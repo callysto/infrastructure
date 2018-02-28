@@ -53,8 +53,10 @@ ad-hoc commands to get the system to a known state
 ```
   $ cd ansible
   $ ansible --become -i inventory.yml \ 
-    -m 'yum' -a 'name=* state=latest' hub-dev.callysto.ca
+    -m 'yum' -a 'name=* state=latest exclude=dhclient' \
+    hub-dev.callysto.ca
   $ ansible --become -i inventory.yml \
-    -m 'command' -a 'reboot' hub-dev.callysto.ca
+    -m 'command' -a 'reboot' \
+    hub-dev.callysto.ca
 ```
 
