@@ -15,7 +15,6 @@ inside terraform, we can do this by defining TF_VAR_os_cybera_password before
 running terraform. There's an `init.sh` script in the terraform directory which
 should be able to handle most of this
 ```
-  $ cd terraform
   $ . init.sh
   $ echo $TF_VAR_os_project_name
 ```
@@ -31,3 +30,31 @@ You will need the openstack plugin and some other bits and pieces so run
 
 ### Terraform apply
 `terraform apply` will create the resources for you
+```
+  $ cd terraform
+  $ terraform apply
+
+...
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ip = 162.246.156.221
+```
+That IP address should be associated with some DNS name before the ansible
+playbooks are run.
+
+
+## Ansible
+
+We have encoded most of the setup for creating our JupyterHub instances as
+ansible playbooks. Before actually running the playbooks, I usually run some
+ad-hoc commands to get the system to a known state
+```
+  $ cd ansible
+  $ ansible --become -i inventory.yml \ 
+    -m 'yum' -a 'name=* state=latest' hub-dev.callysto.ca
+  $ ansible --become -i inventory.yml \
+    -m 'command' -a 'reboot' hub-dev.callysto.ca
+```
+
