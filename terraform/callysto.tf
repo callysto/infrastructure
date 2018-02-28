@@ -31,7 +31,7 @@ resource "openstack_compute_instance_v2" "callysto-dev" {
   image_id        = "10076751-ace0-49b2-ba10-cfa22a98567d"
   flavor_id       = "1a9598b6-1cf9-452a-b7fd-64844382a709"
   key_pair        = "id_cybera_openstack"
-  security_groups = ["default","ssh","ping"]
+  security_groups = ["default","ssh","ping","http"]
   user_data       = "${var.cloudconfig_default_user}"
   network {
     name = "default"
