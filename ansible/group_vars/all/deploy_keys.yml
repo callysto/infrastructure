@@ -1,0 +1,14 @@
+deploy_keys:
+  callysto_html:
+    name: "Callysto Landing deploy keys"
+    user: "ptty2u"
+    key_file:
+      src: "{{ deploy_secrets }}/id_callysto_html_deploy"
+      dest: "/home/ptty2u/.ssh/id_callysto_html_deploy"
+  syzygyauthenticator:
+    name: "Syzygy Authenticator deploy keys"
+    user: "ptty2u"
+    key_file:
+      src: "{{ deploy_secrets }}/id_syzygyauthenticator_callysto_deploy"
+      dest: "/home/ptty2u/.ssh/id_syzygyauthenticator_callysto_deploy"
+

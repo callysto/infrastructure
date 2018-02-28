@@ -7,3 +7,9 @@
   roles:
     - { role: hostname,                    tags: ["setup", "hostname"] }
     - { role: base-packages,               tags: ["setup", "base-packages"] }
+    - { role: ansible-role-selinux,        tags: ["selinux"] }
+    - { role: ansible-role-firewalld,      tags: ["firewalld"] }
+    - { role: ansible-sshd,                tags: ["sshd"] }
+    - { role: ansible-sudo,                tags: ["sudo"] }
+    - { role: ansible-role-apache,         tags: ["httpd"] }
+    - { role: dehydrate-letsencrypt,       tags: ["letsencrypt"] }

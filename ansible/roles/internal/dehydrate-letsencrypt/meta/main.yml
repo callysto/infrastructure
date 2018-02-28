@@ -1,0 +1,4 @@
+---
+dependencies:
+  - { role: secret }
+  - { role: ansible-role-apache }

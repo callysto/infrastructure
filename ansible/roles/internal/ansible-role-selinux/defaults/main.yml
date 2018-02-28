@@ -1,0 +1,7 @@
+---
+selinux_packages:
+  - { name: 'libselinux', state: 'latest' }
+  - { name: 'libselinux-python', state: 'latest' }
+
+selinux_policy: targeted
+selinux_state: permissive

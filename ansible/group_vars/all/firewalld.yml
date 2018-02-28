@@ -1,0 +1,6 @@
+#
+# N.B. Docker handles its own roles currently
+firewalld_allow_services:
+  - { service: http }
+  - { service: https }
+  - { service: ssh }

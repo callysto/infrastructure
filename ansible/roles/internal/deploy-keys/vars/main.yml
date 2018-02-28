@@ -1,0 +1,8 @@
+---
+#deploy_keys:
+#  - name: "Key 1"
+#    user: "username"
+#    key_file: "{{ lookup('file', '{{ secret_keys }}/key1.pub' }}"
+#  - name: "Key 2"
+#    user: "username2"
+#    key_file: "{{ lookup('file', '{{ secret_keys }}/key2.pub' }}"

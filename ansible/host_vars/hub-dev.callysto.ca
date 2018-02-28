@@ -1,0 +1,4 @@
+# We need openstack to report these as volume ID a-la-compute canada
+# Using the plain device names is risky!
+zfs_disk_1: /dev/sdb
+zfs_disk_2: /dev/sdc

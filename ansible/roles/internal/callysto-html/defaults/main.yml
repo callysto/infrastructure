@@ -1,0 +1,17 @@
+callysto_html_hostname: "{{ inventory_hostname }}"
+callysto_html_domain: "callysto.ca"
+callysto_html_support_email: "jupyter@pims.math.ca"
+callysto_html_url: "http://{{ inventory_hostname }}"
+callysto_html_longname: "Cybera"
+
+callysto_html_dir:
+  src: /opt/callysto-html
+  dest: /var/www/html/site
+
+callysto_html_logout_message: "You have been logged out of your Jupyter Session"
+
+callysto_html_terms: |
+  By using this service you are indicating that you agree with the Rapid Access
+  Cloud <a href="http://www.cybera.ca/policies/acceptable-use-policy-cloud-services/">acceptable
+  use policy</a> and <a href="https://docs.google.com/document/d/1I2AzMPLXsVXGDOiBsmMqdetDQ106Kg-2WuSevXkov5c/edit?pli=1">terms
+  of serice</a>.

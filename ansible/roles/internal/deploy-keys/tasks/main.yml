@@ -1,0 +1,8 @@
+- name: Add deploy key
+  copy:
+    owner: '{{ item.value.user }}'
+    group: '{{ item.value.user }}'
+    mode: 0400
+    src: '{{ item.value.key_file.src }}'
+    dest: '{{ item.value.key_file.dest }}'
+  with_dict: '{{ deploy_keys }}'

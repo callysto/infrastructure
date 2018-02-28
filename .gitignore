@@ -2,5 +2,7 @@ terraform/.terraform
 *.gpg
 *.tfstate
 *.tfstate.backup
+*.retry
+.hostfiles
 openrc.sh
 ansible/roles/external

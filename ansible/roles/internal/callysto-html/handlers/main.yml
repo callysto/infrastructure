@@ -1,0 +1,14 @@
+---
+- name: Copy landing page templates
+  shell: "rm -rf {{ callysto_html_dir.dest }} && mkdir {{ callysto_html_dir.dest }} && git archive template | tar -x -C {{ callysto_html_dir.dest }}"
+  args:
+    chdir: '{{ callysto_html_dir.src }}'
+
+- name: Update image assets
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    force: yes
+  with_items:
+    - { src: '{{ inventory_dir }}/host_files/{{ inventory_hostname }}/logo.png', dest: '/var/www/html/site/img/logo.png' }
+    - { src: '{{ inventory_dir }}/host_files/{{ inventory_hostname }}/login.png', dest: '/var/www/html/site/img/login.png' }
