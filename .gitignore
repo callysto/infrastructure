@@ -1,0 +1,5 @@
+terraform/.terraform
+*.gpg
+*.tfstate
+*.tfstate.backup
+openrc.sh
