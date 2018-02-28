@@ -1,0 +1,9 @@
+---
+
+- name: Jupyter Setup
+  hosts: jupyter
+  become: true
+
+  roles:
+    - { role: hostname,                    tags: ["setup", "hostname"] }
+    - { role: base-packages,               tags: ["setup", "base-packages"] }

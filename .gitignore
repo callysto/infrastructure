@@ -3,3 +3,4 @@ terraform/.terraform
 *.tfstate
 *.tfstate.backup
 openrc.sh
+ansible/roles/external
