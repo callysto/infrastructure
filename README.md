@@ -60,3 +60,11 @@ ad-hoc commands to get the system to a known state
     hub-dev.callysto.ca
 ```
 
+Where possible we want to use roles from [ansible
+galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
+`ansible/roles/roles_requirements.yml` and a setup script at
+`ansible/scripts/role_update.sh` will download them.
+
+```
+  $ ./ansible/scripts/role_update.sh
+```
