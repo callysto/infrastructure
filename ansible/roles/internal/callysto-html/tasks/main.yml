@@ -2,8 +2,7 @@
 - name: Install HTML files
   git:
     repo: git@github.com:pimsmath/syzygy-landing-page.git
-    branch: callysto
-    version: template
+    version: "{{ callysto_landing_branch }}"
     dest: /opt/callysto-html 
     ssh_opts: "-o StrictHostKeyChecking=no"
     key_file: '{{ deploy_keys.callysto_html.key_file.dest }}'

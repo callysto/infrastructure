@@ -1,6 +1,6 @@
 ---
 - name: Copy landing page templates
-  shell: "rm -rf {{ callysto_html_dir.dest }} && mkdir {{ callysto_html_dir.dest }} && git archive template | tar -x -C {{ callysto_html_dir.dest }}"
+  shell: "rm -rf {{ callysto_html_dir.dest }} && mkdir {{ callysto_html_dir.dest }} && git archive {{ callysto_landing_branch }} | tar -x -C {{ callysto_html_dir.dest }}"
   args:
     chdir: '{{ callysto_html_dir.src }}'
 

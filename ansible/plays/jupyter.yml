@@ -13,3 +13,4 @@
     - { role: ansible-sudo,                tags: ["sudo"] }
     - { role: ansible-role-apache,         tags: ["httpd"] }
     - { role: dehydrate-letsencrypt,       tags: ["letsencrypt"] }
+    - { role: callysto-html,               tags: ["httpd"] }
