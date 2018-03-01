@@ -60,6 +60,9 @@ ad-hoc commands to get the system to a known state
     hub-dev.callysto.ca
 ```
 
+Additionally, we want to use an updated kernel which means we will involve a
+reboot before we can compile kernel modules against it (zfs).
+
 Where possible we want to use roles from [ansible
 galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
 `ansible/roles/roles_requirements.yml` and a setup script at
