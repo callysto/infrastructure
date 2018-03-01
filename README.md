@@ -61,7 +61,15 @@ ad-hoc commands to get the system to a known state
 ```
 
 Additionally, we want to use an updated kernel which means we will involve a
-reboot before we can compile kernel modules against it (zfs).
+reboot before we can compile kernel modules against it (zfs). This can be done
+by rebooting after running the setup tasks
+```
+  $ cd ansible
+  $ ansible-playbook plays/jupyter.yml --tags setup
+  $ ansible --become -i inventory.yml \
+    -m 'command' -a 'reboot' \
+    hub-dev.callysto.ca
+```
 
 Where possible we want to use roles from [ansible
 galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to

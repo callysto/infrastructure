@@ -1,0 +1,43 @@
+---
+- name: Check if ZFS repo is already configured
+  stat: path= {{ zfs_repofile_path }}
+  register: zfs_repofile_result
+
+- name: Add ZFS repo
+  yum:
+    name: "{{ zfs_repo_rpm }}"
+    state: present
+  register: result
+  until: '"failed" not in result'
+  retries: 5
+  delay: 10
+  when: not zfs_repofile_result.stat.exists
+
+- name: Add ZFS repo GPG key
+  rpm_key:
+    key: "{{ zfs_repo_gpg_key_url }}"
+    state: present
+  when: not zfs_repofile_result.stat.exists
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Install zfs kernel module
+  yum:
+    name: zfs
+    state: present
+  notify:
+    - Modprobe zfs
+
+- name: Flush ZFS Handlers
+  meta: flush_handlers
+
+- name: Create tank zpool
+  notify:
+   - Start zfs
+  command: /sbin/zpool create -f tank mirror '{{ zfs_disk_1 }}' '{{ zfs_disk_2 }}'
+  args:
+    creates: /tank
+
+- name: Create ZFS home container
+  command: /sbin/zfs create tank/home
+  args:
+    creates: /tank/home

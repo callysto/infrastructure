@@ -5,7 +5,7 @@
   become: true
 
   roles:
-    - { role: elrepo-kernel,               tags: ["elrepo"] }
+    - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
     - { role: hostname,                    tags: ["setup", "hostname"] }
     - { role: base-packages,               tags: ["setup", "base-packages"] }
     - { role: ansible-role-selinux,        tags: ["selinux"] }
@@ -16,3 +16,4 @@
     - { role: dehydrate-letsencrypt,       tags: ["letsencrypt"] }
     - { role: callysto-html,               tags: ["httpd"] }
     - { role: zfs,                         tags: ["zfs"] }
+    - { role: ius-python3,                 tags: ["python3"] }
