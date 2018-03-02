@@ -8,6 +8,7 @@
     - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
     - { role: hostname,                    tags: ["setup", "hostname"] }
     - { role: base-packages,               tags: ["setup", "base-packages"] }
+    - { role: ssh-public-keys,             tags: ["setup", "ssh"] } 
     - { role: ansible-role-selinux,        tags: ["selinux"] }
     - { role: ansible-role-firewalld,      tags: ["firewalld"] }
     - { role: ansible-sshd,                tags: ["sshd"] }
@@ -17,3 +18,6 @@
     - { role: callysto-html,               tags: ["httpd"] }
     - { role: zfs,                         tags: ["zfs"] }
     - { role: ius-python3,                 tags: ["python3"] }
+    - { role: ansible-role-docker,         tags: ["docker"] }
+    - { role: dockerhub,                   tags: ["docker", "dockerhub"] }
+    - { role: jupyterhub,                  tags: ["jupyterhub"] }

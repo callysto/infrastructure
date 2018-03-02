@@ -9,4 +9,3 @@
   name: ansible-role-apache
 - src: https://github.com/marcelnijenhof/ansible-role-firewalld.git
   name: ansible-role-firewalld
-

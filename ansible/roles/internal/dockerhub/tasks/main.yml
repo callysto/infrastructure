@@ -1,0 +1,12 @@
+---
+- name: Install docker module
+  yum:
+    name: 'python-docker-py'
+    state: 'latest'
+
+- name: DockerHub login
+  docker_login:
+    username: '{{ dockerhub_username }}'
+    password: '{{ dockerhub_password }}'
+    email: '{{ dockerhub_email }}'
+    api_version: '{{ dockerhub_api_version }}'

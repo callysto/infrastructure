@@ -1,0 +1,15 @@
+---
+- name: Grab cull script (v0.7.2)
+  get_url:
+    url: "{{ jhub_docker_cull_script.src }}"
+    dest: "{{ jhub_docker_cull_script.dest }}"
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Install python3-dateutil packages
+  yum:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+  with_items: '{{ jhub_docker_cull_packages }}'
+

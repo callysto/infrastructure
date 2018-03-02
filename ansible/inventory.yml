@@ -1,5 +1,5 @@
-[development]
+[google]
 hub-dev.callysto.ca
 
 [jupyter:children]
-development
+google

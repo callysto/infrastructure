@@ -1,0 +1,13 @@
+---
+- name: Install the syzygyauthenticator from github
+  git:
+    repo: '{{ syzygyauthenticator_repo }}'
+    dest: '{{ syzygyauthenticator_dir }}'
+    ssh_opts: "-o StrictHostKeyChecking=no"
+    key_file: '{{ deploy_keys.syzygyauthenticator.key_file.dest }}'
+
+- name: Install the syzygyauthenticator
+  pip: 
+    chdir: '{{ syzygyauthenticator_dir }}'
+    name: 'file://{{ syzygyauthenticator_dir }}'
+    executable: pip3.6

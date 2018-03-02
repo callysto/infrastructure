@@ -1,0 +1,78 @@
+---
+- name: Examine groups
+  debug:
+    msg: "Content of group_names is {{ group_names }}"
+
+- name: Add a jupyter user to run things as
+  user:
+    name: "jupyter"
+
+- name: Get the jupyter uidNumber
+  getent:
+    database: passwd
+    key: "jupyter"
+    split: ':'
+
+- name: Collect the UserID for jupyter user
+  set_fact: 
+    jupyterhub_user_uid: '{{ getent_passwd["jupyter"][1] }}'
+
+- name: Install Jupyterhub
+  pip: 
+    name: jupyterhub
+    executable: pip3.6
+
+- name: Install node packages
+  yum:
+    name: nodejs
+    state: latest
+
+- name: Install configurable-http-proxy
+  npm:
+    name: configurable-http-proxy
+    state: latest
+    global: yes
+
+- name: Create JupyterHub Config Directory
+  file:
+    path: '{{ jupyterhub_srv_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: Add Jupyterhub Config
+  template:
+    src: jupyterhub_config_base.py.j2
+    dest: "{{ jupyterhub_srv_dir }}/jupyterhub_config.py"
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart JupyterHub
+
+- name: Get Docker image for JupyterHub containers
+  docker_image:
+    name: '{{ jupyterhub_docker_container }}'
+
+- name: Jupyterhub Service config
+  template:
+    src: jupyterhub-env.j2
+    dest: /etc/sysconfig/jupyterhub
+    mode: 0600
+    owner: root
+    group: root
+
+- name: Jupyterhub Service definition
+  template:
+    src: jupyterhub.service.j2
+    dest: /etc/systemd/system/jupyterhub.service
+  notify:
+    - Start JupyterHub
+
+- name: Add jupyterhub port to to home zone (assume firewalld)
+  firewalld:
+    zone: "home"
+    port: "{{ jupyterhub_api_port }}/tcp"
+    immediate: yes
+    state: enabled
+    permanent: true
+

@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+{% block global %}
+import os
+
+{% for global_option in jupyterhub_global_options %}
+c.{{ global_option.conf_object }} = {{ global_option.value }}
+{% endfor %}
+
+{% if jupyterhub_global_options_extra is defined %}
+{% for global_option in jupyterhub_global_options_extra %}
+c.{{ global_option.conf_object }} = {{ global_option.value }}
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block spawner %}
+c.JupyterHub.spawner_class = '{{ jupyterhub_spawner }}'
+{% if jupyterhub_spawner_options is defined %}
+{% for spawner_option in jupyterhub_spawner_options %}
+c.{{ spawner_option.conf_object }} = {{ spawner_option.value }}
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block authenticator %}
+c.JupyterHub.authenticator_class = '{{ jupyterhub_authenticator }}'
+{% if jupyterhub_authenticator_options is defined %}
+{% for authenticator_option in jupyterhub_authenticator_options %}
+c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
+{% endfor %}
+{% endif %}
+{% endblock %}
