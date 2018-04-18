@@ -1,29 +1,19 @@
 ---
-- name: Check if ZFS repo is already configured
-  stat: path= {{ zfs_repofile_path }}
-  register: zfs_repofile_result
+- name: Copy ZFS yum repo
+  copy:
+    src: files/zfs.repo
+    dest: /etc/yum.repos.d/zfs.repo
 
-- name: Add ZFS repo
-  yum:
-    name: "{{ zfs_repo_rpm }}"
-    state: present
-  register: result
-  until: '"failed" not in result'
-  retries: 5
-  delay: 10
-  when: not zfs_repofile_result.stat.exists
-
-- name: Add ZFS repo GPG key
-  rpm_key:
-    key: "{{ zfs_repo_gpg_key_url }}"
-    state: present
-  when: not zfs_repofile_result.stat.exists
-  ignore_errors: "{{ ansible_check_mode }}"
+- name: Copy ZFS GPG key
+  copy:
+    src: files/RPM-GPG-KEY-zfsonlinux
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
 
 - name: Install zfs kernel module
   yum:
     name: zfs
     state: present
+    update_cache: yes
   notify:
     - Modprobe zfs
 

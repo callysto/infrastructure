@@ -1,3 +1,3 @@
 zfs_repo_rpm: "http://download.zfsonlinux.org/epel/zfs-release.el{{ ansible_distribution_version | regex_replace('^(?P<major>[0-9]+).(?P<minor>[0-9]+).*', '\\g<major>_\\g<minor>' )}}.noarch.rpm"
-zfs_repofile_path: "zfs.repo"
+zfs_repofile_path: "/etc/yum.repos.d/zfs.repo"
 zfs_repo_gpg_key_url: "http://pgp.mit.edu/pks/lookup?op=get&search=0xA9D5A1C0F14AB620"
