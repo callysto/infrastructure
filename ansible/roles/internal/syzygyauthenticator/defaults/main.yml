@@ -1,3 +1,3 @@
 ---
-syzygyauthenticator_repo: git@github.com:pimsmath/syzygyauthenticator.git
+syzygyauthenticator_repo: git@github.com:callysto/syzygyauthenticator.git
 syzygyauthenticator_dir: /opt/syzygyauthenticator
