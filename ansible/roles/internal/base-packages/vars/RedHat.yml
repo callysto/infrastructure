@@ -1,8 +1,9 @@
 ---
-base_packages: 
+base_packages:
   - { name: 'git', state: 'latest' }
   - { name: 'wget', state: 'latest' }
   - { name: 'vim', state: 'latest' }
   - { name: 'tmux', state: 'latest' }
   - { name: 'screen', state: 'latest' }
   - { name: 'python2-pip', state: 'latest' }
+  - { name: 'epel-release', state: 'latest' }
