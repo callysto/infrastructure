@@ -43,29 +43,13 @@ playbooks are run.
 
 ## Ansible
 
-We have encoded most of the setup for creating our JupyterHub instances as
-ansible playbooks. Before actually running the playbooks, I usually run some
-ad-hoc commands to get the system to a known state
+The instance must be initialized the first time. This will update all packages,
+and use a suitable kernel to run zfs with.
 ```
   $ cd ansible
-  $ ansible --become -i inventory.yml \ 
-    -m 'yum' -a 'name=* state=latest exclude=dhclient' \
-    hub-dev.callysto.ca
-  $ ansible --become -i inventory.yml \
-    -m 'command' -a 'reboot' \
-    hub-dev.callysto.ca
+  $ ansible-playbook plays/init.yml
 ```
 
-Additionally, we want to use an updated kernel which means we will involve a
-reboot before we can compile kernel modules against it (zfs). This can be done
-by rebooting after running the setup tasks
-```
-  $ cd ansible
-  $ ansible-playbook plays/jupyter.yml --tags setup
-  $ ansible --become -i inventory.yml \
-    -m 'command' -a 'reboot' \
-    hub-dev.callysto.ca
-```
 
 Where possible we want to use roles from [ansible
 galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
