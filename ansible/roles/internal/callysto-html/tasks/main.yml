@@ -1,7 +1,7 @@
 ---
 - name: Install HTML files
   git:
-    repo: git@github.com:pimsmath/syzygy-landing-page.git
+    repo: git@github.com:callysto/syzygy-landing-page.git
     version: "{{ callysto_landing_branch }}"
     dest: /opt/callysto-html 
     ssh_opts: "-o StrictHostKeyChecking=no"
