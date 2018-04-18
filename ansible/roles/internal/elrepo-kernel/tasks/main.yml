@@ -1,30 +1,19 @@
 ---
-- name: Check if ELREPO repo is already configured.
-  stat: path={{ elrepo_repofile_path }}
-  register: elrepo_repofile_result
+- name: Copy ELREPO repo file
+  copy:
+    src: elrepo.repo
+    dest: /etc/yum.repos.d/elrepo.repo
 
-- name: Install ELREPO repo.
-  yum:
-    name: "{{ elrepo_repo_url }}"
-    state: present
-  register: result
-  until: '"failed" not in result'
-  retries: 5
-  delay: 10
-  when: not elrepo_repofile_result.stat.exists
-
-- name: Import ELREPO GPG key.
-  rpm_key:
-    key: "{{ elrepo_repo_gpg_key_url }}"
-    state: present
-  when: not elrepo_repofile_result.stat.exists
-  ignore_errors: "{{ ansible_check_mode }}"
+- name: Copy ELREPO repo gpg key
+  copy:
+    src: RPM-GPG-KEY-elrepo.org
+    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
 
 - name: Install kernel-lt packages
   yum:
       name: '{{ item.name }}'
       state: '{{ item.state }}'
-      enablerepo: '{{ elrepo_kernel_repo }}'
+      update_cache: yes
   with_items: '{{ elrepo_kernel_packages }}'
 
 - name: "Setting default kernel"
@@ -33,7 +22,8 @@
     regexp: '^GRUB_DEFAULT='
     line: "GRUB_DEFAULT=0"
   register: grub_changed
-  notify: 
+  notify:
     - Recreate grub config
 
-- debug: var=grub_changed["changed"]
+- name: Force handlers to run
+  meta: flush_handlers
