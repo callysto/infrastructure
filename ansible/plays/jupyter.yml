@@ -1,4 +1,16 @@
 ---
+- name: Fix sudo TTY
+  hosts: jupyter
+  tasks:
+    - name: Disable sudo requiretty
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'Defaults    requiretty'
+        state: absent
+      become: true
+      vars:
+          ansible_ssh_pipelining: no
+      tags: always
 
 - name: Jupyter Setup
   hosts: jupyter
@@ -8,7 +20,7 @@
     - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
     - { role: hostname,                    tags: ["setup", "hostname"] }
     - { role: base-packages,               tags: ["setup", "base-packages"] }
-    - { role: ssh-public-keys,             tags: ["setup", "ssh"] } 
+    - { role: ssh-public-keys,             tags: ["setup", "ssh"] }
     - { role: ansible-role-selinux,        tags: ["selinux"] }
     - { role: ansible-role-firewalld,      tags: ["firewalld"] }
     - { role: ansible-sshd,                tags: ["sshd"] }
