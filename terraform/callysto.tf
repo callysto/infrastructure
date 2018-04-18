@@ -8,6 +8,11 @@ resource "openstack_blockstorage_volume_v2" "zfsvol2" {
   size = 50
 }
 
+resource "openstack_blockstorage_volume_v2" "var_docker" {
+  name = "docker"
+  size = 100
+}
+
 resource "openstack_networking_floatingip_v2" "fip_1" {
   pool         = "public"
 }
@@ -42,6 +47,11 @@ resource "openstack_compute_volume_attach_v2" "zfsvol1" {
 resource "openstack_compute_volume_attach_v2" "zfsvol2" {
   instance_id = "${openstack_compute_instance_v2.callysto-dev.id}"
   volume_id = "${openstack_blockstorage_volume_v2.zfsvol2.id}"
+}
+
+resource "openstack_compute_volume_attach_v2" "var_docker" {
+  instance_id = "${openstack_compute_instance_v2.callysto-dev.id}"
+  volume_id = "${openstack_blockstorage_volume_v2.var_docker.id}"
 }
 
 output "ip" {
