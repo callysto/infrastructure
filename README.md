@@ -9,14 +9,10 @@ everything quickly.
  * 2 * 50G volumes for user homedir backing
 
 ### Setup
-You will need to make some environment variables available for terraform to talk
-to openstack. As an example, we need the variable `${var.os_cybera_password}`
-inside terraform, we can do this by defining TF_VAR_os_cybera_password before
-running terraform. There's an `init.sh` script in the terraform directory which
-should be able to handle most of this
+You will need to ensure your OpenStack `openrc.sh` file is in the top level folder.
+Ensure you source it before proceeding:
 ```
-  $ . init.sh
-  $ echo $TF_VAR_os_project_name
+  $ source openrc.sh
 ```
 
 
