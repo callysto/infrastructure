@@ -6,4 +6,3 @@ base_packages:
   - { name: 'tmux', state: 'latest' }
   - { name: 'screen', state: 'latest' }
   - { name: 'python2-pip', state: 'latest' }
-  - { name: 'epel-release', state: 'latest' }
