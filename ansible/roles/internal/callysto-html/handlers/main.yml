@@ -10,5 +10,5 @@
     dest: '{{ item.dest }}'
     force: yes
   with_items:
-    - { src: '{{ inventory_dir }}/host_files/{{ inventory_hostname }}/logo.png', dest: '/var/www/html/site/img/logo.png' }
-    - { src: '{{ inventory_dir }}/host_files/{{ inventory_hostname }}/login.png', dest: '/var/www/html/site/img/login.png' }
+    - { src: 'files/logo.png', dest: '/var/www/html/site/img/logo.png' }
+    - { src: 'files/login.png', dest: '/var/www/html/site/img/login.png' }

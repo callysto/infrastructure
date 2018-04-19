@@ -1,4 +1,4 @@
-<VirtualHost {{ ansible_default_ipv4.address }}:80>
+<VirtualHost *:80>
   ServerName {{ inventory_hostname }}
   ErrorLog /var/log/httpd/jupyter-error.log
   LogLevel warn
@@ -7,7 +7,7 @@
   Redirect / https://{{ inventory_hostname }}/
 </VirtualHost>
 
-<VirtualHost {{ ansible_default_ipv4.address }}:443>
+<VirtualHost *:443>
   ServerName {{ inventory_hostname }}
   ServerAdmin jupyter@pims.math.ca
 
