@@ -2,4 +2,8 @@ WELLKNOWN="{{ acme_home }}/challenge"
 LOCKFILE="${WELLKNOWN}/.lock"
 CONTACT_EMAIL="{{ acme_email }}"
 RENEW_DAYS=7
-CA="{{ dehydrate_ca }}"
+{% if not dehydrate_test_cert %}
+CA="{{ dehydrate_ca_prod }}"
+{% else %}
+CA="{{ dehydrate_ca_staging }}"
+{% endif %}

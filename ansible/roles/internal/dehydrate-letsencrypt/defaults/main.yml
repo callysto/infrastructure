@@ -2,7 +2,11 @@
 acme_user: "acme"
 acme_home: "/home/acme"
 acme_email: "iana@pims.math.ca"
-dehydrate_ca: "https://acme-staging.api.letsencrypt.org/directory"
+dehydrate_ca_prod: "https://acme-v02.api.letsencrypt.org/directory"
+dehydrate_ca_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+# By default obtain a fake certificate
+dehydrate_test_cert: True
 
 # One list item per machine, multiple names for the same machine
 # can be handled by space separating a single list item
