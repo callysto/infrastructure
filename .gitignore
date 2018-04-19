@@ -6,3 +6,4 @@ terraform/.terraform
 .hostfiles
 openrc.sh
 ansible/roles/external
+local_vars.yml

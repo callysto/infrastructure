@@ -1,0 +1,19 @@
+dockerhub_username: "USERNAME"
+dockerhub_password: "PASSWORD"
+dockerhub_email: "EMAIL"
+
+zfs_disk_1: /dev/sdb
+zfs_disk_2: /dev/sdc
+openstack_ephemeral_docker_disk: /dev/sdd
+
+domain: subdomain.example.com
+
+jupyterhub_oauth_client_id: 12345
+jupyterhub_oauth_client_secret: SUPERSECRET
+jupyterhub_oauth_callback_url: https://callback.example.com
+
+# Set to True if wanting to speed up initialization
+disable_update: False
+
+# Set to False to get a production-ready certificate
+dehydrate_test_cert: True
