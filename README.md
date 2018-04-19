@@ -9,7 +9,7 @@ everything quickly.
  * 2 * 50G volumes for user homedir backing
  * 1 * 100G volume used for /var/lib/docker
 
-### Setup
+### Terraform Prep
 You will need to ensure your OpenStack `openrc.sh` file is sourced before running
  terraform.
 ```
@@ -20,7 +20,7 @@ The SSH public key from your $HOME/.ssh/id_rsa.pub will be attached to the insta
 Ensure that you have the associated key ($HOME/.ssh/id_rsa) as well. If you need to
 create one then run:
 ```
-ssh-keygen -t rsa -f ~/.ssh/id_rsa
+  $ ssh-keygen -t rsa -f ~/.ssh/id_rsa
 ```
 
 ### First Time
@@ -47,7 +47,7 @@ ip = 162.246.156.221
 That IP address should be associated with some DNS name before the ansible
 playbooks are run.
 
-## Prep
+## Ansible Prep
 Create local_vars.yml file and fill in needed values:
 ```
   $ cd ansible
