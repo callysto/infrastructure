@@ -21,6 +21,7 @@
         name: "*"
         state: latest
       ignore_errors: true
+      when: "not disable_update | default(false)"
 
   roles:
     - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
