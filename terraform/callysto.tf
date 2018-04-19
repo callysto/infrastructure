@@ -1,18 +1,3 @@
-resource "openstack_blockstorage_volume_v2" "zfsvol1" {
-  name = "docker"
-  size = 50
-}
-
-resource "openstack_blockstorage_volume_v2" "zfsvol2" {
-  name = "docker"
-  size = 50
-}
-
-resource "openstack_blockstorage_volume_v2" "var_docker" {
-  name = "docker"
-  size = 100
-}
-
 resource "openstack_networking_floatingip_v2" "fip_1" {
   pool         = "public"
 }
@@ -34,109 +19,12 @@ resource "openstack_compute_instance_v2" "callysto-dev" {
   flavor_name       = "m1.large"
   key_pair        = "${openstack_compute_keypair_v2.callysto.name}"
   security_groups = ["${openstack_networking_secgroup_v2.callysto.name}"]
-  user_data       = "${var.cloudconfig_default_user}"
+  user_data       = "${var.cloudconfig}"
   network {
     name = "default"
   }
 }
 
-resource "openstack_compute_volume_attach_v2" "zfsvol1" {
-  instance_id = "${openstack_compute_instance_v2.callysto-dev.id}"
-  volume_id = "${openstack_blockstorage_volume_v2.zfsvol1.id}"
-}
-resource "openstack_compute_volume_attach_v2" "zfsvol2" {
-  instance_id = "${openstack_compute_instance_v2.callysto-dev.id}"
-  volume_id = "${openstack_blockstorage_volume_v2.zfsvol2.id}"
-}
-
-resource "openstack_compute_volume_attach_v2" "var_docker" {
-  instance_id = "${openstack_compute_instance_v2.callysto-dev.id}"
-  volume_id = "${openstack_blockstorage_volume_v2.var_docker.id}"
-}
-
 output "ip" {
   value = "${openstack_networking_floatingip_v2.fip_1.address}"
 }
-
-
-# Security Group
-
-resource "openstack_networking_secgroup_v2" "callysto" {
-    name = "Callysto"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "ssh_v4" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 22
-  port_range_max    = 22
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "ssh_v6" {
-  direction         = "ingress"
-  ethertype         = "IPv6"
-  protocol          = "tcp"
-  port_range_min    = 22
-  port_range_max    = 22
-  remote_ip_prefix  = "::/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "http_world_v4" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 80
-  port_range_max    = 80
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "https_world_v4" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 443
-  port_range_max    = 443
-  remote_ip_prefix  = "0.0.0.0/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "http_world_v6" {
-  direction         = "ingress"
-  ethertype         = "IPv6"
-  protocol          = "tcp"
-  port_range_min    = 80
-  port_range_max    = 80
-  remote_ip_prefix  = "::/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "https_world_v6" {
-  direction         = "ingress"
-  ethertype         = "IPv6"
-  protocol          = "tcp"
-  port_range_min    = 443
-  port_range_max    = 443
-  remote_ip_prefix  = "::/0"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-
-resource "openstack_networking_secgroup_rule_v2" "icmp_v4" {
-  direction         = "ingress"
-  ethertype         = "IPv4"
-  protocol          = "icmp"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
-resource "openstack_networking_secgroup_rule_v2" "icmp_v6" {
-  direction         = "ingress"
-  ethertype         = "IPv6"
-  protocol          = "icmp"
-  security_group_id = "${openstack_networking_secgroup_v2.callysto.id}"
-}
-
