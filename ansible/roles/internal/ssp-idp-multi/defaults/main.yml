@@ -1,0 +1,24 @@
+ssp_php_conf_mem_limit: 128M
+ssp_php_conf_max_exec_time: 30
+
+ssp_ver: 1.15.4
+ssp_sha256: 349cf5d9f9ecbbced0e6f6794d26d5242fc9dafbd34268aeeb200182c24f88a5
+ssp_url: https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_ver  }}/simplesamlphp-{{ ssp_ver  }}.tar.gz
+
+ssp_domain: localhost.local
+ssp_path: /var
+ssp_prefix: simplesamlphp-
+ssp_dir: "{{ ssp_path  }}/{{ ssp_prefix  }}{{ ssp_ver  }}"
+ssp_tmp_dir: /tmp/ssp
+ssp_www_user: apache
+ssp_www_group: apache
+
+ssp_cron_enable: True
+ssp_cron_daily_cmd: "curl --silent -k -H 'host: {{ ssp_domain  }}' 'https://localhost/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key  }}&tag=daily' > /dev/null 2>&1"
+ssp_cron_hourly_cmd: "curl --silent -k -H 'host: {{ ssp_domain  }}' 'https://localhost/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key  }}&tag=hourly' > /dev/null 2>&1"
+#ssp_refresh_key: E1jvd1TbqSHL
+
+ssp_theme_install: True
+
+# False by default until install is done
+ssp_installed_now: False

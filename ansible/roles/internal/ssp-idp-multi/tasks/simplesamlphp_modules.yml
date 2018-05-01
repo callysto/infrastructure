@@ -1,0 +1,18 @@
+- name: Copy composer installer
+  copy:
+    src: get-composer.sh
+    dest: "{{ ssp_dir }}/get-composer.sh"
+    mode: 0755
+
+- name: Run composer installer (if needed)
+  command: get-composer.sh
+  args:
+    chdir: "{{ ssp_dir }}"
+    creates: "{{ ssp_dir }}/composer.phar"
+
+- name: Run composer authoauth2 installer
+  command: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:dev-master
+  args:
+    chdir: "{{ ssp_dir }}"
+    creates: "{{ ssp_dir }}/modules/authoauth2/lib/OAuth2ResponseHandler.php"
+

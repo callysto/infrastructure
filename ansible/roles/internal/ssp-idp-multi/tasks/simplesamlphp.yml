@@ -1,0 +1,59 @@
+- name: Check for SSP cert
+  stat:
+    path: "{{ ssp_dir }}/cert/saml.crt"
+  register: ssp_crt_stat
+
+- name: Check for SSP key
+  stat:
+    path: "{{ ssp_dir }}/cert/saml.pem"
+  register: ssp_key_stat
+
+- name: Check if SimpleSAMLphp directory already exists
+  stat:
+    path: "{{ ssp_dir }}/.installed"
+  register: ssp_stat
+
+- name: Install SimpleSAMLphp (if required)
+  include_tasks: install_simplesamlphp.yml
+  when: ssp_stat.stat.exists is not defined or ssp_stat.stat.exists == False
+
+- name: Install SimpleSAMLphp modules (if required)
+  include_tasks: simplesamlphp_modules.yml
+
+- name: Ensure SSP metadata dir exists and writable by http user
+  file:
+    path: "{{ ssp_dir }}/metadata"
+    state: directory
+    owner: "{{ ssp_www_user }}"
+    group: "{{ ssp_www_user }}"
+
+- name: Setup SSP cert
+  copy:
+    content: "{{ ssp_idp_multi_saml_cert }}"
+    dest: "{{ ssp_dir }}/cert/multi-idp.crt"
+    mode: 0440
+    owner: root
+    group: "{{ ssp_www_user }}"
+
+- name: Setup SSP key
+  copy:
+    content: "{{ ssp_idp_multi_saml_key }}"
+    dest: "{{ ssp_dir }}/cert/multi-idp.pem"
+    mode: 0440
+    owner: root
+    group: "{{ ssp_www_user }}"
+
+- name: Copy simplesamlphp config templates
+  template:
+    src: "simplesamlphp/{{ item }}.j2"
+    dest: "{{ ssp_dir }}/config/{{ item }}"
+  with_items:
+    - authsources.php
+    - config.php
+    - module_cron.php
+    - config-metarefresh.php
+
+- name: Copy simplesamlphp idp metadata
+  template:
+    src: "simplesamlphp/saml20-idp-hosted.php.j2"
+    dest: "{{ ssp_dir }}/metadata/saml20-idp-hosted.php"

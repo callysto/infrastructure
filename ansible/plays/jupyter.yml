@@ -33,3 +33,4 @@
     - { role: ansible-role-docker,         tags: ["docker"] }
     - { role: dockerhub,                   tags: ["docker", "dockerhub"] }
     - { role: jupyterhub,                  tags: ["jupyterhub"] }
+    - { role: ssp-idp-multi,               tags: ["simplesaml"] }
