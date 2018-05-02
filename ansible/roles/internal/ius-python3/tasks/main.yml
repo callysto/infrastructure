@@ -21,3 +21,8 @@
     src: '/usr/bin/python3.6'
     dest: '/usr/bin/python3'
     state: link
+
+- name: Ensure python3.4 is removed
+  yum:
+    name: python34.x86_64
+    state: absent
