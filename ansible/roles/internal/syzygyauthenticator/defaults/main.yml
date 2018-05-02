@@ -1,3 +1,4 @@
 ---
 syzygyauthenticator_repo: git@github.com:callysto/syzygyauthenticator.git
+syzygyauthenticator_version: shibboleth-auth
 syzygyauthenticator_dir: /opt/syzygyauthenticator

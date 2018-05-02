@@ -6,14 +6,14 @@
     clockSkew="180">
 
 
-    <ApplicationDefaults entityID="https://18530.yeg.cybera.ca/shibboleth"
+    <ApplicationDefaults entityID="https://{{ ssp_domain }}/shibboleth"
                          REMOTE_USER="eppn email persistent-id targeted-id" signing="true" encryption="true"
                         signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
 
         <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
                   checkAddress="false" handlerSSL="false" cookieProps="http">
 
-            <SSO entityID="https://18530.yeg.cybera.ca/simplesaml/saml2/idp/metadata.php">SAML2</SSO>
+            <SSO entityID="https://{{ ssp_domain }}/simplesaml/saml2/idp/metadata.php">SAML2</SSO>
 
             <Logout>SAML2 Local</Logout>
 
@@ -28,7 +28,7 @@
             styleSheet="/shibboleth-sp/main.css"/>
 
         <MetadataProvider type="XML"
-              uri="https://18530.yeg.cybera.ca/simplesaml/saml2/idp/metadata.php"
+              uri="https://{{ ssp_domain }}/simplesaml/saml2/idp/metadata.php"
               backingFilePath="federation-metadata.xml" reloadInterval="3600">
 <!--            <MetadataFilter type="RequireValidUntil" maxValidityInterval="2419200"/> -->
         </MetadataProvider>

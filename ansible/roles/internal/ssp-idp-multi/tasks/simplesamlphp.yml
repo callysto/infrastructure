@@ -17,8 +17,8 @@
   include_tasks: install_simplesamlphp.yml
   when: ssp_stat.stat.exists is not defined or ssp_stat.stat.exists == False
 
-- name: Install SimpleSAMLphp modules (if required)
-  include_tasks: simplesamlphp_modules.yml
+- name: Install SimpleSAMLphp modules
+  import_tasks: simplesamlphp_modules.yml
 
 - name: Ensure SSP metadata dir exists and writable by http user
   file:
@@ -57,3 +57,6 @@
   template:
     src: "simplesamlphp/saml20-idp-hosted.php.j2"
     dest: "{{ ssp_dir }}/metadata/saml20-idp-hosted.php"
+
+- name: Setup crontab
+  import_tasks: simplesamlphp_cron.yml

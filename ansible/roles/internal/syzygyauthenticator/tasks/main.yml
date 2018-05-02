@@ -3,6 +3,7 @@
   git:
     repo: '{{ syzygyauthenticator_repo }}'
     dest: '{{ syzygyauthenticator_dir }}'
+    version: '{{ syzygyauthenticator_version }}'
     ssh_opts: "-o StrictHostKeyChecking=no"
     key_file: '{{ deploy_keys.syzygyauthenticator.key_file.dest }}'
 

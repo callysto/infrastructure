@@ -1,3 +1,6 @@
+# Unset REMOTE_USER header (for security)
+RequestHeader unset REMOTE_USER
+
 <VirtualHost *:80>
   ServerName {{ inventory_hostname }}
   ErrorLog /var/log/httpd/jupyter-error.log
@@ -24,18 +27,38 @@
 
   Header always set Strict-Transport-Security "max-age=15768000"
 
+  ProxyPass /Shibboleth.sso !
+
+  <Location /Shibboleth.sso>
+    SetHandler shib
+  </Location>
+
   <Directory "/var/www/html/site">
     Order allow,deny
     Allow from all
   </Directory>
 
   <Location /jupyter>
-     ProxyPass http://127.0.0.1:8000/jupyter
-     ProxyPassReverse http://127.0.0.1:8000/jupyter
-     ProxyPreserveHost on
+    ProxyPass http://127.0.0.1:8000/jupyter
+    ProxyPassReverse http://127.0.0.1:8000/jupyter
+    ProxyPreserveHost on
+  </Location>
+
+  <Location /jupyter/hub>
+    AuthType shibboleth
+    Require shibboleth
+    ShibRequestSetting requireSession true
+    ShibUseHeaders off
+    RequestHeader set REMOTE_USER %{REMOTE_USER}s
   </Location>
 
   <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
+    AuthType shibboleth
+    Require shibboleth
+    ShibRequestSetting requireSession true
+    ShibUseHeaders off
+    RequestHeader set REMOTE_USER %{REMOTE_USER}s
+
     ProxyPassMatch ws://127.0.0.1:8000/jupyter/$1/$2$3
     ProxyPassReverse ws://127.0.0.1:8000/jupyter/$1/$2$3
   </LocationMatch>
@@ -44,6 +67,23 @@
   ErrorLog /var/log/httpd/jupyter-ssl-error.log
   LogLevel warn
   CustomLog /var/log/httpd/jupyter-ssl-access.log combined
+
+  # SimpleSAMLphp
+  SetEnv SIMPLESAMLPHP_CONFIG_DIR {{ ssp_dir }}/config
+  Alias /simplesaml {{ ssp_dir }}/www
+
+  <Directory {{ ssp_dir }}>
+    <IfModule !mod_authz_core.c>
+      # For Apache 2.2:
+      Order allow,deny
+      Allow from all
+      </IfModule>
+      <IfModule mod_authz_core.c>
+      # For Apache 2.4:
+      Require all granted
+      </IfModule>
+  </Directory>
+
 
 </VirtualHost>
 
