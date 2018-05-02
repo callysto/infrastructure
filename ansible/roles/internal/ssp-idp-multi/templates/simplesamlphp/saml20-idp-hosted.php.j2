@@ -1,0 +1,17 @@
+<?php
+/**
+ * SAML 2.0 IdP configuration for SimpleSAMLphp.
+ *
+ * See: https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-hosted
+ */
+
+$metadata['__DYNAMIC:1__'] = array(
+        'host' => '__DEFAULT__',
+        'privatekey' => 'multi-idp.pem',
+        'certificate' => 'multi-idp.crt',
+        'auth' => 'multi-idp-source',
+
+        'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+        'attributes.NameFormat' => 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+
+);
