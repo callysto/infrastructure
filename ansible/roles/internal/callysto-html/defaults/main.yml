@@ -1,6 +1,6 @@
 callysto_html_hostname: "{{ inventory_hostname }}"
 callysto_html_domain: "callysto.ca"
-callysto_html_support_email: "jupyter@pims.math.ca"
+callysto_html_support_email: "{{ admin_email }}"
 callysto_html_url: "http://{{ inventory_hostname }}"
 callysto_html_longname: "Cybera"
 

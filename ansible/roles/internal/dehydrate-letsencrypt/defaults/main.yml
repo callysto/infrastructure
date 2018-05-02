@@ -1,7 +1,7 @@
 ---
 acme_user: "acme"
 acme_home: "/home/acme"
-acme_email: "iana@pims.math.ca"
+acme_email: "{{ admin_email }}"
 dehydrate_ca_prod: "https://acme-v02.api.letsencrypt.org/directory"
 dehydrate_ca_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
 

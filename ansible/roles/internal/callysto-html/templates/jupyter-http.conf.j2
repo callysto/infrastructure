@@ -9,7 +9,7 @@
 
 <VirtualHost *:443>
   ServerName {{ inventory_hostname }}
-  ServerAdmin jupyter@pims.math.ca
+  ServerAdmin {{ admin_email }}
 
   SSLEngine on
   SSLCertificateFile /home/acme/certs/{{ inventory_hostname }}/cert.pem

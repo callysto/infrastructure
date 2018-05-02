@@ -2,6 +2,7 @@ dockerhub_username: "USERNAME"
 dockerhub_password: "PASSWORD"
 dockerhub_email: "EMAIL"
 
+admin_email: user@example.com
 zfs_disk_1: /dev/sdb
 zfs_disk_2: /dev/sdc
 openstack_ephemeral_docker_disk: /dev/sdd
