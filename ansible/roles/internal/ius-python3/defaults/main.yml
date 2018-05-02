@@ -1,3 +1,3 @@
 ius_python3_packages:
-  - { name: 'python36u', state: 'latest' }
-  - { name: 'python36u-pip', state: 'latest' }
+  - { name: 'python36u', state: 'present' }
+  - { name: 'python36u-pip', state: 'present' }

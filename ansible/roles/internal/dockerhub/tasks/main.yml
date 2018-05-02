@@ -2,7 +2,7 @@
 - name: Install docker module
   yum:
     name: 'python-docker-py'
-    state: 'latest'
+    state: 'present'
 
 - name: DockerHub login
   docker_login:

@@ -14,23 +14,23 @@
     split: ':'
 
 - name: Collect the UserID for jupyter user
-  set_fact: 
+  set_fact:
     jupyterhub_user_uid: '{{ getent_passwd["jupyter"][1] }}'
 
 - name: Install Jupyterhub
-  pip: 
+  pip:
     name: jupyterhub
     executable: pip3.6
 
 - name: Install node packages
   yum:
     name: nodejs
-    state: latest
+    state: present
 
 - name: Install configurable-http-proxy
   npm:
     name: configurable-http-proxy
-    state: latest
+    state: present
     global: yes
 
 - name: Create JupyterHub Config Directory

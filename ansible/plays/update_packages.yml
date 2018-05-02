@@ -1,0 +1,11 @@
+- name: Update Packages
+  hosts: jupyter
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+      ignore_errors: true
+      when: "not disable_update | default(false)"
