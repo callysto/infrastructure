@@ -38,3 +38,9 @@
       async: 0
       poll: 0
       ignore_errors: true
+    - name: wait for SSH access to come back
+      wait_for_connection:
+        delay: 65
+        timeout: 300
+
+- import_playbook: jupyter.yml
