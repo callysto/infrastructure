@@ -52,6 +52,8 @@
     - config.php
     - module_cron.php
     - config-metarefresh.php
+  notify:
+    - restart shibd
 
 - name: Copy simplesamlphp idp metadata
   template:

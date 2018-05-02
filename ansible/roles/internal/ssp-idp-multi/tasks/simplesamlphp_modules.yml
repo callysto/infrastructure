@@ -5,9 +5,9 @@
     mode: 0755
 
 - name: Run composer installer (if needed)
-  command: get-composer.sh
+  command: ./get-composer.sh
   args:
-    chdir: "{{ ssp_dir }}"
+    chdir: "{{ ssp_dir }}/"
     creates: "{{ ssp_dir }}/composer.phar"
 
 - name: Run composer authoauth2 installer

@@ -1,3 +1,9 @@
+- name: Create SimpleSAMLphp tmp directory
+  file:
+    path: "{{ ssp_tmp_dir }}"
+    state: directory
+    mode: 0755
+
 - name: Download SimpleSAMLphp
   get_url:
     url: "{{ ssp_url }}"

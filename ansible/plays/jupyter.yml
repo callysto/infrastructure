@@ -20,6 +20,7 @@
     - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
     - { role: hostname,                    tags: ["setup", "hostname"] }
     - { role: base-packages,               tags: ["setup", "base-packages"] }
+    - { role: zfs,                         tags: ["zfs"] }
     - { role: ssh-public-keys,             tags: ["setup", "ssh"] }
     - { role: ansible-role-selinux,        tags: ["selinux"] }
     - { role: ansible-role-firewalld,      tags: ["firewalld"] }
@@ -27,10 +28,9 @@
     - { role: ansible-sudo,                tags: ["sudo"] }
     - { role: ansible-role-apache,         tags: ["httpd"] }
     - { role: dehydrate-letsencrypt,       tags: ["letsencrypt"] }
-    - { role: ssp-idp-multi,               tags: ["simplesaml"] }
     - { role: callysto-html,               tags: ["httpd"] }
-    - { role: zfs,                         tags: ["zfs"] }
     - { role: ius-python3,                 tags: ["python3"] }
+    - { role: ssp-idp-multi,               tags: ["simplesaml"] }
     - { role: ansible-role-docker,         tags: ["docker"] }
     - { role: dockerhub,                   tags: ["docker", "dockerhub"] }
     - { role: jupyterhub,                  tags: ["jupyterhub"] }

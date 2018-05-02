@@ -15,6 +15,8 @@
     state=present
     job="{{ ssp_cron_hourly_cmd }}"
 
+- meta: flush_handlers
+
 - name: Force SSP update
   get_url:
     url: "https://localhost/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key }}&tag={{ item }}"
