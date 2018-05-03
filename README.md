@@ -112,7 +112,7 @@ The salt, admin password, and refresh key can be set to any secure values.
 
 The SAML keys can be created by using the following command:
 ```
-  $ openssl req -new -x509 -days 365 -nodes -sha256 -out saml.crt -keyout saml.pem
+  $ openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem
 ```
 
 Copy the contents of `saml.crt` to `ssp_idp_multi_saml_cert`, and `saml.pem` to `ssp_idp_multi_saml_key`.
@@ -173,6 +173,6 @@ are hardcoded, support for this will need to be added to the ssp-idp-multi role.
 It's trivial to add, but likely won't be needed.
 
 ### Adding a Generic OIDC Provider
-There is currently no way to configure generic OIDC connections. However, Google and Microsoft both use
-OAuth2/OIDC connections, so there is support for it in SimpleSAMLphp and it will need to be added to the
-Ansible role.
+There is currently no way to configure generic OIDC connections. Google and Microsoft both use
+OAuth2/OIDC connections, which means SimpleSAMLphp has support, but it will just need to be added
+to the Ansible role.
