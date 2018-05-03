@@ -79,14 +79,100 @@ galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
 ## Ansible
 
 The instance must be initialized the first time. This will update all packages,
-and use a suitable kernel to run zfs with. When finished, the instance will reboot
-to use the newly installed kernel.
+and use a suitable kernel to run zfs with. The instance will reboot once during
+the process to use a new kernel version and automatically continue the deployment
+of the `jupyter.yml` playbook.
 ```
   $ cd ansible
   $ ansible-playbook plays/init.yml
 ```
 
-After a successful initialization, you can finish configuring with this command:
+After a successful initialization, you can maintain the installation with this command:
 ```
   $ ansible-playbook plays/jupyter.yml
 ```
+
+## Identity Proxy
+
+An identity proxy [SimpleSAMLphp](https://simplesamlphp.org/) is used to manage multiple
+login sources from Google, Microsoft, and other SAML/OIDC providers.
+All configuration is done via the `local_vars.yml` file.
+
+### Initial Configuration
+The following variables will need to be configured in the `local_vars.yml` file before deployment:
+```
+  ssp_idp_multi_salt
+  ssp_idp_multi_admin_password
+  ssp_refresh_key
+  ssp_idp_multi_saml_cert
+  ssp_idp_multi_saml_key
+```
+
+The salt, admin password, and refresh key can be set to any secure values.
+
+The SAML keys can be created by using the following command:
+```
+  $ openssl req -new -x509 -days 365 -nodes -sha256 -out saml.crt -keyout saml.pem
+```
+
+Copy the contents of `saml.crt` to `ssp_idp_multi_saml_cert`, and `saml.pem` to `ssp_idp_multi_saml_key`.
+
+### Adding Google Authentication
+Register application with Google here: https://console.developers.google.com/?pli=1
+
+Create a new project.
+Credentials > Create credentials > OAuth client ID
+Select Web application
+Name the client something memorable
+Authorized redirect URIs: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
+Note the client ID and client secret as they will be added to:
+```
+ssp_idp_multi_sources:
+  ...
+  - type: google
+    display_name: Google
+    client_id: <Google client ID>
+    client_secret: <Google client secret>
+```
+More documentation here: https://developers.google.com/identity/protocols/OAuth2
+
+### Adding Microsoft Authentication
+You will need to register the application here: http://go.microsoft.com/fwlink/?LinkID=144070
+
+Under the Platforms > Web section in the Microsoft registration page,
+use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
+Make sure the `User.Read` permission is set.
+
+Create an application secret. This will be stored under `client_secret` in local_vars.yml:
+```
+ssp_idp_multi_sources:
+  ...
+  - type: microsoft
+    display_name: Microsoft
+    client_id: <Microsoft Application Id>
+    client_secret: <Application Secret>
+```
+
+More documentation here: https://msdn.microsoft.com/en-us/library/bb676626.aspx
+
+### Adding a SAML Identity Provider:
+Add an entry for the Identity Provider under `local_vars.yml`:
+```
+ssp_idp_multi_sources:
+  ...
+  - type: saml
+    display_name: Example School
+    metadata_url: https://school.example.com/authentication/idp/metadata
+```
+
+You will need to provide the following metadata URL to the Identity Provider:
+https://hub.callysto.ca/simplesaml/module.php/saml/sp/metadata.php/default-sp
+
+Currently only SAML Identity Providers that publish their metadata is supported. If values
+are hardcoded, support for this will need to be added to the ssp-idp-multi role.
+It's trivial to add, but likely won't be needed.
+
+### Adding a Generic OIDC Provider
+There is currently no way to configure generic OIDC connections. However, Google and Microsoft both use
+OAuth2/OIDC connections, so there is support for it in SimpleSAMLphp and it will need to be added to the
+Ansible role.
