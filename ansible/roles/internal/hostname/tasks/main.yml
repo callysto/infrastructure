@@ -3,6 +3,11 @@
   hostname: 
     name: "{{ inventory_hostname }}"
 
+- name: Check for cloud-config
+  stat:
+    path: "/etc/cloud/cloud.cfg"
+  register: cloud_config
+
 - name: Disable updating hostname in cloud-config
   lineinfile:
     dest: /etc/cloud/cloud.cfg
@@ -10,4 +15,5 @@
     line: '# - update_hostname'
     backup: yes
   tags: cloud-config
+  when: cloud_config.stat.exists
 
