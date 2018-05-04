@@ -14,3 +14,22 @@
     update_cache: yes
   tags: setup
   with_items: '{{ base_packages }}'
+
+# Auto-security updates
+- name: Ensure yum fully updated
+  yum:
+    name: yum
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Install yum-cron
+  yum:
+    name: yum-cron
+  become: yes
+
+- name: Copy yum-cron template
+  template:
+    src: yum-cron.conf.j2
+    dest: /etc/yum/yum-cron.conf
+  become: yes
