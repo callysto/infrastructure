@@ -1,5 +1,6 @@
 terraform/.terraform
 *.gpg
+*.ianabc
 *.tfstate
 *.tfstate.backup
 *.retry
