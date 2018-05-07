@@ -2,6 +2,7 @@ variable "cloudconfig" {
   type = "string"
   default = <<EOF
 #cloud-config
+preserve_hostname: true
 runcmd:
   - sed -i '/\/dev\/sdb/d' /etc/fstab
   - swaplabel -L swap0 /dev/sdb
