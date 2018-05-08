@@ -1,51 +1,53 @@
-# Build a Hub for Callysto
+# Callysto Infrastructure
+
+This repository contains code for managing infrastructure within the Callysto
+project.
 
 ## Terraform
 The resources are controlled by terraform so we can destroy and recreate
 everything quickly.
 
- * m1.large
- * CentOS 7
- * 2 * 50G volumes for user homedir backing
- * 1 * 100G volume used for /var/lib/docker
+All Terraform-related files are stored in the `./terraform` directory.
 
 ### Terraform Prep
 You will need to ensure your OpenStack `openrc.sh` file is sourced before running
- terraform.
+terraform.
 ```
   $ source openrc.sh
 ```
 
-The SSH public key from your $HOME/.ssh/id_rsa.pub will be attached to the instance.
-Ensure that you have the associated key ($HOME/.ssh/id_rsa) as well. If you need to
-create one then run:
+The SSH key from the top-level `./keys` directory will be attached to the
+instance. Ensure that you have created a key under the `keys` directory:
+
 ```
+  $ cd keys
   $ ssh-keygen -t rsa -f ~/.ssh/id_rsa
 ```
 
-### First Time
-You will need the openstack plugin and some other bits and pieces so run
-`terraform init` in the terraform directory
+### Binaries
+The `./terraform/bin` directory contains the binaries required to run Terraform.
+These binaries are bundled in this repository to ensure all project members are
+using the same version.
+
+### Modules
+Terraform modules are stored in `./terraform/modules`. The following modules
+are defined:
+
+  * `hub`: deploys a standard Callysto JupyterHub environment.
+
+### Makefile
+The `./terraform/Makefile` provides an easy way to interact with Terraform to
+deploy and manage infrastructure.
+
+For example, to redeploy the `hub-dev` environment, do
+
 ```
-  $ cd terraform
-  $ terraform init
+  $ make destroy env=hub-dev
+  $ make apply env=hub-dev
 ```
 
-### Terraform apply
-`terraform apply` will create the resources for you
-```
-  $ cd terraform
-  $ terraform apply
-
-...
-Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-ip = 162.246.156.221
-```
-That IP address should be associated with some DNS name before the ansible
-playbooks are run.
+This will use the Terraform binary in `./bin` to apply the Terraform configuration
+defined in `./terraform/hub-dev`.
 
 ## Ansible Prep
 Create local_vars.yml file and fill in needed values:
