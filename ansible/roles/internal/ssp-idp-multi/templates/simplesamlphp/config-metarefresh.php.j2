@@ -1,0 +1,38 @@
+<?php
+
+$config = array(
+  'sets' => array(
+{% for s in ssp_idp_multi_sources %}
+	{% if s.type == 'saml' %}
+    '{{ s.display_name | lower | replace(' ','') }}' => array(
+      'cron'          => array('hourly'),
+      'sources'       => array(
+         array(
+          'src' => '{{ s.metadata_url }}',
+          'template' => array(
+              'tags'  => array('saml'),
+          ),
+        ),
+        ),
+        'expireAfter'           => 60*60*24*4, // Maximum 4 days cache time
+        'outputDir'     => 'metadata/metarefresh-{{ s.display_name | lower | replace(' ','')  }}/',
+        'outputFormat' => 'flatfile',
+                ),
+	{% endif %}
+{% endfor %}
+    'callysto' => array(
+      'cron'          => array('daily'),
+      'sources'       => array(
+         array(
+          'src' => 'https://{{ ssp_domain }}/Shibboleth.sso/Metadata',
+          'template' => array(
+              'tags'  => array('sp'),
+          ),
+        ),
+        ),
+        'expireAfter'           => 60*60*24*4, // Maximum 4 days cache time
+        'outputDir'     => 'metadata/',
+        'outputFormat' => 'flatfile',
+                ),
+        ),
+);

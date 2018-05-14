@@ -1,0 +1,54 @@
+dockerhub_username: "USERNAME"
+dockerhub_password: "PASSWORD"
+dockerhub_email: "EMAIL"
+
+admin_email: user@example.com
+zfs_disk_1: /dev/sdb
+zfs_disk_2: /dev/sdc
+openstack_ephemeral_docker_disk: /dev/sdd
+
+domain: subdomain.example.com
+
+jupyterhub_oauth_client_id: 12345
+jupyterhub_oauth_client_secret: SUPERSECRET
+jupyterhub_oauth_callback_url: https://callback.example.com
+
+# Set to True if wanting to speed up initialization
+disable_update: False
+
+# Set to False to get a production-ready certificate
+dehydrate_test_cert: True
+
+ssp_idp_multi_sources:
+  - type: google
+    display_name: Google
+    client_id: 1234567890.apps.googleusercontent.com
+    client_secret: supersecurepassword
+  - type: microsoft
+    display_name: Microsoft
+    client_id: 123456790-1234-123456789
+    client_secret: supersecurepassword
+  - type: saml
+    display_name: SAML Federation
+    metadata_url: https://metadata.example.com/Shibboleth.sso/Metadata
+
+# Generate a new salt and admin password with: "< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-32}";echo;"
+ssp_idp_multi_salt: defaultsecretsalt
+ssp_idp_multi_admin_password: 123
+ssp_refresh_key: 1234567
+
+# Generate a new key-pair with `openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem`
+ssp_idp_multi_saml_cert: |
+  -----BEGIN CERTIFICATE-----
+  MIIDXTCCAkWgAwIBAgIJAM7OPzrFix+TMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV
+  BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
+  aWRnaXRzIFB0eSBMdGQwHhcNMTgwNTAxMjA1MDMwWhcNMTkwNTAxMjA1MDMwWjBF
+  -----END CERTIFICATE-----
+
+ssp_idp_multi_saml_key: |
+  -----BEGIN PRIVATE KEY-----
+  MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDiaTntm06TlENT
+  g514pZcYkYQipmXLI3fKOQfI5NGlIj/fLwMSN7dyDAA2GR6PFsxTxQsoXCNhVLAA
+  Zfdenm/fi4er22HcrvzbtHVJVM6KXDnr7LW3blw1aekMTLs3WkTeschrdNWVHKB/
+  9b4gAt+W3TfcXbMy+515XbIO6pWIo/m7TXgbepo7J53mgRAUhMFVREN6WxdktBaQ
+  -----END PRIVATE KEY-----

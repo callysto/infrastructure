@@ -1,0 +1,46 @@
+- name: Fix sudo TTY
+  hosts: jupyter
+  tasks:
+    - name: Disable sudo requiretty
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'Defaults    requiretty'
+        state: absent
+      become: true
+      vars:
+          ansible_ssh_pipelining: no
+      tags: always
+
+- name: Jupyter Setup
+  hosts: jupyter
+  become: true
+  gather_facts: false
+  pre_tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+      ignore_errors: true
+      when: "not disable_update | default(false)"
+
+  roles:
+    - { role: elrepo-kernel,               tags: ["setup", "elrepo"] }
+    - { role: hostname,                    tags: ["setup", "hostname"] }
+    - { role: base-packages,               tags: ["setup", "base-packages"] }
+    - { role: ssh-public-keys,             tags: ["setup", "ssh"] }
+
+- hosts: jupyter
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Reboot instance
+      command: /sbin/shutdown -r +1
+      async: 0
+      poll: 0
+      ignore_errors: true
+    - name: wait for SSH access to come back
+      wait_for_connection:
+        delay: 65
+        timeout: 300
+
+- import_playbook: jupyter.yml

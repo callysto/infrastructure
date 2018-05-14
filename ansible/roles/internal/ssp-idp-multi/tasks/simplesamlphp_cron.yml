@@ -1,0 +1,33 @@
+- name: Setup simplesaml daily cron
+  cron:
+    name="simplesaml daily"
+    user="{{ ssp_www_user }}"
+    minute="2"
+    hour="0"
+    state=present
+    job="{{ ssp_cron_daily_cmd }}"
+
+- name: Setup simplesaml hourly cron
+  cron:
+    name="simplesaml hourly"
+    user="{{ ssp_www_user }}"
+    minute="1"
+    state=present
+    job="{{ ssp_cron_hourly_cmd }}"
+
+- meta: flush_handlers
+
+- name: Force SSP update
+  get_url:
+    url: "https://localhost/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key }}&tag={{ item }}"
+    dest: "/dev/null"
+    validate_certs: no
+    timeout: 30
+    force: yes
+  with_items:
+    - hourly
+    - daily
+  become_user: "{{ ssp_www_user }}"
+  become: yes
+  tags:
+    - update_ssp

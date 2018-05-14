@@ -1,0 +1,48 @@
+- name: Create SimpleSAMLphp tmp directory
+  file:
+    path: "{{ ssp_tmp_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Download SimpleSAMLphp
+  get_url:
+    url: "{{ ssp_url }}"
+    dest: "{{ ssp_tmp_dir }}/simplesamlphp-{{ ssp_ver }}.tgz"
+    checksum: "sha256:{{ ssp_sha256 }}"
+
+- name: Extract SimpleSAMLphp
+  unarchive:
+    src: "{{ ssp_tmp_dir }}/simplesamlphp-{{ ssp_ver }}.tgz"
+    dest: "{{ ssp_tmp_dir }}/"
+    copy: no
+
+- name: Create SimpleSAMLphp dir
+  file:
+    path: "{{ ssp_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Move extracted directory
+  shell: mv -n {{ ssp_tmp_dir }}/simplesamlphp-*/* "{{ ssp_dir }}"
+
+- name: Remove stock metadata
+  file:
+    dest: "{{ ssp_dir }}/metadata/"
+    state: absent
+
+- name: Create cert directory
+  file:
+    dest: "{{ ssp_dir }}/cert"
+    state: directory
+    owner: root
+    group: "{{ ssp_www_group }}"
+    mode: 0755
+
+- name: Mark as installed
+  file:
+    path: "{{ ssp_dir }}/.installed"
+    state: touch
+
+- name: Set installed now variable
+  set_fact:
+    ssp_installed_now: true

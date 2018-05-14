@@ -1,5 +1,6 @@
-[google]
-hub-dev.callysto.ca
+[hub]
+#1848b.yeg.cybera.ca
+18530.yeg.cybera.ca
 
 [jupyter:children]
-google
+hub

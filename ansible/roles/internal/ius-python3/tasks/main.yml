@@ -1,23 +1,19 @@
 ---
-- name: Check if IUS repo is already configured
-  stat: path= {{ ius_repofile_path }}
-  register: ius_repofile_result
+- name: Copy IUS repo file
+  copy:
+    src: ius.repo
+    dest: /etc/yum.repos.d/ius.repo
 
-- name: Add IUS repo
-  yum:
-    name: "{{ ius_repo_rpm }}"
-    state: present
-  register: result
-  until: '"failed" not in result'
-  retries: 5
-  delay: 10
-  when: not ius_repofile_result.stat.exists
-  ignore_errors: "{{ ansible_check_mode }}"
+- name: Copy IUS GPG key
+  copy:
+    src: IUS-COMMUNITY-GPG-KEY
+    dest: /etc/pki/rpm-gpg/IUS-COMMUNITY-GPG-KEY
 
 - name: Install python3
   yum:
     name: '{{ item.name }}'
     state: '{{ item.state }}'
+    update_cache: yes
   with_items: '{{ ius_python3_packages }}'
 
 - name: Symlink python3
@@ -25,3 +21,8 @@
     src: '/usr/bin/python3.6'
     dest: '/usr/bin/python3'
     state: link
+
+- name: Ensure python3.4 is removed
+  yum:
+    name: python34.x86_64
+    state: absent

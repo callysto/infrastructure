@@ -1,0 +1,68 @@
+<?php
+
+$config = array(
+    'admin' => array(
+        // The default is to use core:AdminPassword, but it can be replaced with
+        // any authentication source.
+
+        'core:AdminPassword',
+    ),
+    'default-sp' => array(
+        'saml:SP',
+        'entityID' => null,
+        'idp' => null,
+        'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+    ),
+
+{% for s in ssp_idp_multi_sources %}
+  {% if s.type == 'google' %}
+    '{{ s.display_name | lower | replace(' ','') }}' => array(
+            'authoauth2:OAuth2',
+            'urlAuthorize' => 'https://accounts.google.com/o/oauth2/auth',
+            'urlAccessToken' => 'https://accounts.google.com/o/oauth2/token',
+            'urlResourceOwnerDetails' => 'https://www.googleapis.com/plus/v1/people/me/openIdConnect',
+            //'urlResourceOwnerDetails' => 'https://www.googleapis.com/plus/v1/people/me?fields=id,name',
+            'clientId' => '{{ s.client_id }}',
+            'clientSecret' => '{{ s.client_secret }}',
+            'scopes' =>  array(
+                'email'
+            ),
+            'scopeSeparator' => ' ',
+        ),
+  {% endif %}
+
+  {% if s.type == 'microsoft' %}
+    '{{ s.display_name | lower | replace(' ','') }}' => array(
+        'authwindowslive:LiveID',
+        'key' => '{{ s.client_id }}',
+        'secret' => '{{ s.client_secret }}',
+    ),
+  {% endif %}
+
+{% endfor %}
+
+'multi-idp-source' => array(
+    'multiauth:MultiAuth',
+
+    'sources' => array(
+        'default-sp' => array(
+            'text' => array(
+                'en' => 'Log with Institution account',
+                'fr' => 'Log with Institution account',
+            ),
+            'css-class' => 'SAML',
+        ),
+{% for s in ssp_idp_multi_sources %}
+    {% if s.type != 'saml' %}
+        '{{ s.display_name | lower | replace(' ','') }}' => array(
+            'text' => array(
+                'en' => 'Log with {{ s.display_name }} account',
+                'fr' => 'Log with {{ s.display_name }} account',
+            ),
+            'css-class' => 'SAML',
+        ),
+    {% endif %}
+{% endfor %}
+    ),
+),
+);
