@@ -1,9 +1,9 @@
 ---
 jupyterhub_srv_dir: '/srv/jupyterhub'
 jupyterhub_shib_dir: '/opt/shib_authenticator'
-jupyterhub_docker_image: 'docker.io/pimsubc/pims-notebook'
+jupyterhub_docker_image: 'docker.io/callysto/pims-notebook'
 jupyterhub_api_port: '8081'
-jupyterhub_docker_container: 'docker.io/pimsubc/pims-notebook:latest'
+jupyterhub_docker_container: 'docker.io/callysto/pims-notebook:latest'
 
 jupyterhub_global_options:
   - conf_object: 'JupyterHub.admin_access'

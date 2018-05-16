@@ -19,6 +19,12 @@ disable_update: False
 # Set to False to get a production-ready certificate
 dehydrate_test_cert: True
 
+# This is shared betwen ssp and callysto-html
+ssp_ver: 1.15.4
+ssp_path: /var
+ssp_prefix: simplesamlphp-
+ssp_dir: "{{ ssp_path  }}/{{ ssp_prefix  }}{{ ssp_ver }}"
+
 ssp_idp_multi_sources:
   - type: google
     display_name: Google
