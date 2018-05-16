@@ -22,3 +22,7 @@ apply: plan
 destroy: check-env
 	cd $(env) ; \
 	$(PATH)/terraform destroy
+
+show: check-env
+	cd $(env) ; \
+	$(PATH)/terraform show
