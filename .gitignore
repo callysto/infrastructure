@@ -4,6 +4,7 @@
 **/*.tfstate
 **/*.tfstate.backup
 **/*.retry
+**/*.swp
 **/.hostfiles
 **/openrc.sh
 **/clouds.yaml
