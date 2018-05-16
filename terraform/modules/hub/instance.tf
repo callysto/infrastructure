@@ -26,6 +26,14 @@ resource "openstack_compute_floatingip_associate_v2" "fip" {
   instance_id = "${openstack_compute_instance_v2.callysto.id}"
 }
 
-output "ip" {
+output "name" {
+  value = "${format("callysto%s", var.name_suffix)}"
+}
+
+output "floating_ip" {
   value = "${openstack_networking_floatingip_v2.fip.address}"
+}
+
+output "access_ip_v6" {
+  value = "${openstack_compute_instance_v2.callysto.access_ip_v6}"
 }

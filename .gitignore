@@ -4,8 +4,10 @@
 **/*.tfstate
 **/*.tfstate.backup
 **/*.retry
+**/*.swp
 **/.hostfiles
 **/openrc.sh
 **/clouds.yaml
 keys/id_rsa*
 ansible/roles/external
+ansible/group_vars/all/local_vars.yml

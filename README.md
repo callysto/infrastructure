@@ -9,21 +9,6 @@ everything quickly.
 
 All Terraform-related files are stored in the `./terraform` directory.
 
-### Terraform Prep
-You will need to ensure your OpenStack `openrc.sh` file is sourced before running
-terraform.
-```
-  $ source openrc.sh
-```
-
-The SSH key from the top-level `./keys` directory will be attached to the
-instance. Ensure that you have created a key under the `keys` directory:
-
-```
-  $ cd keys
-  $ ssh-keygen -t rsa -f ~/.ssh/id_rsa
-```
-
 ### Binaries
 The `./terraform/bin` directory contains the binaries required to run Terraform.
 These binaries are bundled in this repository to ensure all project members are
@@ -49,7 +34,67 @@ For example, to redeploy the `hub-dev` environment, do
 This will use the Terraform binary in `./bin` to apply the Terraform configuration
 defined in `./terraform/hub-dev`.
 
-## Ansible Prep
+The `Makefile` arguments correspond to the common Terraform commands: `plan`, `apply`,
+`destroy`, etc.
+
+The `Makefile` is only a convenience and it is not required. If you want to use Terraform
+directly, simply do:
+
+```
+$ cd hub-dev
+$ ../bin/<arch>/terraform <action>
+```
+
+### Terraform Prep
+You will need to ensure your OpenStack `openrc.sh` file is sourced before running
+terraform.
+```
+  $ source openrc.sh
+```
+
+> Do not store credentials in this repository!
+
+The SSH key from the top-level `./keys` directory will be attached to the
+instance. Ensure that you have created a key under the `keys` directory:
+
+```
+  $ cd keys
+  $ ssh-keygen -t rsa -f ~/.ssh/id_rsa
+```
+
+> Do not store keys in this repository!
+
+### Deploying an Environment
+An "environment" is defined as any collection of related infrastructure.
+Environments are grouped in directories under the `terraform` directory.
+
+Use the `Makefile` to deploy an environment:
+
+```
+$ make plan env=hub-dev
+$ make apply env=hub-dev
+```
+
+## Ansible
+Resources are _provisioned_ with Ansible. Contrast this with Terraform
+which _deploys_ resources.
+
+### Makefile
+There's an `ansible/Makefile` which can assist with running various Ansible
+commands. Using the `Makefile` makes it easy to ensure the command has all
+required information.
+
+If you prefer to not use the `Makefile`, check the contents of the `Makefile`
+for all required Ansible arguments and then just run `ansible` or
+`ansible-playbook` manually.
+
+## Ansible Inventory
+Inventory is handled through the
+[ansible-terraform-inventory](https://github.com/jtopjian/ansible-terraform-inventory)
+plugin. This plugin reads in the Terraform State of a deployed enviornment and
+creates an appropriate Ansible Inventory result.
+
+### Ansible Prep
 Create local_vars.yml file and fill in needed values:
 ```
   $ cd ansible
@@ -78,18 +123,20 @@ galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
   $ ./ansible/scripts/role_update.sh
 ```
 
-## Ansible
+## Running Ansible
 
 The instance must be initialized the first time. This will update all packages,
 and use a suitable kernel to run zfs with. The instance will reboot once during
 the process to use a new kernel version and automatically continue the deployment
 of the `jupyter.yml` playbook.
+
 ```
   $ cd ansible
   $ ansible-playbook plays/init.yml
 ```
 
 After a successful initialization, you can maintain the installation with this command:
+
 ```
   $ ansible-playbook plays/jupyter.yml
 ```
