@@ -59,7 +59,7 @@ instance. Ensure that you have created a key under the `keys` directory:
 
 ```
   $ cd keys
-  $ ssh-keygen -t rsa -f ~/.ssh/id_rsa
+  $ ssh-keygen -t rsa -f ./id_rsa
 ```
 
 > Do not store keys in this repository!
