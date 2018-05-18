@@ -1,5 +1,5 @@
 resource "openstack_networking_secgroup_v2" "callysto" {
-  name = "${format("Callysto%s", var.name_suffix)}"
+  name = "${local.name}"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ssh_v4" {
