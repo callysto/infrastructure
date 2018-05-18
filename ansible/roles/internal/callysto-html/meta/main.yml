@@ -1,4 +1,4 @@
 ---
-dependencies: 
+dependencies:
   - { role: deploy-keys }
-  - { role: ansible-role-apache }
+  - { role: apache }
