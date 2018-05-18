@@ -26,13 +26,14 @@ $config = array(
          array(
           'src' => 'https://{{ ssp_domain }}/Shibboleth.sso/Metadata',
           'template' => array(
-              'tags'  => array('sp'),
+              'attributes'    => array('eduPersonTargetedID'),
+              'tags'  => array('sp','callysto'),
           ),
         ),
         ),
         'expireAfter'           => 60*60*24*4, // Maximum 4 days cache time
         'outputDir'     => 'metadata/',
         'outputFormat' => 'flatfile',
-                ),
-        ),
+    ),
+  ),
 );

@@ -818,8 +818,8 @@ $config = array(
         ),
         30 => array(
             'class' => 'saml:PersistentNameID2TargetedID',
-            'attribute' => 'eduPersonTargetedID', // The default
-            'nameId' => FALSE, // The default
+            'attribute' => 'eduPersonTargetedID',
+            'nameId' => FALSE,
         ),
         45 => array(
             'class'         => 'core:StatisticsWithAttribute',
@@ -827,13 +827,7 @@ $config = array(
             'type'          => 'saml20-idp-SSO',
         ),
 
-        /* When called without parameters, it will fallback to filter attributes ‹the old way›
-         * by checking the 'attributes' parameter in metadata on IdP hosted and SP remote.
-         */
         50 => 'core:AttributeLimit',
-
-        // If language is set in Consent module it will be added as an attribute.
-        99 => 'core:LanguageAdaptor',
 
         100 => array(
             'class' => 'core:AttributeMap', 'name2oid'
