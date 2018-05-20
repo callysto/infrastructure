@@ -12,7 +12,7 @@
       vars:
           ansible_ssh_pipelining: no
 
-- name: Install and configure Jupyterhub
+- name: Install and configure the hub
   hosts: hub
   become: true
   tasks:
@@ -64,7 +64,7 @@
         selinux_state: permissive
 
     # Enabled services are defined in
-    # group_vars/all/firewalld.yml
+    # group_vars/hub/firewalld.yml
     #
     # The jupyterhub role also enables access
     # to `jupyterhub_api_port`.
@@ -87,18 +87,11 @@
       include_role:
         name: apache
 
+    # This requires the hub to have a resolvable FQDN.
     - name: Configure letsencrypt
       tags: ["ssl", "letsencrypt", "httpd"]
       include_role:
         name: dehydrate-letsencrypt
-
-    # Right now this is a private repository
-    # that requires secrets and deploy_keys
-    # to be configured.
-    - name: Manage Callysto html repo
-      tags: ["httpd"]
-      include_role:
-        name: callysto-html
 
     - name: Manage Python3
       tags: ["python", "python3"]
@@ -112,30 +105,8 @@
 
     - name: Manage Docker
       tags: ["docker"]
-      include_role:
-        name: docker
+      include_tasks: docker.yml
 
-    - name: Manage Docker storage
-      tags: ["docker"]
-      include_role:
-        name: docker-ephemeral
-
-    - name: Manage dockerspawner
-      tags: ["jupyter", "docker", "python3"]
-      include_role:
-        name: dockerspawner
-
-    - name: Manage syzygyauthenticator
-      tags: ["jupyter", "python3", "zfs", "ssp"]
-      include_role:
-        name: syzygyauthenticator
-
-    - name: Manage JupyterHub Docker Cull script
-      tags: ["jupyter", "python3"]
-      include_role:
-        name: jhub-docker-cull
-
-    - name: Manage Jupyterhub
-      tags: ["jupyter", "jupyterhub"]
-      include_role:
-        name: jupyterhub
+    - name: Manage JupyterHub
+      tags: ["jupyterhub"]
+      include_tasks: jupyterhub.yml
