@@ -1,4 +1,4 @@
 ---
 dependencies:
- - { role: ansible-role-docker }
+ - { role: docker }
  - { role: ius-python3 }

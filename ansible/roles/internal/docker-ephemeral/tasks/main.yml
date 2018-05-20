@@ -1,12 +1,4 @@
 ---
-- name: Unmount ephemeral if mounted
-  mount:
-    src: '{{ openstack_ephemeral_docker_partition }}'
-    path: '/mnt'
-    state: absent
-  notify:
-    - Unmount ephemeral
-
 - name: Partition OpenStack Ephemeral Storage
   parted:
     device: '{{ openstack_ephemeral_docker_disk }}'

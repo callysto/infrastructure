@@ -1,4 +1,0 @@
----
-- name: Unmount ephemeral
-  mount:
-    src: '{{ openstack_docker_ephemeral_partition }}'
