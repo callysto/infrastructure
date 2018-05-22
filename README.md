@@ -221,6 +221,10 @@ Currently only SAML Identity Providers that publish their metadata is supported.
 are hardcoded, support for this will need to be added to the ssp-idp-multi role.
 It's trivial to add, but likely won't be needed.
 
+This SAML Identity Provider must release an eduPersonPrincipalName (urn:oid:1.3.6.1.4.1.5923.1.1.1.6) attribute.
+Once provided, it is converted at the Identity Proxy level into a Targeted ID (urn:oid:1.3.6.1.4.1.5923.1.1.1.10)
+such as `20fa03478ece18d03c7cd5b39aa2224e45f0cee8`.
+
 ### Adding a Generic OIDC Provider
 There is currently no way to configure generic OIDC connections. Google and Microsoft both use
 OAuth2/OIDC connections, which means SimpleSAMLphp has support, but it will just need to be added
