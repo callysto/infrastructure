@@ -453,6 +453,7 @@ $config = array(
      */
      'module.enable' => array(
           'authwindowslive' => TRUE,
+          'smartattributes' => TRUE,
           'cron' => TRUE,
           'metarefresh' => TRUE,
      ),
@@ -805,30 +806,16 @@ $config = array(
         1 => array(
             'class' => 'core:AttributeMap', 'urn2name'
         ),
-        5 => array(
-            'class' => 'core:AttributeMap', 'windowslive2name'
-        ),
         20 => array(
-          'class' => 'core:PHP',
-          'code' => '
-              # Use ePPN first if available, and email if not
-              if (empty($attributes["eduPersonPrincipalName"])) {
-                  if (empty($attributes["email"])) {
-                      throw new Exception("Missing eppn or email attributes from IdP.");
-                  }
-
-                  $email = $attributes["email"][0];
-                  $attributes["targeted_id_attribute"] = array($email);
-
-              } else {
-                  $attributes["targeted_id_attribute"] = $attributes["eduPersonPrincipalName"][0];
-
-              }
-          ',
+            'class' => 'smartattributes:SmartID',
+            'candidates' => array('eduPersonTargetedID', 'eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            'add_authority' => TRUE,
+            'add_candidate' => FALSE,
+            'id_attribute' => 'smart_id',
         ),
-        30 => array(
+        21 => array(
             'class' => 'core:TargetedID',
-            'attributename' => 'targeted_id_attribute',
+            'attributename' => 'smart_id',
             'nameId' => FALSE,
         ),
         45 => array(
