@@ -31,7 +31,7 @@ jupyterhub_global_options:
             }
         ]
 
-jupyterhub_spawner: 'dockerspawner.SystemUserSpawner'
+jupyterhub_spawner: 'syzygyauthenticator.systemuserspawner.SyzygySystemUserSpawner'
 jupyterhub_spawner_options:
   - conf_object: 'DockerSpawner.use_internal_ip'
     value: True

@@ -809,12 +809,20 @@ $config = array(
             'class' => 'core:AttributeMap', 'windowslive2name'
         ),
         20 => array(
-          'class' => 'saml:PersistentNameID',
-          'attribute' => 'email'
+          'class' => 'core:PHP',
+          'code' => '
+              if (empty($attributes["eduPersonPrincipalName"])) {
+                  if (empty($attributes["email"])) {
+                      throw new Exception("Missing eppn and email attributes.");
+                  }
+                  $eppn = $attributes["email"][0];
+                  $attributes["eduPersonPrincipalName"] = array($eppn);
+              }
+          ',
         ),
         21 => array(
-          'class' => 'saml:PersistentNameID',
-          'attribute' => 'eduPersonPrincipalName'
+            'class' => 'saml:PersistentNameID',
+            'attribute' => 'eduPersonPrincipalName'
         ),
         30 => array(
             'class' => 'saml:PersistentNameID2TargetedID',

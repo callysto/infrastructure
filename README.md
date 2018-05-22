@@ -189,7 +189,7 @@ More documentation here: https://developers.google.com/identity/protocols/OAuth2
 You will need to register the application here: http://go.microsoft.com/fwlink/?LinkID=144070
 
 Under the Platforms > Web section in the Microsoft registration page,
-use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
+use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authwindowslive/linkback.php
 Make sure the `User.Read` permission is set.
 
 Create an application secret. This will be stored under `client_secret` in local_vars.yml:
