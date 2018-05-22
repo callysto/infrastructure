@@ -811,22 +811,24 @@ $config = array(
         20 => array(
           'class' => 'core:PHP',
           'code' => '
+              # Use ePPN first if available, and email if not
               if (empty($attributes["eduPersonPrincipalName"])) {
                   if (empty($attributes["email"])) {
-                      throw new Exception("Missing eppn and email attributes.");
+                      throw new Exception("Missing eppn or email attributes from IdP.");
                   }
-                  $eppn = $attributes["email"][0];
-                  $attributes["eduPersonPrincipalName"] = array($eppn);
+
+                  $email = $attributes["email"][0];
+                  $attributes["targeted_id_attribute"] = array($email);
+
+              } else {
+                  $attributes["targeted_id_attribute"] = $attributes["eduPersonPrincipalName"][0];
+
               }
           ',
         ),
-        21 => array(
-            'class' => 'saml:PersistentNameID',
-            'attribute' => 'eduPersonPrincipalName'
-        ),
         30 => array(
-            'class' => 'saml:PersistentNameID2TargetedID',
-            'attribute' => 'eduPersonTargetedID',
+            'class' => 'core:TargetedID',
+            'attributename' => 'targeted_id_attribute',
             'nameId' => FALSE,
         ),
         45 => array(
