@@ -32,6 +32,10 @@
     name: ssp-idp-multi
   when: jupyterhub_authenticator == 'shib'
 
+- name: Configure dummy authentication
+  include_tasks: dummy_auth.yml
+  when: jupyterhub_authenticator == 'dummy'
+
 - name: Examine groups
   debug:
     msg: "Content of group_names is {{ group_names }}"

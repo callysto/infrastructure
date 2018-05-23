@@ -68,6 +68,19 @@ jupyterhub_spawners:
         value: "'0.0.0.0'"
       - conf_object: 'SystemUserSpawner.host_homedir_format_string'
         value: "'/tank/home/{username}'"
+  dockerspawner_docker:
+    name: 'dockerspawner.DockerSpawner'
+    options:
+      - conf_object: 'DockerSpawner.use_internal_ip'
+        value: True
+      - conf_object: 'DockerSpawner.image'
+        value: "'{{ jupyterhub_docker_container }}'"
+      - conf_object: 'DockerSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'DockerSpawner.host_ip'
+        value: "'0.0.0.0'"
 
 jupyterhub_authenticator: 'pam'
 jupyterhub_authenticators:
@@ -95,3 +108,5 @@ jupyterhub_authenticators:
         value: 'False'
       - conf_object: 'SyzygyAuthenticator.create_user_homedir'
         value: 'True'
+  dummy:
+    name: 'dummyauthenticator.DummyAuthenticator'

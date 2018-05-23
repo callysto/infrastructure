@@ -1,6 +1,3 @@
-jhub_docker_cull_run_s: 1800
-jhub_docker_cull_cull_s: 10800
-
 jupyterhub_authenticator: 'shib'
 
 syzygy_html_logout_message: "You have been logged out of your Jupyter but you are still be signed in to google"

@@ -46,6 +46,7 @@ RequestHeader unset REMOTE_USER
     ProxyPreserveHost on
   </Location>
 
+  {% if jupyterhub_authenticator == 'shib' %}
   <Location /jupyter/hub>
     AuthType shibboleth
     Require shibboleth
@@ -53,6 +54,7 @@ RequestHeader unset REMOTE_USER
     ShibUseHeaders off
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
   </Location>
+  {% endif %}
 
   <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
     {% if jupyterhub_authenticator == 'shib' %}

@@ -119,6 +119,8 @@ Create local_vars.yml file and fill in needed values:
   $ vi group_vars/hub/local_vars.yml
 ```
 
+> Make sure to set `jupyterhub_authenticator` and `jupyterhub_spawner` appropriately.
+
 Create deploy keys. Each of these must be registered on Github by their respected projects.
 
 ```
@@ -145,8 +147,8 @@ the process to use a new kernel version.
 
 ```
   $ cd ansible
-  $ make env=hub-dev init/check
-  $ make env=hub-dev init/apply
+  $ make env=hub-dev hub/init/check
+  $ make env=hub-dev hub/init/apply
 ```
 
 > Note: `init/check` might fail due to Ansible unable to accurately predict the

@@ -19,14 +19,14 @@ list-init-tasks:
 list-hub-tasks:
 	ansible-playbook --list-tasks plays/hub.yml
 
-init/check: check-env
-	$(PLAYBOOK_CMD) --check --diff plays/init.yml
+hub/init/check: check-env
+	$(PLAYBOOK_CMD) --limit hub --check --diff plays/init.yml
 
-init/apply: check-env
-	$(PLAYBOOK_CMD) plays/init.yml
+hub/init/apply: check-env
+	$(PLAYBOOK_CMD) --limit hub plays/init.yml
 
 hub/check: check-env
-	$(PLAYBOOK_CMD) --check --diff plays/hub.yml
+	$(PLAYBOOK_CMD) --limit hub --check --diff plays/hub.yml
 
 hub/apply: check-env
-	$(PLAYBOOK_CMD)  plays/hub.yml
+	$(PLAYBOOK_CMD) --limit hub plays/hub.yml

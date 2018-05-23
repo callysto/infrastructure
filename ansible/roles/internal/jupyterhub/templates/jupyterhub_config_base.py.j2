@@ -17,17 +17,21 @@ c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% block spawner %}
 {% if jupyterhub_spawner in jupyterhub_spawners %}
 c.JupyterHub.spawner_class = '{{ jupyterhub_spawners[jupyterhub_spawner].name }}'
+{% if 'options' in jupyterhub_spawners[jupyterhub_spawner] %}
 {% for spawner_option in jupyterhub_spawners[jupyterhub_spawner].options %}
 c.{{ spawner_option.conf_object }} = {{ spawner_option.value }}
 {% endfor %}
+{% endif %}
 {% endif %}
 {% endblock %}
 
 {% block authenticator %}
 {% if jupyterhub_authenticator in jupyterhub_authenticators %}
 c.JupyterHub.authenticator_class = '{{ jupyterhub_authenticators[jupyterhub_authenticator].name }}'
-{% for authenticator_option in jupyterhub_spawners[jupyterhub_spawner].options %}
+{% if 'options' in jupyterhub_authenticators[jupyterhub_authenticator] %}
+{% for authenticator_option in jupyterhub_authenticators[jupyterhub_authenticator].options %}
 c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endfor %}
+{% endif %}
 {% endif %}
 {% endblock %}
