@@ -56,7 +56,7 @@ resource "ansible_group" "jupyter" {
 }
 
 resource "ansible_host" "hub-ci" {
-  inventory_hostname = "${data.external.dig.result["name"]}"
+  inventory_hostname = "${local.name}"
   groups             = ["hub", "hub-dev"]
 
   vars {
