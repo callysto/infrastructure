@@ -3,6 +3,7 @@
 **/*.ianabc
 **/*.tfstate
 **/*.tfstate.backup
+**/.terraform.tfstate.lock.info
 **/*.retry
 **/*.swp
 **/.hostfiles
