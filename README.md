@@ -229,3 +229,26 @@ such as `20fa03478ece18d03c7cd5b39aa2224e45f0cee8`.
 There is currently no way to configure generic OIDC connections. Google and Microsoft both use
 OAuth2/OIDC connections, which means SimpleSAMLphp has support, but it will just need to be added
 to the Ansible role.
+
+### Identity Proxy Mock (Development) Accounts
+In the local_vars.yml file, enable the `develop` variable:
+```
+...
+ssp_develop: True
+...
+```
+
+Run a deployment
+
+#### Test Accounts
+There are 2 test accounts that come enabled with the mock Identity Proxy. They can be used by clicking `Login with mock account` at the Callysto login screen:
+```
+username: user1
+password: password
+
+username: user2
+password: password
+```
+
+user1 will release an eduPersonTargetedID attribute with the value `lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu`
+user2 will release an eduPersonPrincipalName attribute with the value `user2@example.ca`

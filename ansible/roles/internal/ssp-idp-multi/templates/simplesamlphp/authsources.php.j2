@@ -13,7 +13,17 @@ $config = array(
         'idp' => null,
         'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
     ),
-
+{% if ssp_develop %}
+'mock-idp' => array(
+    'exampleauth:UserPass',
+    'user1:password' => array(
+        'eduPersonTargetedID' => array('lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu'),
+    ),
+    'user2:password' => array(
+        'eduPersonPrincipalName' => array('user2@example.ca'),
+    ),
+),
+{% endif %}
 {% for s in ssp_idp_multi_sources %}
   {% if s.type == 'google' %}
     '{{ s.display_name | lower | replace(' ','') }}' => array(
@@ -47,17 +57,25 @@ $config = array(
     'sources' => array(
         'default-sp' => array(
             'text' => array(
-                'en' => 'Log with Institution account',
-                'fr' => 'Log with Institution account',
+                'en' => 'Login with Institution account',
+                'fr' => 'Login with Institution account',
             ),
             'css-class' => 'SAML',
         ),
+{% if ssp_develop %}
+        'mock-idp' => array(
+            'text' => array(
+                'en' => 'Login with mock account',
+                'fr' => 'Login with mock account',
+                )
+            ),
+{% endif %}
 {% for s in ssp_idp_multi_sources %}
     {% if s.type != 'saml' %}
         '{{ s.display_name | lower | replace(' ','') }}' => array(
             'text' => array(
-                'en' => 'Log with {{ s.display_name }} account',
-                'fr' => 'Log with {{ s.display_name }} account',
+                'en' => 'Login with {{ s.display_name }} account',
+                'fr' => 'Login with {{ s.display_name }} account',
             ),
             'css-class' => 'SAML',
         ),

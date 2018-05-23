@@ -452,6 +452,7 @@ $config = array(
      *
      */
      'module.enable' => array(
+          {% if ssp_develop %}'exampleauth' => TRUE,{% endif %}
           'authwindowslive' => TRUE,
           'smartattributes' => TRUE,
           'cron' => TRUE,
