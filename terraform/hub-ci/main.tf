@@ -6,11 +6,13 @@ resource "random_id" "name" {
 locals {
   name = "hub-${random_id.name.hex}.callysto.farm"
 
-  image_id     = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
-  flavor_name  = "m1.large"
-  network_name = "default"
-  public_key   = "${file("../../keys/id_rsa.pub")}"
-  zone_id      = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595" # callysto.farm
+  image_id         = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
+  flavor_name      = "m1.large"
+  network_name     = "default"
+  public_key       = "${file("../../keys/id_rsa.pub")}"
+  zone_id          = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595" # callysto.farm
+  vol_homedir_size = 10
+  vol_docker_size  = 20
 }
 
 resource "openstack_compute_keypair_v2" "hub-ci" {
@@ -19,12 +21,14 @@ resource "openstack_compute_keypair_v2" "hub-ci" {
 }
 
 module "hub-ci" {
-  source       = "../modules/hub"
-  name         = "${local.name}"
-  image_id     = "${local.image_id}"
-  flavor_name  = "${local.flavor_name}"
-  key_name     = "${openstack_compute_keypair_v2.hub-ci.name}"
-  network_name = "${local.network_name}"
+  source           = "../modules/hub"
+  name             = "${local.name}"
+  image_id         = "${local.image_id}"
+  flavor_name      = "${local.flavor_name}"
+  key_name         = "${openstack_compute_keypair_v2.hub-ci.name}"
+  network_name     = "${local.network_name}"
+  vol_homedir_size = "${local.vol_homedir_size}"
+  vol_docker_size  = "${local.vol_docker_size}"
 }
 
 resource "openstack_dns_recordset_v2" "hub-ci" {
@@ -42,14 +46,18 @@ resource "ansible_group" "hub" {
   inventory_group_name = "hub"
 }
 
+resource "ansible_group" "hub-dev" {
+  inventory_group_name = "hub-dev"
+}
+
 resource "ansible_group" "jupyter" {
   inventory_group_name = "jupyter"
-  children             = ["hub"]
+  children             = ["hub", "hub-dev"]
 }
 
 resource "ansible_host" "hub-ci" {
   inventory_hostname = "${data.external.dig.result["name"]}"
-  groups             = ["hub"]
+  groups             = ["hub", "hub-dev"]
 
   vars {
     ansible_user = "ptty2u"

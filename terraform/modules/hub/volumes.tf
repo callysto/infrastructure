@@ -1,12 +1,12 @@
 resource "openstack_blockstorage_volume_v2" "homedir" {
   count = 2
   name  = "${format("%s-homedir-%02d", var.name, count.index+1)}"
-  size  = 50
+  size  = "${var.vol_homedir_size}"
 }
 
 resource "openstack_blockstorage_volume_v2" "docker" {
   name = "${format("%s-docker", var.name)}"
-  size = 100
+  size = "${var.vol_docker_size}"
 }
 
 # Manually specify each attachment in a serial order.

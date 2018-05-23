@@ -10,6 +10,14 @@ variable "name" {
   default = ""
 }
 
+variable "vol_homedir_size" {
+  default = 10
+}
+
+variable "vol_docker_size" {
+  default = 20
+}
+
 locals {
   cloudconfig = <<EOF
     #cloud-config
