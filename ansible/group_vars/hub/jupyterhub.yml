@@ -1,19 +1,7 @@
 jhub_docker_cull_run_s: 1800
 jhub_docker_cull_cull_s: 10800
 
-jupyterhub_authenticator: "syzygyauthenticator.shib.RemoteUserAuthenticator"
-jupyterhub_authenticator_options:
-
-  - conf_object: 'SyzygyAuthenticator.user_id'
-    value: '{{ jupyterhub_user_uid }}'
-  - conf_object: 'SyzygyAuthenticator.homedir_string'
-    value: "'/tank/home/USERNAME'"
-  - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
-    value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
-  - conf_object: 'SyzygyAuthenticator.create_system_users'
-    value: 'False'
-  - conf_object: 'SyzygyAuthenticator.create_user_homedir'
-    value: 'True'
+jupyterhub_authenticator: 'shib'
 
 syzygy_html_logout_message: "You have been logged out of your Jupyter but you are still be signed in to google"
 syzygy_html_logout_message_extra: '<a href="https://accounts.google.com/Logout">SIGN OUT OF GOOGLE</a>'

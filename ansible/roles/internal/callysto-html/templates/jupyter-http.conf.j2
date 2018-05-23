@@ -27,11 +27,13 @@ RequestHeader unset REMOTE_USER
 
   Header always set Strict-Transport-Security "max-age=15768000"
 
+  {% if jupyterhub_authenticator == 'shib' %}
   ProxyPass /Shibboleth.sso !
 
   <Location /Shibboleth.sso>
     SetHandler shib
   </Location>
+  {% endif %}
 
   <Directory "/var/www/html/site">
     Order allow,deny
@@ -53,11 +55,13 @@ RequestHeader unset REMOTE_USER
   </Location>
 
   <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
+    {% if jupyterhub_authenticator == 'shib' %}
     AuthType shibboleth
     Require shibboleth
     ShibRequestSetting requireSession true
     ShibUseHeaders off
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
+    {% endif %}
 
     ProxyPassMatch ws://127.0.0.1:8000/jupyter/$1/$2$3
     ProxyPassReverse ws://127.0.0.1:8000/jupyter/$1/$2$3
@@ -68,6 +72,7 @@ RequestHeader unset REMOTE_USER
   LogLevel warn
   CustomLog /var/log/httpd/jupyter-ssl-access.log combined
 
+  {% if jupyterhub_authenticator == 'shib' %}
   # SimpleSAMLphp
   SetEnv SIMPLESAMLPHP_CONFIG_DIR {{ ssp_dir }}/config
   Alias /simplesaml {{ ssp_dir }}/www
@@ -83,6 +88,7 @@ RequestHeader unset REMOTE_USER
       Require all granted
       </IfModule>
   </Directory>
+  {% endif %}
 
 
 </VirtualHost>

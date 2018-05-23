@@ -15,18 +15,18 @@ c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% endblock %}
 
 {% block spawner %}
-c.JupyterHub.spawner_class = '{{ jupyterhub_spawner }}'
-{% if jupyterhub_spawner_options is defined %}
-{% for spawner_option in jupyterhub_spawner_options %}
+{% if jupyterhub_spawner in jupyterhub_spawners %}
+c.JupyterHub.spawner_class = '{{ jupyterhub_spawners[jupyterhub_spawner].name }}'
+{% for spawner_option in jupyterhub_spawners[jupyterhub_spawner].options %}
 c.{{ spawner_option.conf_object }} = {{ spawner_option.value }}
 {% endfor %}
 {% endif %}
 {% endblock %}
 
 {% block authenticator %}
-c.JupyterHub.authenticator_class = '{{ jupyterhub_authenticator }}'
-{% if jupyterhub_authenticator_options is defined %}
-{% for authenticator_option in jupyterhub_authenticator_options %}
+{% if jupyterhub_authenticator in jupyterhub_authenticators %}
+c.JupyterHub.authenticator_class = '{{ jupyterhub_authenticators[jupyterhub_authenticator].name }}'
+{% for authenticator_option in jupyterhub_spawners[jupyterhub_spawner].options %}
 c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endfor %}
 {% endif %}

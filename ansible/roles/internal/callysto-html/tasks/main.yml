@@ -3,7 +3,7 @@
   git:
     repo: git@github.com:callysto/syzygy-landing-page.git
     version: "{{ callysto_landing_branch }}"
-    dest: /opt/callysto-html 
+    dest: /opt/callysto-html
     ssh_opts: "-o StrictHostKeyChecking=no"
     key_file: '{{ deploy_keys.callysto_html.key_file.dest }}'
   notify:
@@ -15,24 +15,24 @@
 
 - name: Grab html template from host
   run_once : true
-  fetch    :
-    src             : '{{ item.src }}'
-    dest            : '{{ item.dest }}'
-    flat            : yes
-    fail_on_missing : yes
+  fetch:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    flat: yes
+    fail_on_missing: yes
   with_items:
     - src: '{{ callysto_html_dir.src }}/index.html'
       dest: '/var/tmp/callysto-html-index.html'
     - src: '{{ callysto_html_dir.src }}/logout/index.html'
       dest: '/var/tmp/callysto-html-logout-index.html'
 
-- name     : Process html template and send results back to host
-  template :
-    src   : '{{ item.src }}'
-    dest  : '{{ item.dest }}'
-    owner : root
-    group : root
-    mode  : 0644
+- name: Process html template and send results back to host
+  template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: root
+    group: root
+    mode: 0644
   with_items:
     - dest: '{{ callysto_html_dir.dest }}/index.html'
       src: '/var/tmp/callysto-html-index.html'

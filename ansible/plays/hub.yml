@@ -98,10 +98,45 @@
       include_role:
         name: ius-python3
 
+    # Manage Docker
     - name: Manage Docker
-      tags: ["docker"]
-      include_tasks: docker.yml
+      include_role:
+        name: docker
 
-    - name: Manage JupyterHub
-      tags: ["jupyterhub"]
-      include_tasks: jupyterhub.yml
+    - name: Add interfaces their respective zones
+      firewalld:
+        interface: '{{ item.interface }}'
+        zone: '{{ item.zone }}'
+        state: enabled
+        permanent: true
+        immediate: yes
+      with_items:
+        - { interface: '{{ docker_interface }}', zone: 'home' }
+      notify:
+        firewalld complete reload
+
+    - name: update facts if docker0 is not defined
+      action: setup filter="ansible_docker0"
+      when: ansible_docker0 is not defined
+
+    - name: Install docker module
+      yum:
+        name: 'python-docker-py'
+        state: 'present'
+
+    - name: Manage Docker ephemeral storage
+      include_role:
+        name: docker-ephemeral
+
+    # Manage Jupyterhub
+    # This role is tightly coupled to the following roles:
+    #   * dockerspawner
+    #   * ssp-idp-multi
+    #   * callysto-html
+    #   * syzygyauthenticator
+    # These roles should not be used independently.
+    # TODO: merge all of these roles into one?
+    - name: Manage Jupyterhub
+      tags: ["jupyter", "jupyterhub", "ssp"]
+      include_role:
+        name: jupyterhub
