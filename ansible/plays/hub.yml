@@ -4,7 +4,7 @@
   become: true
   tasks:
     # Settings are defined in
-    # group_vars/all/sudo.yml
+    # group_vars/<group>/sudo.yml
     - name: Configure sudo
       tags: ["sudo", "always"]
       include_role:
@@ -35,14 +35,14 @@
         name: base-packages
 
     # Configuration is stored in
-    # group_vars/all/secret.yml
+    # group_vars/<group>/secret.yml
     - name: Manage secrets
       tags: ["secrets"]
       include_role:
         name: secret
 
     # Configuration is stored in
-    # group_vars/all/deploy_keys.yml
+    # group_vars/<group>/deploy_keys.yml
     - name: Manage deploy keys
       tags: ["ssh"]
       include_role:
@@ -74,14 +74,14 @@
         name: firewalld
 
     # Configuration is stored in
-    # group_vars/all/ssh.yml.
+    # group_vars/<group>/ssh.yml.
     - name: Ensure sshd is installed and running
       tags: ["sshd"]
       include_role:
         name: sshd
 
     # Configuration is stored in
-    # group_vars/all/httpd.yml
+    # group_vars/<group>/httpd.yml
     - name: Manage Apache
       tags: ["httpd"]
       include_role:
@@ -97,11 +97,6 @@
       tags: ["python", "python3"]
       include_role:
         name: ius-python3
-
-    - name: Manage SimpleSAMLphp Identity Provider
-      tags: ["ssp", "httpd", "ssl"]
-      include_role:
-        name: ssp-idp-multi
 
     - name: Manage Docker
       tags: ["docker"]

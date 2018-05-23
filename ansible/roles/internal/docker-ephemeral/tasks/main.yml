@@ -12,7 +12,7 @@
 - name: Create an XFS filesystem on the storage
   filesystem:
     fstype: xfs
-    dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition}}'
+    dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition }}'
 
 - name: Mount the ephemeral for docker
   mount:

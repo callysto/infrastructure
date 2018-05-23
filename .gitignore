@@ -10,5 +10,5 @@
 **/clouds.yaml
 keys/id_rsa*
 ansible/roles/external
-ansible/group_vars/all/local_vars.yml
+ansible/group_vars/*/local_vars.yml
 ansible/inventory

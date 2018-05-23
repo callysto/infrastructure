@@ -115,8 +115,8 @@ Create local_vars.yml file and fill in needed values:
 
 ```
   $ cd ansible
-  $ cp local_vars.yml.example group_vars/all/local_vars.yml
-  $ vi group_vars/all/local_vars.yml
+  $ cp local_vars.yml.example group_vars/hub/local_vars.yml
+  $ vi group_vars/hub/local_vars.yml
 ```
 
 Create deploy keys. Each of these must be registered on Github by their respected projects.

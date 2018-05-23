@@ -24,6 +24,11 @@
   include_role:
     name: jhub-docker-cull
 
+- name: Manage SimpleSAMLphp Identity Provider
+  tags: ["ssp", "httpd", "ssl"]
+  include_role:
+    name: ssp-idp-multi
+
 - name: Manage Jupyterhub
   tags: ["jupyter", "jupyterhub"]
   include_role:
