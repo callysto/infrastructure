@@ -1,6 +1,11 @@
 locals {
-  name_suffix = "-dev"
-  public_key  = "${file("../../keys/id_rsa.pub")}"
+  name = "hub-dev.callysto.farm"
+
+  image_id     = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
+  flavor_name  = "m1.large"
+  network_name = "default"
+  public_key   = "${file("../../keys/id_rsa.pub")}"
+  zone_id      = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595" # callysto.farm
 }
 
 resource "openstack_compute_keypair_v2" "hub-dev" {
@@ -9,13 +14,23 @@ resource "openstack_compute_keypair_v2" "hub-dev" {
 }
 
 module "hub-dev" {
-  source           = "../modules/hub"
-  name_suffix      = "${local.name_suffix}"
-  image_id         = "10076751-ace0-49b2-ba10-cfa22a98567d"
-  flavor_name      = "m1.large"
-  key_name         = "${openstack_compute_keypair_v2.hub-dev.name}"
-  network_name     = "default"
-  floating_ip_pool = "public"
+  source       = "../modules/hub"
+  name         = "${local.name}"
+  image_id     = "${local.image_id}"
+  flavor_name  = "${local.flavor_name}"
+  key_name     = "${openstack_compute_keypair_v2.hub-dev.name}"
+  network_name = "${local.network_name}"
+}
+
+resource "openstack_dns_recordset_v2" "hub-dev" {
+  zone_id = "${local.zone_id}"
+  name    = "${local.name}."
+  ttl     = 60
+  type    = "AAAA"
+
+  records = [
+    "${replace(module.hub-dev.access_ip_v6, "/[][]/", "")}",
+  ]
 }
 
 resource "ansible_group" "hub" {
@@ -28,13 +43,13 @@ resource "ansible_group" "jupyter" {
 }
 
 resource "ansible_host" "hub-dev" {
-  inventory_hostname = "${module.hub-dev.name}"
+  inventory_hostname = "${local.name}"
   groups             = ["hub"]
 
   vars {
     ansible_user = "ptty2u"
 
-    ansible_host            = "${module.hub-dev.floating_ip}"
+    ansible_host            = "${openstack_dns_recordset_v2.hub-dev.records[0]}"
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
   }
 }

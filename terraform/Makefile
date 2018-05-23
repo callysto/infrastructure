@@ -7,6 +7,9 @@ ifndef env
 	$(error env is not defined)
 endif
 
+setup:
+	@echo "All OK!"
+
 init: check-env
 	cd $(env) ; \
 	$(PATH)/terraform init

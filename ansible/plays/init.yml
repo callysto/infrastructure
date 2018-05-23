@@ -1,5 +1,5 @@
 ---
-# These set of tasks are meant to be run only once,
+# This set of tasks are meant to be run only once,
 # after the infrastructure has been deployed by
 # Terraform.
 #

@@ -1,5 +1,3 @@
-variable "floating_ip_pool" {}
-
 variable "image_id" {}
 
 variable "flavor_name" {}
@@ -8,17 +6,11 @@ variable "key_name" {}
 
 variable "network_name" {}
 
-variable "name_suffix" {
+variable "name" {
   default = ""
 }
 
-variable "domain" {
-  default = "callysto.ca"
-}
-
 locals {
-  name = "${format("callysto%s.%s", var.name_suffix, var.domain)}"
-
   cloudconfig = <<EOF
     #cloud-config
     preserve_hostname: true

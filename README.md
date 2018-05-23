@@ -46,6 +46,12 @@ $ ../bin/<arch>/terraform <action>
 ```
 
 ### Terraform Prep
+First, run the following to ensure your environment has all prerequisites:
+
+```
+  $ make setup
+```
+
 You will need to ensure your OpenStack `openrc.sh` file is sourced before running
 terraform.
 
