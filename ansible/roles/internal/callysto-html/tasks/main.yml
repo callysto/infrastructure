@@ -1,11 +1,10 @@
 ---
 - name: Install HTML files
   git:
-    repo: git@github.com:callysto/syzygy-landing-page.git
+    repo: '{{ callysto_hub_landing_page_repo }}'
     version: "{{ callysto_landing_branch }}"
-    dest: /opt/callysto-html
+    dest: '{{ callysto_html_dir.src }}'
     ssh_opts: "-o StrictHostKeyChecking=no"
-    key_file: '{{ deploy_keys.callysto_html.key_file.dest }}'
   notify:
     - Copy landing page templates
     - Update image assets
