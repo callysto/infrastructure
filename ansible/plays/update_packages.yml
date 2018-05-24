@@ -1,5 +1,5 @@
 - name: Update Packages
-  hosts: jupyter
+  hosts: all
   become: true
   gather_facts: false
   tasks:

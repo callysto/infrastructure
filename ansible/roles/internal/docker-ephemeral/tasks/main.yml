@@ -1,12 +1,4 @@
 ---
-- name: Unmount ephemeral if mounted
-  mount:
-    src: '{{ openstack_ephemeral_docker_partition }}'
-    path: '/mnt'
-    state: absent
-  notify:
-    - Unmount ephemeral
-
 - name: Partition OpenStack Ephemeral Storage
   parted:
     device: '{{ openstack_ephemeral_docker_disk }}'
@@ -16,11 +8,15 @@
     part_end: '{{ openstack_ephemeral_docker_end }}'
     part_type: '{{ openstack_ephemeral_part_type }}'
     state: present
+  notify:
+    - restart docker
 
 - name: Create an XFS filesystem on the storage
   filesystem:
     fstype: xfs
-    dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition}}'
+    dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition }}'
+  notify:
+    - restart docker
 
 - name: Mount the ephemeral for docker
   mount:
@@ -28,3 +24,5 @@
     path: '/var/lib/docker'
     fstype: 'xfs'
     state: 'mounted'
+  notify:
+    - restart docker

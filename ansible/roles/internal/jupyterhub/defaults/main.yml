@@ -1,9 +1,20 @@
 ---
+# This is shared betwen ssp and callysto-html
+ssp_ver: 1.15.4
+ssp_path: /var
+ssp_prefix: simplesamlphp-
+ssp_dir: "{{ ssp_path  }}/{{ ssp_prefix  }}{{ ssp_ver }}"
+
 jupyterhub_srv_dir: '/srv/jupyterhub'
-jupyterhub_shib_dir: '/opt/shib_authenticator'
-jupyterhub_docker_image: 'docker.io/pimsubc/pims-notebook'
 jupyterhub_api_port: '8081'
-jupyterhub_docker_container: 'docker.io/pimsubc/pims-notebook:latest'
+
+jupyterhub_shib_dir: '/opt/shib_authenticator'
+
+jhub_docker_cull_run_s: 1800
+jhub_docker_cull_cull_s: 10800
+
+jupyterhub_docker_image: 'docker.io/callysto/pims-minimal'
+jupyterhub_docker_container: 'docker.io/callysto/pims-minimal:latest'
 
 jupyterhub_global_options:
   - conf_object: 'JupyterHub.admin_access'
@@ -31,28 +42,77 @@ jupyterhub_global_options:
             }
         ]
 
-jupyterhub_spawner: 'syzygyauthenticator.systemuserspawner.SyzygySystemUserSpawner'
-jupyterhub_spawner_options:
-  - conf_object: 'DockerSpawner.use_internal_ip'
-    value: True
-  - conf_object: 'SystemUserSpawner.image'
-    value: "'{{ jupyterhub_docker_container }}'"
-  - conf_object: 'SystemUserSpawner.extra_host_config'
-    value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
-  - conf_object: 'SystemUserSpawner.remove_containers'
-    value: 'True'
-  - conf_object: 'SystemUserSpawner.host_ip'
-    value: "'0.0.0.0'"
-  - conf_object: 'SystemUserSpawner.host_homedir_format_string'
-    value: "'/tank/home/{username}'"
+jupyterhub_spawner: 'syzygysystemuserspawner'
+jupyterhub_spawners:
+  syzygysystemuserspawner:
+    name: 'syzygyauthenticator.systemuserspawner.SyzygySystemUserSpawner'
+    options:
+      - conf_object: 'DockerSpawner.use_internal_ip'
+        value: True
+      - conf_object: 'SystemUserSpawner.image'
+        value: "'{{ jupyterhub_docker_container }}'"
+      - conf_object: 'SystemUserSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'SystemUserSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'SystemUserSpawner.host_ip'
+        value: "'0.0.0.0'"
+      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
+        value: "'/tank/home/{username}'"
+  dockerspawner:
+    name: 'dockerspawner.SystemUserSpawner'
+    options:
+      - conf_object: 'DockerSpawner.use_internal_ip'
+        value: True
+      - conf_object: 'SystemUserSpawner.image'
+        value: "'{{ jupyterhub_docker_container }}'"
+      - conf_object: 'SystemUserSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'SystemUserSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'SystemUserSpawner.host_ip'
+        value: "'0.0.0.0'"
+      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
+        value: "'/tank/home/{username}'"
+  dockerspawner_docker:
+    name: 'dockerspawner.DockerSpawner'
+    options:
+      - conf_object: 'DockerSpawner.use_internal_ip'
+        value: True
+      - conf_object: 'DockerSpawner.image'
+        value: "'{{ jupyterhub_docker_container }}'"
+      - conf_object: 'DockerSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'DockerSpawner.host_ip'
+        value: "'0.0.0.0'"
 
-jupyterhub_authenticator: 'syzygyauthenticator.SyzygyPAMAuthenticator'
-jupyterhub_authenticator_options:
-  - conf_object: 'SyzygyAuthenticator.create_system_users'
-    value: False
-  - conf_object: 'SyzygyAuthenticator.create_user_homedir'
-    value: True
-  - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
-    value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'USERNAME']"
-  - conf_object: 'SyzygyAuthenticator.homedir_string'
-    value: "'/tank/home/USERNAME'"
+jupyterhub_authenticator: 'pam'
+jupyterhub_authenticators:
+  pam:
+    name: 'syzygyauthenticator.SyzygyPAMAuthenticator'
+    options:
+      - conf_object: 'SyzygyAuthenticator.create_system_users'
+        value: False
+      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
+        value: True
+      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
+        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'USERNAME']"
+      - conf_object: 'SyzygyAuthenticator.homedir_string'
+        value: "'/tank/home/USERNAME'"
+  shib:
+    name: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
+    options:
+      - conf_object: 'SyzygyAuthenticator.user_id'
+        value: '{{ jupyterhub_user_uid }}'
+      - conf_object: 'SyzygyAuthenticator.homedir_string'
+        value: "'/tank/home/USERNAME'"
+      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
+        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
+      - conf_object: 'SyzygyAuthenticator.create_system_users'
+        value: 'False'
+      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
+        value: 'True'
+  dummy:
+    name: 'dummyauthenticator.DummyAuthenticator'

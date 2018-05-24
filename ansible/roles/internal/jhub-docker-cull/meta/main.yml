@@ -1,3 +1,0 @@
----
-dependencies:
-  - { role: ius-python3 }

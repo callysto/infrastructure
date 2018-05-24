@@ -1,17 +1,25 @@
-variable "floating_ip_pool" {}
 variable "image_id" {}
+
 variable "flavor_name" {}
-variable "public_key" {}
+
+variable "key_name" {}
+
 variable "network_name" {}
 
-variable "name_suffix" {
+variable "name" {
   default = ""
 }
 
-variable "cloudconfig" {
-  type = "string"
+variable "vol_homedir_size" {
+  default = 10
+}
 
-  default = <<EOF
+variable "vol_docker_size" {
+  default = 20
+}
+
+locals {
+  cloudconfig = <<EOF
     #cloud-config
     preserve_hostname: true
     runcmd:

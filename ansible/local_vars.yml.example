@@ -9,6 +9,12 @@ openstack_ephemeral_docker_disk: /dev/sdd
 
 domain: subdomain.example.com
 
+# valid values: dummy, shib, pam
+jupyterhub_authenticator: dummy
+
+# valid values: dockerspawner_docker, dockerspawner_system
+jupyterhub_spawner: dockerspawner_docker
+
 jupyterhub_oauth_client_id: 12345
 jupyterhub_oauth_client_secret: SUPERSECRET
 jupyterhub_oauth_callback_url: https://callback.example.com

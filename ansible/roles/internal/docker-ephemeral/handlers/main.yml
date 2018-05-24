@@ -1,4 +1,3 @@
 ---
-- name: Unmount ephemeral
-  mount:
-    src: '{{ openstack_docker_ephemeral_partition }}'
+- name: restart docker
+  service: name=docker state=restarted

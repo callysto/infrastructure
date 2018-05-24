@@ -1,0 +1,5 @@
+---
+- name: Install Dummy Authenticator
+  pip:
+    name: jupyterhub-dummyauthenticator
+    executable: pip3.6

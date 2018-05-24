@@ -1,5 +1,0 @@
----
-dependencies:
- - { role: deploy-keys }
- - { role: ius-python3 }
- - { role: zfs }

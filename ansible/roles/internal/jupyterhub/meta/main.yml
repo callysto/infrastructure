@@ -1,7 +1,0 @@
----
-dependencies:
- - { role: deploy-keys }
- - { role: ius-python3 }
- - { role: dockerspawner }
- - { role: syzygyauthenticator }
- - { role: jhub-docker-cull }

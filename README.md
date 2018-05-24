@@ -46,8 +46,15 @@ $ ../bin/<arch>/terraform <action>
 ```
 
 ### Terraform Prep
+First, run the following to ensure your environment has all prerequisites:
+
+```
+  $ make setup
+```
+
 You will need to ensure your OpenStack `openrc.sh` file is sourced before running
 terraform.
+
 ```
   $ source openrc.sh
 ```
@@ -95,22 +102,31 @@ plugin. This plugin reads in the Terraform State of a deployed enviornment and
 creates an appropriate Ansible Inventory result.
 
 ### Ansible Prep
-Create local_vars.yml file and fill in needed values:
+Run the setup command to prepare the environment:
+
 ```
   $ cd ansible
-  $ cp local_vars.yml.example group_vars/all/local_vars.yml
-  $ vi group_vars/all/local_vars.yml
+  $ make setup
 ```
+
+(TODO: this should install Ansible if it's not installed)
+
+Create local_vars.yml file and fill in needed values:
+
+```
+  $ cd ansible
+  $ cp local_vars.yml.example group_vars/hub/local_vars.yml
+  $ vi group_vars/hub/local_vars.yml
+```
+
+> Make sure to set `jupyterhub_authenticator` and `jupyterhub_spawner` appropriately.
 
 Create deploy keys. Each of these must be registered on Github by their respected projects.
+
 ```
+  $ mkdir -p .hostfiles/secret/deploy_keys
   $ ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_callysto_html_deploy
   $ ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy
-```
-
-Update Ansible inventory file and replace hostname under "google" section:
-```
-  $ vi inventory.yml
 ```
 
 Download needed external Ansible roles
@@ -127,19 +143,25 @@ galaxy](https://galaxy.ansible.com). New roles from galaxy can be added to
 
 The instance must be initialized the first time. This will update all packages,
 and use a suitable kernel to run zfs with. The instance will reboot once during
-the process to use a new kernel version and automatically continue the deployment
-of the `jupyter.yml` playbook.
+the process to use a new kernel version.
 
 ```
   $ cd ansible
-  $ ansible-playbook plays/init.yml
+  $ make env=hub-dev hub/init/check
+  $ make env=hub-dev hub/init/apply
 ```
 
-After a successful initialization, you can maintain the installation with this command:
+> Note: `init/check` might fail due to Ansible unable to accurately predict the
+> commands it will run.
+
+After a successful initialization, you can continue provisioning the hub with:
 
 ```
-  $ ansible-playbook plays/jupyter.yml
+  $ make env=hub-dev hub/check
+  $ make env=hub-dev hub/apply
 ```
+
+> Note: again, `hub/check` might fail because Ansible.
 
 ## Identity Proxy
 
@@ -149,6 +171,7 @@ All configuration is done via the `local_vars.yml` file.
 
 ### Initial Configuration
 The following variables will need to be configured in the `local_vars.yml` file before deployment:
+
 ```
   ssp_idp_multi_salt
   ssp_idp_multi_admin_password
@@ -160,6 +183,7 @@ The following variables will need to be configured in the `local_vars.yml` file 
 The salt, admin password, and refresh key can be set to any secure values.
 
 The SAML keys can be created by using the following command:
+
 ```
   $ openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem
 ```
@@ -175,6 +199,7 @@ Select Web application
 Name the client something memorable
 Authorized redirect URIs: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
 Note the client ID and client secret as they will be added to:
+
 ```
 ssp_idp_multi_sources:
   ...
@@ -183,6 +208,7 @@ ssp_idp_multi_sources:
     client_id: <Google client ID>
     client_secret: <Google client secret>
 ```
+
 More documentation here: https://developers.google.com/identity/protocols/OAuth2
 
 ### Adding Microsoft Authentication
@@ -193,6 +219,7 @@ use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/modul
 Make sure the `User.Read` permission is set.
 
 Create an application secret. This will be stored under `client_secret` in local_vars.yml:
+
 ```
 ssp_idp_multi_sources:
   ...
@@ -206,6 +233,7 @@ More documentation here: https://msdn.microsoft.com/en-us/library/bb676626.aspx
 
 ### Adding a SAML Identity Provider:
 Add an entry for the Identity Provider under `local_vars.yml`:
+
 ```
 ssp_idp_multi_sources:
   ...
