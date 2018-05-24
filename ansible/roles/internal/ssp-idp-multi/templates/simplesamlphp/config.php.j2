@@ -452,7 +452,9 @@ $config = array(
      *
      */
      'module.enable' => array(
+          {% if ssp_develop %}'exampleauth' => TRUE,{% endif %}
           'authwindowslive' => TRUE,
+          'smartattributes' => TRUE,
           'cron' => TRUE,
           'metarefresh' => TRUE,
      ),
@@ -805,21 +807,17 @@ $config = array(
         1 => array(
             'class' => 'core:AttributeMap', 'urn2name'
         ),
-        5 => array(
-            'class' => 'core:AttributeMap', 'windowslive2name'
-        ),
         20 => array(
-          'class' => 'saml:PersistentNameID',
-          'attribute' => 'email'
+            'class' => 'smartattributes:SmartID',
+            'candidates' => array('eduPersonTargetedID', 'eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            'add_authority' => TRUE,
+            'add_candidate' => FALSE,
+            'id_attribute' => 'smart_id',
         ),
         21 => array(
-          'class' => 'saml:PersistentNameID',
-          'attribute' => 'eduPersonPrincipalName'
-        ),
-        30 => array(
-            'class' => 'saml:PersistentNameID2TargetedID',
-            'attribute' => 'eduPersonTargetedID', // The default
-            'nameId' => FALSE, // The default
+            'class' => 'core:TargetedID',
+            'attributename' => 'smart_id',
+            'nameId' => FALSE,
         ),
         45 => array(
             'class'         => 'core:StatisticsWithAttribute',
@@ -827,13 +825,7 @@ $config = array(
             'type'          => 'saml20-idp-SSO',
         ),
 
-        /* When called without parameters, it will fallback to filter attributes ‹the old way›
-         * by checking the 'attributes' parameter in metadata on IdP hosted and SP remote.
-         */
         50 => 'core:AttributeLimit',
-
-        // If language is set in Consent module it will be added as an attribute.
-        99 => 'core:LanguageAdaptor',
 
         100 => array(
             'class' => 'core:AttributeMap', 'name2oid'

@@ -1,3 +1,4 @@
+ssp_develop: False
 ssp_ver: 1.15.4
 ssp_sha256: 349cf5d9f9ecbbced0e6f6794d26d5242fc9dafbd34268aeeb200182c24f88a5
 ssp_url: https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_ver  }}/simplesamlphp-{{ ssp_ver  }}.tar.gz

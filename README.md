@@ -189,7 +189,7 @@ More documentation here: https://developers.google.com/identity/protocols/OAuth2
 You will need to register the application here: http://go.microsoft.com/fwlink/?LinkID=144070
 
 Under the Platforms > Web section in the Microsoft registration page,
-use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
+use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authwindowslive/linkback.php
 Make sure the `User.Read` permission is set.
 
 Create an application secret. This will be stored under `client_secret` in local_vars.yml:
@@ -221,7 +221,34 @@ Currently only SAML Identity Providers that publish their metadata is supported.
 are hardcoded, support for this will need to be added to the ssp-idp-multi role.
 It's trivial to add, but likely won't be needed.
 
+This SAML Identity Provider must release an eduPersonPrincipalName (urn:oid:1.3.6.1.4.1.5923.1.1.1.6) attribute.
+Once provided, it is converted at the Identity Proxy level into a Targeted ID (urn:oid:1.3.6.1.4.1.5923.1.1.1.10)
+such as `20fa03478ece18d03c7cd5b39aa2224e45f0cee8`.
+
 ### Adding a Generic OIDC Provider
 There is currently no way to configure generic OIDC connections. Google and Microsoft both use
 OAuth2/OIDC connections, which means SimpleSAMLphp has support, but it will just need to be added
 to the Ansible role.
+
+### Identity Proxy Mock (Development) Accounts
+In the local_vars.yml file, enable the `develop` variable:
+```
+...
+ssp_develop: True
+...
+```
+
+Run a deployment
+
+#### Test Accounts
+There are 2 test accounts that come enabled with the mock Identity Proxy. They can be used by clicking `Login with mock account` at the Callysto login screen:
+```
+username: user1
+password: password
+
+username: user2
+password: password
+```
+
+user1 will release an eduPersonTargetedID attribute with the value `lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu`
+user2 will release an eduPersonPrincipalName attribute with the value `user2@example.ca`
