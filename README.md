@@ -127,7 +127,6 @@ Create deploy keys. Each of these must be registered on Github by their respecte
 
 ```
   $ mkdir -p .hostfiles/secret/deploy_keys
-  $ ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_callysto_html_deploy
   $ ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy
 ```
 
