@@ -1,5 +1,9 @@
+module "dns" "dns" {
+  source = "../modules/dns"
+}
+
 locals {
-  name = "hub-dev.callysto.farm"
+  name = "hub-dev.${module.dns.domain_name}"
 
   image_id         = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
   flavor_name      = "m1.large"
@@ -27,7 +31,7 @@ module "hub-dev" {
 }
 
 resource "openstack_dns_recordset_v2" "hub-dev" {
-  zone_id = "${local.zone_id}"
+  zone_id = "${module.dns.zone_id}"
   name    = "${local.name}."
   ttl     = 60
   type    = "AAAA"

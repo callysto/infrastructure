@@ -1,0 +1,76 @@
+---
+# This set of tasks are meant to be run on the clavius
+# virtual machine.
+#
+- name: Ensure sudo is configured correctly
+  hosts: clavius
+  become: true
+  tasks:
+    # Settings are defined in
+    # group_vars/all/sudo.yml
+    # group_vars/infra/sudo.yml
+    # host_vars/clavius/sudo.yml
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+      vars:
+          ansible_ssh_pipelining: no
+
+- name: Manage Clavius
+  hosts: clavius
+  become: true
+  tasks:
+    - name: Ensure hostname is set
+      tags: ["hostname"]
+      include_role:
+        name: hostname
+
+    # Add relevant keys to `ssh_public_keys` defined in:
+    # group_vars/all/local_vars.yml
+    # group_vars/infra/local_vars.yml
+    # host_vars/clavius/local_vars.yml
+    - name: Manage SSH public keys
+      tags: ["ssh"]
+      include_role:
+        name: ssh-public-keys
+
+    # This also installs EPEL
+    - name: Ensure base packages are installed
+      tags: ["base-packages"]
+      include_role:
+        name: base-packages
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      include_role:
+        name: selinux
+      vars:
+        selinux_policy: targeted
+        selinux_state: permissive
+
+    # Enabled services are defined in
+    # group_vars/all/firewalld.yml
+    # group_vars/infra/firewalld.yml
+    # host_vars/clavius/firewalld.yml
+    - name: Ensure firewalld service is running
+      tags: ["firewalld"]
+      include_role:
+        name: firewalld
+
+    - name: Manage Ansible
+      tags: ["ansible"]
+      include_role:
+        name: ansible
+
+    - name: Manage Docker
+      include_role:
+        name: docker
+
+    - name: Ensure cryptsetup is installed
+      yum:
+        name: cryptsetup
+
+    - name: Ensure dm_crypt module is loaded
+      modprobe:
+        name: dm_crypt

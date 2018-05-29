@@ -30,3 +30,15 @@ hub/check: check-env
 
 hub/apply: check-env
 	$(PLAYBOOK_CMD) --limit hub plays/hub.yml
+
+clavius/init/check: check-env
+	$(PLAYBOOK_CMD) --limit clavius --check --diff plays/init.yml
+
+clavius/init/apply: check-env
+	$(PLAYBOOK_CMD) --limit clavius plays/init.yml
+
+clavius/check: check-env
+	$(PLAYBOOK_CMD) --limit clavius --check --diff plays/clavius.yml
+
+clavius/apply: check-env
+	$(PLAYBOOK_CMD) --limit clavius plays/clavius.yml
