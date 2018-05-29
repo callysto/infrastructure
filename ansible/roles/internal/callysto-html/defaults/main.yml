@@ -1,12 +1,11 @@
 callysto_hub_landing_page_repo: "https://github.com/callysto/hub-landing-page"
 callysto_html_hostname: "{{ inventory_hostname }}"
 callysto_html_domain: "callysto.ca"
-callysto_html_support_email: "{{ admin_email }}"
+callysto_html_support_email: "support@callysto.ca"
 callysto_html_url: "http://{{ inventory_hostname }}"
-callysto_html_longname: "Cybera"
 
 callysto_html_dir:
-  src: /opt/callysto-html
+  src: /opt/hub-landing-page
   dest: /var/www/html/site
 
 callysto_html_logout_message: "You have been logged out of your Jupyter Session"
