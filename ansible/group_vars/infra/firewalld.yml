@@ -1,0 +1,2 @@
+firewalld_allow_services:
+  - {service: ssh }

@@ -18,6 +18,8 @@ using the same version.
 Terraform modules are stored in `./terraform/modules`. The following modules
 are defined:
 
+  * `clavius`: deploys a centralized team workstation to manage Callysto.
+  * `dns`: Contains hard-coded DNS information for Callysto.
   * `hub`: deploys a standard Callysto JupyterHub environment.
 
 ### Makefile
