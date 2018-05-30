@@ -52,6 +52,14 @@ $ ./role_update.sh
 $ popd
 ```
 
+Finally, set up the Ansible inventory script:
+
+```
+$ pushd ansible
+$ make setup
+$ popd
+```
+
 ### Domain Names
 
 The Callysto infrastructure relies on two domain names: one for production
@@ -125,13 +133,19 @@ Next, re-clone the infrastructure repository and repeat the initial setup:
 $ git clone https://github.com/callysto/infrastructure callysto-infra
 $ cd callysto-infra
 $ ssh-keygen -t rsa -f ./keys/id_rsa
-$ pushd ansible/scripts
+$ pushd ansible
+$ make setup
+$ pushd scripts
 $ ./role_update.sh
+$ popd
 $ popd
 ```
 
 > Notice how you've just repeated the steps from the beginning of this section.
 > This is intentional as there's an element of bootstrapping to get started.
+>
+> Additionally, you should also copy the `terraform/clavius/terraform.tfstate`
+> file to the new location, too.
 
 ## Deploying the Development Environment
 
