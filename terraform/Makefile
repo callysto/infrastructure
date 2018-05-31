@@ -8,7 +8,10 @@ ifndef env
 endif
 
 setup:
-	@echo "All OK!"
+	@echo ""
+	@echo "Make sure to edit modules/dns/vars.tf with your Designate zone ID!"
+	@echo "Press enter to continue"
+	@read
 
 init: check-env
 	cd $(env) ; \

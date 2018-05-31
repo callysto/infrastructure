@@ -14,7 +14,6 @@ locals {
   flavor_name      = "m1.large"
   network_name     = "default"
   public_key       = "${file("../../keys/id_rsa.pub")}"
-  zone_id          = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595" # callysto.farm
   vol_homedir_size = 10
   vol_docker_size  = 20
 }

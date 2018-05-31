@@ -8,7 +8,27 @@ ANSIBLE_CMD = TF_STATE=$(TF_PATH)/$(env) ansible --private-key=../keys/id_rsa -i
 export PATH := $(TF_PATH)/bin/$(UNAME):$(PATH)
 
 setup:
-	ln -s ./bin/$(UNAME)/ansible-terraform-inventory inventory
+	@echo "Setting up Ansible Inventory"
+	[[ -e "inventory" ]] || ln -s ./bin/$(UNAME)/ansible-terraform-inventory inventory
+	@echo "Making deploy_keys directory"
+	[[ -d ".hostfiles/secret/deploy_keys" ]] || mkdir -p .hostfiles/secret/deploy_keys
+	@echo "Creating syzygyauthenticator deploy key"
+	[[ -f ".hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy" ]] || ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy
+	@echo ""
+	@echo "Add the public key as a deploy key to github.com/callysto/syzygyauthenticator!"
+	@echo "Press enter to continue"
+	@echo ""
+	@read
+	@echo "Creating group_vars/hub/local_vars.yml from the example template"
+	[[ -f "group_vars/hub/local_vars.yml" ]] || cp local_vars.yml.example group_vars/hub/local_vars.yml
+	@echo ""
+	@echo "Update group_vars/hub/local_vars.yml to fit your environment."
+	@echo "Don't forget to generate the SSL certificates for simplesamlphp if you're using it for authentication."
+	@echo "And don't forget to set dehydrate_test_cert to False if you're sure Let's Encrypt is working."
+	@echo "Press enter to continue"
+	@read
+	@echo "Installing external Ansible roles"
+	/bin/bash scripts/role_update.sh
 
 check-env:
 ifndef env

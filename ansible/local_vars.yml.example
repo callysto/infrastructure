@@ -9,11 +9,15 @@ openstack_ephemeral_docker_disk: /dev/sdd
 
 domain: subdomain.example.com
 
+# Required for the callyst-html task
+callysto_html_longname: Callysto Dev
+
 # valid values: dummy, shib, pam
 jupyterhub_authenticator: dummy
 
-# valid values: dockerspawner_docker, dockerspawner_system
-jupyterhub_spawner: dockerspawner_docker
+# valid values: dockerspawner_docker, dockerspawner_system, syzygysystemuserspawner.
+# use syzygysystemuserspawner to test with ssp/shib authentication.
+jupyterhub_spawner: syzygysystemuserspawner
 
 jupyterhub_oauth_client_id: 12345
 jupyterhub_oauth_client_secret: SUPERSECRET
@@ -24,6 +28,9 @@ disable_update: False
 
 # Set to False to get a production-ready certificate
 dehydrate_test_cert: True
+
+# uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
+#ssp_develop: True
 
 ssp_idp_multi_sources:
   - type: google
@@ -39,11 +46,12 @@ ssp_idp_multi_sources:
     metadata_url: https://metadata.example.com/Shibboleth.sso/Metadata
 
 # Generate a new salt and admin password with: "< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c"${1:-32}";echo;"
-ssp_idp_multi_salt: defaultsecretsalt
-ssp_idp_multi_admin_password: 123
-ssp_refresh_key: 1234567
+#ssp_idp_multi_salt:
+#ssp_idp_multi_admin_password:
+#ssp_refresh_key:
 
-# Generate a new key-pair with `openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem`
+# Generate a new key-pair with
+# openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"
 ssp_idp_multi_saml_cert: |
   -----BEGIN CERTIFICATE-----
   MIIDXTCCAkWgAwIBAgIJAM7OPzrFix+TMA0GCSqGSIb3DQEBCwUAMEUxCzAJBgNV
