@@ -1,0 +1,14 @@
+os_tools_pip_pkg_vers:
+  - { name: python-openstackclient, version: "{{ openstackclient_version }}"}
+
+os_tools_pip_pkgs:
+  - python-novaclient
+  - python-keystoneclient
+  - python-swiftclient
+  - python-glanceclient
+  - python-cinderclient
+  - python-neutronclient
+  - python-ceilometerclient
+  - python-troveclient
+  - python-heatclient
+  - python-designateclient

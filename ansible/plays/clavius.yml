@@ -74,3 +74,7 @@
     - name: Ensure dm_crypt module is loaded
       modprobe:
         name: dm_crypt
+
+    - name: Ensure OpenStack CLI tools are installed
+      include_role:
+        name: openstack-tools

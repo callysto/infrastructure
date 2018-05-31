@@ -1,0 +1,43 @@
+- name: Ensure prerequesites exist on CentOS
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - openssl-devel
+    - gcc
+    - libffi-devel
+    - python-devel
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure prerequesites exist on Debian/Ubuntu
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - libssl-dev
+    - build-essential
+    - libffi-dev
+    - python-dev
+    - python-openssl
+  become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure versioned pip packages exist
+  pip:
+    name: "{{ item.name }}"
+    state: present
+    version: "{{ item.version }}"
+  with_items:
+    - "{{ os_tools_pip_pkg_vers }}"
+  become: yes
+
+- name: Ensure pip packages exist
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ os_tools_pip_pkgs }}"
+  become: yes
