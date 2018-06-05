@@ -59,7 +59,7 @@ jupyterhub_spawners:
         value: "'0.0.0.0'"
       - conf_object: 'SystemUserSpawner.host_homedir_format_string'
         value: "'/tank/home/{username}'"
-  dockerspawner:
+  dockerspawner_system:
     name: 'dockerspawner.SystemUserSpawner'
     options:
       - conf_object: 'DockerSpawner.use_internal_ip'

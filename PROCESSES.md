@@ -12,19 +12,18 @@ the Callysto environment.
 If all of the existing Callysto infrastructure was lost or if you are creating
 your own clone of Callysto, start here.
 
-### OpenStack Access
+### OpenStack
 
-The Callysto infrastructure runs exclusively on OpenStack. In order to exactly
-reproduce everything here, you will need access to an OpenStack cloud with the
-following services:
+As mentioned in the [README](README.md), Callysto is configured specifically to
+run in an OpenStack cloud.
 
-* Nova
-* Cinder
-* Neutron
-* Designate
+Make sure your OpenStack account has a sufficient quota to run all required
+resources. (TODO: document the exact quota requirements)
 
 Download or generate a standard `openrc` file. All commands below assume you
 have sourced this file into your shell environment.
+
+> Do not store credentials in this repository!
 
 ### Clone this Repository
 
@@ -44,21 +43,27 @@ Next, create an ssh keypair:
 $ ssh-keygen -t rsa -f ./keys/id_rsa
 ```
 
-Next, install the required external roles:
+> Do not store keys in this repository!
+
+Next, set up Terraform:
 
 ```
-$ pushd ansible/scripts
-$ ./role_update.sh
+$ pushd terraform
+$ make setup
 $ popd
 ```
 
-Finally, set up the Ansible inventory script:
+> Read the `setup` task in the `Makefile` to understand all steps being performed.
+
+Next, set up Ansible
 
 ```
 $ pushd ansible
 $ make setup
 $ popd
 ```
+
+> Read the `setup` task in the `Makefile` to understand all steps being performed.
 
 ### Domain Names
 
@@ -95,7 +100,7 @@ Once Terraform has finished, use Ansible to provision it. Review the
 `ansible/plays/init.yml` and `ansible/plays/clavius.yml` files to understand
 the steps that will be applied.
 
-Next, add the public keys of all users to
+Next, add the public keys of all team members to
 `ansible/group_vars/all/local_vars.yml`. For example:
 
 ```
@@ -106,6 +111,8 @@ ssh_public_keys:
     public_key: '...'
 ```
 
+Finally, run Ansible:
+
 ```
 $ pushd ansible
 $ make env=clavius clavius/init/apply
@@ -114,7 +121,11 @@ $ popd
 ```
 
 Once this is complete, log in to `clavius.callysto.farm` (or whatever the name
-you chose is) to finish the process.
+you chose is) via ssh to finish the process:
+
+```
+$ ssh ptty2u@clavius.callysto.farm
+```
 
 First, configure a LUKS-based encrypted volume:
 
@@ -135,9 +146,6 @@ $ cd callysto-infra
 $ ssh-keygen -t rsa -f ./keys/id_rsa
 $ pushd ansible
 $ make setup
-$ pushd scripts
-$ ./role_update.sh
-$ popd
 $ popd
 ```
 
@@ -145,7 +153,7 @@ $ popd
 > This is intentional as there's an element of bootstrapping to get started.
 >
 > Additionally, you should also copy the `terraform/clavius/terraform.tfstate`
-> file to the new location, too.
+> file from the workstation which deployed clavius to the new location, too.
 
 ## Deploying the Development Environment
 
