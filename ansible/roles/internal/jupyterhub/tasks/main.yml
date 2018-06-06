@@ -8,18 +8,18 @@
 - name: Manage dockerspawner
   include_role:
     name: dockerspawner
-  when: jupyterhub_spawner in ['dockerspawner_docker', 'dockerspawner_system', 'syzygysystemuserspawner']
+  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role jhub-docker-cull into this role?
 - name: Manage Jupyterhub Docker Cull script
   include_role:
     name: jhub-docker-cull
-  when: jupyterhub_spawner in ['dockerspawner_docker', 'dockerspawner_system', 'syzygysystemuserspawner']
+  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
     name: '{{ jupyterhub_docker_container }}'
-  when: jupyterhub_spawner in ['dockerspawner_docker', 'dockerspawner_system', 'syzygysystemuserspawner']
+  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role syzygyauthenticator into this role?
 - name: Manage syzygyauthenticator
@@ -31,10 +31,6 @@
   include_role:
     name: ssp-idp-multi
   when: jupyterhub_authenticator == 'shib'
-
-- name: Configure dummy authentication
-  include_tasks: dummy_auth.yml
-  when: jupyterhub_authenticator == 'dummy'
 
 - name: Examine groups
   debug:
