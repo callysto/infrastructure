@@ -1,7 +1,3 @@
-dockerhub_username: "USERNAME"
-dockerhub_password: "PASSWORD"
-dockerhub_email: "EMAIL"
-
 admin_email: user@example.com
 zfs_disk_1: /dev/sdb
 zfs_disk_2: /dev/sdc
@@ -12,16 +8,23 @@ domain: subdomain.example.com
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
 
-# valid values: dummy, shib, pam
+# valid values:
+#   * dummy: username: jupyter, no password
+#   * shib: log in through ssp/shib
+#   * pam: log in with system users
+#
 jupyterhub_authenticator: dummy
 
-# valid values: dockerspawner_docker, dockerspawner_system, syzygysystemuserspawner.
-# use syzygysystemuserspawner to test with ssp/shib authentication.
-jupyterhub_spawner: syzygysystemuserspawner
+# valid values:
+#
+#   * syzygysystemuserspawner: standard
+#   * syzygyswiftsystemuserspawner: openstack swift storage backend
+#
+jupyterhub_spawner: syzygyswiftsystemuserspawner
 
-jupyterhub_oauth_client_id: 12345
-jupyterhub_oauth_client_secret: SUPERSECRET
-jupyterhub_oauth_callback_url: https://callback.example.com
+# The docker image to use for notebooks
+jupyterhub_docker_image: 'docker.io/callysto/callysto-swift'
+jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
 
 # Set to True if wanting to speed up initialization
 disable_update: False
@@ -66,3 +69,13 @@ ssp_idp_multi_saml_key: |
   Zfdenm/fi4er22HcrvzbtHVJVM6KXDnr7LW3blw1aekMTLs3WkTeschrdNWVHKB/
   9b4gAt+W3TfcXbMy+515XbIO6pWIo/m7TXgbepo7J53mgRAUhMFVREN6WxdktBaQ
   -----END PRIVATE KEY-----
+
+# OpenStack auth information
+# Fill this in when using the syzygyswiftsystemuserspawner spawner
+#openstack_auth_url: "https://example.com:5000/v3"
+#openstack_username: "username"
+#openstack_password: "password"
+#openstack_project_name: "project"
+#openstack_project_domain_name: "Default"
+#openstack_user_domain_name: "Default"
+#openstack_region_name: "RegionOne"

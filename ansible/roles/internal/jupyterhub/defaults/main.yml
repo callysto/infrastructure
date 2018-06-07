@@ -59,8 +59,8 @@ jupyterhub_spawners:
         value: "'0.0.0.0'"
       - conf_object: 'SystemUserSpawner.host_homedir_format_string'
         value: "'/tank/home/{username}'"
-  dockerspawner_system:
-    name: 'dockerspawner.SystemUserSpawner'
+  syzygyswiftsystemuserspawner:
+    name: 'syzygyauthenticator.swiftsystemuserspawner.SyzygySwiftSystemUserSpawner'
     options:
       - conf_object: 'DockerSpawner.use_internal_ip'
         value: True
@@ -74,20 +74,17 @@ jupyterhub_spawners:
         value: "'0.0.0.0'"
       - conf_object: 'SystemUserSpawner.host_homedir_format_string'
         value: "'/tank/home/{username}'"
-  dockerspawner_docker:
-    name: 'dockerspawner.DockerSpawner'
-    options:
-      - conf_object: 'DockerSpawner.use_internal_ip'
-        value: True
-      - conf_object: 'DockerSpawner.image'
-        value: "'{{ jupyterhub_docker_container }}'"
-      - conf_object: 'DockerSpawner.extra_host_config'
-        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
-      - conf_object: 'DockerSpawner.remove_containers'
-        value: 'True'
-      - conf_object: 'DockerSpawner.host_ip'
-        value: "'0.0.0.0'"
-
+      - conf_object: 'SystemUserSpawner.openstack_auth_info'
+        value: |
+          {
+            'OS_AUTH_URL': '{{ openstack_auth_url }}',
+            'OS_USERNAME': '{{ openstack_username }}',
+            'OS_PASSWORD': '{{ openstack_password }}',
+            'OS_PROJECT_NAME': '{{ openstack_project_name }}',
+            'OS_PROJECT_DOMAIN_NAME': '{{  openstack_project_domain_name }}',
+            'OS_USER_DOMAIN_NAME': '{{  openstack_user_domain_name }}',
+            'OS_REGION_NAME': '{{  openstack_region_name }}',
+          }
 jupyterhub_authenticator: 'pam'
 jupyterhub_authenticators:
   pam:
@@ -115,4 +112,15 @@ jupyterhub_authenticators:
       - conf_object: 'SyzygyAuthenticator.create_user_homedir'
         value: 'True'
   dummy:
-    name: 'dummyauthenticator.DummyAuthenticator'
+    name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
+    options:
+      - conf_object: 'SyzygyDummyAuthenticator.user_id'
+        value: '{{ jupyterhub_user_uid }}'
+      - conf_object: 'SyzygyDummyAuthenticator.homedir_string'
+        value: "'/tank/home/USERNAME'"
+      - conf_object: 'SyzygyDummyAuthenticator.create_homedir_cmd'
+        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
+      - conf_object: 'SyzygyDummyAuthenticator.create_system_users'
+        value: 'False'
+      - conf_object: 'SyzygyDummyAuthenticator.create_user_homedir'
+        value: 'True'
