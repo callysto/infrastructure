@@ -17,6 +17,10 @@
   notify:
     - Modprobe zfs
 
+- name: Ensure the ZFS kernel module is loaded
+  modprobe:
+    name: zfs
+
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
@@ -26,8 +30,10 @@
   command: /sbin/zpool create -f tank mirror '{{ zfs_disk_1 }}' '{{ zfs_disk_2 }}'
   args:
     creates: /tank
+  when: zfs_disk_1 is defined
 
 - name: Create ZFS home container
   command: /sbin/zfs create tank/home
   args:
     creates: /tank/home
+  when: zfs_disk_1 is defined

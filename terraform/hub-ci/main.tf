@@ -1,21 +1,22 @@
-module "dns" "dns" {
-  source = "../modules/dns"
-}
-
 resource "random_id" "name" {
   prefix      = "ci-"
   byte_length = 4
 }
 
 locals {
-  name = "hub-${random_id.name.hex}.${module.dns.domain_name}"
+  name = "hub-${random_id.name.hex}.callysto.farm"
 
-  image_id         = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
-  flavor_name      = "m1.large"
-  network_name     = "default"
-  public_key       = "${file("../../keys/id_rsa.pub")}"
-  vol_homedir_size = 10
-  vol_docker_size  = 20
+  image_name   = "callysto-hub"
+  flavor_name  = "m1.large"
+  network_name = "default"
+  public_key   = "${file("../../keys/id_rsa.pub")}"
+  vol_zfs_size = 50
+  zone_id      = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595"
+}
+
+data "openstack_images_image_v2" "hub-ci" {
+  name        = "${local.image_name}"
+  most_recent = true
 }
 
 resource "openstack_compute_keypair_v2" "hub-ci" {
@@ -24,18 +25,17 @@ resource "openstack_compute_keypair_v2" "hub-ci" {
 }
 
 module "hub-ci" {
-  source           = "../modules/hub"
-  name             = "${local.name}"
-  image_id         = "${local.image_id}"
-  flavor_name      = "${local.flavor_name}"
-  key_name         = "${openstack_compute_keypair_v2.hub-ci.name}"
-  network_name     = "${local.network_name}"
-  vol_homedir_size = "${local.vol_homedir_size}"
-  vol_docker_size  = "${local.vol_docker_size}"
+  source       = "../modules/hub"
+  name         = "${local.name}"
+  image_id     = "${data.openstack_images_image_v2.hub-ci.id}"
+  flavor_name  = "${local.flavor_name}"
+  key_name     = "${openstack_compute_keypair_v2.hub-ci.name}"
+  network_name = "${local.network_name}"
+  vol_zfs_size = "${local.vol_zfs_size}"
 }
 
 resource "openstack_dns_recordset_v2" "hub-ci" {
-  zone_id = "${module.dns.zone_id}"
+  zone_id = "${local.zone_id}"
   name    = "${local.name}."
   ttl     = 60
   type    = "AAAA"

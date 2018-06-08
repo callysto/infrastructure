@@ -4,8 +4,11 @@ The following sections describe various operational processes for managing
 the Callysto environment.
 
 * [Starting from Scratch](#starting-from-scratch)
+* [Building the Hub Image](#building-the-hub-image)
 * [Deploying the Development Environment](#deploying-the-development-environment)
 * [Deploying a CI Environment](#deploying-a-ci-environment)
+* [Building Docker Images](#building-docker-images)
+* [Installing hubtraf](#installing-hubtraf)
 
 ## Starting from Scratch
 
@@ -155,16 +158,46 @@ $ popd
 > Additionally, you should also copy the `terraform/clavius/terraform.tfstate`
 > file from the workstation which deployed clavius to the new location, too.
 
+## Building the Hub Image
+
+To help reduce the amount of time it takes to deploy a hub, you can create an
+image with the essential components pre-installed. This is done using Packer.
+
+As a pre-requisite, you will need to ensure an OpenStack security group exists
+for Packer:
+
+```
+$ pushd terraform
+$ make env=packer apply
+$ popd
+```
+
+Next, build the image:
+
+```
+$ pushd packer
+$ make build/hub
+$ popd
+```
+
+You only need to repeat this process when there are significant OS upgrades
+or a new ZFS kernel module.
+
+By default, Terraform is configured to automatically search for the generated
+"callysto-hub" image and use this image to build the hub (see below).
+
 ## Deploying the Development Environment
 
 To deploy a development environment, run the following:
 
 ```
-$ cd terraform
+$ pushd terraform
 $ make env=hub-dev apply
-$ cd ../ansible
+$ pushd ../ansible
 $ make env=hub-dev hub/init/apply
 $ make env=hub-dev hub/apply
+$ popd
+$ popd
 ```
 
 There can only be one development environment running at a time. If you want to
@@ -194,3 +227,66 @@ $ cd ../ansible
 $ make env=hub-dev hub/init/apply
 $ make env=hub-dev hub/apply
 ```
+
+## Building Docker Images
+
+Docker images are used for the individual Notebooks run from the hub. To build
+and manage these images, do the following on Clavius:
+
+> Alternatively, you can forgo building images and just make changes to the
+> `Dockerfile` files where appropriate. Pushing the changes to the Github repo
+> will trigger Travis to build the images. Upon merging changes to the `ianabc`
+> branch, the images will be pushed to DockerHub.
+
+First, clone the `docker-stacks` repo:
+
+```
+$ pushd ~/work
+$ git clone https://github.com/callysto/docker-stacks
+$ git checkout ianabc
+```
+
+> Make sure you are on the `ianabc` branch.
+
+Next, build the images in succession:
+
+```
+$ make build/base-notebook
+$ make build/minimal-notebook
+$ make build/scipy-notebook
+$ make build/pims-minimal
+$ make build/pims-r
+```
+
+If Swift is being used for file storage, build the Swift image:
+
+```
+$ make build/callysto-swift
+```
+
+## Installing hubtraf
+
+`hubtraf` is a utility which can simulate traffic to a JupyterHub environment.
+This is useful to check if the Hub is working as well as to do benchmarking.
+
+To install `hubtraf`, do the following on Clavius:
+
+```
+$ pushd ~/work
+$ git clone https://github.com/yuvipanda/hubtraf
+$ cd hubtraf
+$ pip3.6 install -e .
+$ popd
+```
+
+### Using hubtraf
+
+Run the following:
+
+```
+$ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --user-session-max-start-delay 5 https://hub-dev.callysto.farm 1
+```
+
+Tweak the parameters as required.
+
+> Note: jupyterhub _must_ be configured with the "dummy" authenticator for `hubtraf` to work.

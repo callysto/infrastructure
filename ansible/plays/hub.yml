@@ -124,9 +124,9 @@
         name: 'python-docker-py'
         state: 'present'
 
-    - name: Manage Docker ephemeral storage
+    - name: Manage Docker storage
       include_role:
-        name: docker-ephemeral
+        name: docker-storage
 
     # Manage Jupyterhub
     # This role is tightly coupled to the following roles:

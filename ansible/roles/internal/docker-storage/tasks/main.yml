@@ -1,0 +1,55 @@
+---
+# Overlay2
+- name: Partition OpenStack Ephemeral Storage
+  parted:
+    device: '{{ openstack_ephemeral_docker_disk }}'
+    number: '{{ openstack_ephemeral_docker_partition }}'
+    align: '{{ openstack_ephemeral_docker_align }}'
+    part_start: '{{ openstack_ephemeral_docker_start }}'
+    part_end: '{{ openstack_ephemeral_docker_end }}'
+    part_type: '{{ openstack_ephemeral_part_type }}'
+    state: present
+  notify:
+    - restart docker
+  when: openstack_ephemeral_docker_disk is defined
+
+- name: Create an XFS filesystem on the storage
+  filesystem:
+    fstype: xfs
+    dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition }}'
+  notify:
+    - restart docker
+  when: openstack_ephemeral_docker_disk is defined
+
+- name: Mount the ephemeral for docker
+  mount:
+    src: '{{ openstack_ephemeral_docker_disk}}{{ openstack_ephemeral_docker_partition }}'
+    path: '/var/lib/docker'
+    fstype: 'xfs'
+    state: 'mounted'
+  notify:
+    - restart docker
+  when: openstack_ephemeral_docker_disk is defined
+
+# ZFS
+- name: Ensure /etc/systemd/system/docker.service.d exists
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  when: openstack_ephemeral_docker_disk is not defined
+
+- name: Ensure /etc/systemd/system/docker.service.d/docker.conf exists
+  copy:
+    src: files/docker-zfs.conf
+    dest: /etc/systemd/system/docker.service.d/docker.conf
+  notify:
+    - restart docker
+  when: openstack_ephemeral_docker_disk is not defined
+
+- name: Ensure /var/lib/docker does not exist
+  file:
+    path: /var/lib/docker
+    state: absent
+
+- name: Flush Handlers
+  meta: flush_handlers

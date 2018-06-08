@@ -10,12 +10,8 @@ variable "name" {
   default = ""
 }
 
-variable "vol_homedir_size" {
+variable "vol_zfs_size" {
   default = 10
-}
-
-variable "vol_docker_size" {
-  default = 20
 }
 
 locals {
