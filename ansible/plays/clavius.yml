@@ -75,6 +75,11 @@
       modprobe:
         name: dm_crypt
 
+    - name: Ensure Python 3 is installed
+      tags: ["python", "python3"]
+      include_role:
+        name: ius-python3
+
     - name: Ensure OpenStack CLI tools are installed
       include_role:
         name: openstack-tools

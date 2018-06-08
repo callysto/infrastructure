@@ -1,0 +1,6 @@
+# openstack_ephemeral_docker_disk:
+openstack_ephemeral_docker_align: 'optimal'
+openstack_ephemeral_docker_partition: 1
+openstack_ephemeral_docker_start: '2048s'
+openstack_ephemeral_docker_end: '100%'
+openstack_ephemeral_part_type: 'primary'

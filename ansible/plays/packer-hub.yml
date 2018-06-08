@@ -1,0 +1,50 @@
+---
+# This set of tasks are meant to be run via packer.
+#
+- name: Initial tasks for Callysto Infrastructure
+  hosts: all
+  become: true
+  tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+      ignore_errors: true
+
+    - name: Install Enterprise Linux kernel
+      include_role:
+        name: elrepo-kernel
+
+    - name: Reboot instance
+      command: /sbin/shutdown -r +1
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+    - name: wait for SSH access to come back
+      wait_for_connection:
+        delay: 65
+        timeout: 300
+
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+
+    - name: Ensure base packages are installed
+      tags: ["base-packages"]
+      include_role:
+        name: base-packages
+
+    - name: Manage ZFS
+      tags: ["zfs"]
+      include_role:
+        name: zfs
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      include_role:
+        name: selinux
+      vars:
+        selinux_policy: targeted
+        selinux_state: permissive

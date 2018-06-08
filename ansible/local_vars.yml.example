@@ -1,7 +1,10 @@
 admin_email: user@example.com
-zfs_disk_1: /dev/sdb
-zfs_disk_2: /dev/sdc
-openstack_ephemeral_docker_disk: /dev/sdd
+zfs_disk_1: /dev/sdc
+zfs_disk_2: /dev/sdd
+
+# Uncomment this to use overlay2
+# Keep this commented out to use ZFS
+#openstack_ephemeral_docker_disk: /dev/sdd
 
 domain: subdomain.example.com
 

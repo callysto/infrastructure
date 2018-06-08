@@ -14,6 +14,32 @@ following services:
 * Neutron
 * Designate
 
+## Packer
+
+Packer is used to create OpenStack images with pre-installed packages and
+settings. This is to help reduce the amount of time it takes to build dev
+and CI environments.
+
+### Binaries
+
+The `./packer/bin` directory contains the binaries required to run Packer.
+These binaries are bundled in this repository to ensure all project members are
+using the same version.
+
+### Makefile
+
+The `./packer/Makefile` provides an easy way to interact with Packer to create
+images.
+
+For example, to create the base hub image:
+
+```
+  $ make build/hub
+```
+
+> Note: review the `Makefile` and Packer build files to ensure their settings
+> are appropriate for your environment.
+
 ## Terraform
 
 The resources are controlled by terraform so we can destroy and recreate
