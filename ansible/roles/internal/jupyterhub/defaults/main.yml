@@ -124,3 +124,28 @@ jupyterhub_authenticators:
         value: 'False'
       - conf_object: 'SyzygyDummyAuthenticator.create_user_homedir'
         value: 'True'
+  dummypw:
+    name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
+    options:
+      - conf_object: 'SyzygyDummyAuthenticator.user_id'
+        value: '{{ jupyterhub_user_uid }}'
+      - conf_object: 'SyzygyDummyAuthenticator.homedir_string'
+        value: "'/tank/home/USERNAME'"
+      - conf_object: 'SyzygyDummyAuthenticator.create_homedir_cmd'
+        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
+      - conf_object: 'SyzygyDummyAuthenticator.create_system_users'
+        value: 'False'
+      - conf_object: 'SyzygyDummyAuthenticator.create_user_homedir'
+        value: 'True'
+      - conf_object: 'SyzygyDummyAuthenticator.password'
+        value: "'{{ jupyterhub_authenticator_dummy_password }}'"
+
+jupyterhub_authenticator_dummy_password: ""
+
+openstack_auth_url: ""
+openstack_username: ""
+openstack_password: ""
+openstack_project_name: ""
+openstack_project_domain_name: ""
+openstack_user_domain_name: ""
+openstack_region_name: ""

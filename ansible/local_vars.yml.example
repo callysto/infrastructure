@@ -1,3 +1,7 @@
+# Add any extra SSH keys here.
+# These will be merged with the ones defined in group_vars/all/local_vars.yml
+#ssh_public_keys:
+
 admin_email: user@example.com
 zfs_disk_1: /dev/sdc
 zfs_disk_2: /dev/sdd
@@ -12,11 +16,15 @@ domain: subdomain.example.com
 callysto_html_longname: Callysto Dev
 
 # valid values:
-#   * dummy: username: jupyter, no password
+#   * dummy: username: anything, no password
+#   * dummypw: username: anything, password via jupyterhub_authenticator_dummy_password
 #   * shib: log in through ssp/shib
 #   * pam: log in with system users
 #
 jupyterhub_authenticator: dummy
+
+# uncomment this when using the dummypw authenticator
+#jupyterhub_authenticator_dummy_password: dummy
 
 # valid values:
 #

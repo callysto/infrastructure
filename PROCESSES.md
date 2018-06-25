@@ -194,7 +194,6 @@ To deploy a development environment, run the following:
 $ pushd terraform
 $ make env=hub-dev apply
 $ pushd ../ansible
-$ make env=hub-dev hub/init/apply
 $ make env=hub-dev hub/apply
 $ popd
 $ popd
@@ -204,7 +203,9 @@ There can only be one development environment running at a time. If you want to
 run a second development environment, you have two options:
 
 1. Copy `terraform/hub-dev` as `terraform/hub-mydev` and replace all occurrences
-of `hub-dev` with `hub-mydev` within the `main.tf` file.
+of `hub-dev` with `hub-mydev` within the `main.tf` file.  Then copy
+`ansible/group_vars/hub-dev` to `ansible/group_vars/hub-mydev` and modify
+as needed.
 
 2. Use the `terraform/hub-ci` environment or copy `terraform/hub-ci` to
 `terraform/hub-mydev`. There is no need to edit `main.tf` as the `hub-ci`
@@ -221,11 +222,13 @@ it.
 To deploy a ci environment, have a CI system run the following:
 
 ```
-$ cd terraform
+$ pushd terraform
 $ make env=hub-dev apply
-$ cd ../ansible
+$ pushd ../ansible
 $ make env=hub-dev hub/init/apply
 $ make env=hub-dev hub/apply
+$ popd
+$ popd
 ```
 
 ## Building Docker Images
