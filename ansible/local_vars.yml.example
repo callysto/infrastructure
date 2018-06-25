@@ -10,7 +10,9 @@ zfs_disk_2: /dev/sdd
 # Keep this commented out to use ZFS
 #openstack_ephemeral_docker_disk: /dev/sdd
 
+# Domain and SSL settings
 domain: subdomain.example.com
+callysto_ssl_cert_dir:
 
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev

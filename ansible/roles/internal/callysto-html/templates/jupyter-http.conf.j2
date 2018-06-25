@@ -15,9 +15,9 @@ RequestHeader unset REMOTE_USER
   ServerAdmin {{ admin_email }}
 
   SSLEngine on
-  SSLCertificateFile /home/acme/certs/{{ inventory_hostname }}/cert.pem
-  SSLCertificateChainFile /home/acme/certs/{{ inventory_hostname }}/chain.pem
-  SSLCertificateKeyFile /home/acme/certs/{{ inventory_hostname }}/privkey.pem
+  SSLCertificateFile /etc/pki/tls/certs/cert.pem
+  SSLCertificateChainFile /etc/pki/tls/certs/chain.pem
+  SSLCertificateKeyFile /etc/pki/tls/private/privkey.pem
 
   SSLProxyEngine On
   SSLProxyVerify none

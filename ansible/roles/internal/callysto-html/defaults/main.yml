@@ -4,6 +4,8 @@ callysto_html_domain: "callysto.ca"
 callysto_html_support_email: "support@callysto.ca"
 callysto_html_url: "http://{{ inventory_hostname }}"
 
+callysto_ssl_cert_dir:
+
 callysto_html_dir:
   src: /opt/hub-landing-page
   dest: /var/www/html/site

@@ -4,6 +4,7 @@ The following sections describe various operational processes for managing
 the Callysto environment.
 
 * [Starting from Scratch](#starting-from-scratch)
+* [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
 * [Building the Hub Image](#building-the-hub-image)
 * [Deploying the Development Environment](#deploying-the-development-environment)
 * [Deploying a CI Environment](#deploying-a-ci-environment)
@@ -157,6 +158,30 @@ $ popd
 >
 > Additionally, you should also copy the `terraform/clavius/terraform.tfstate`
 > file from the workstation which deployed clavius to the new location, too.
+
+## Generating Let's Encrypt Certificates
+
+Let's Encrypt is used for SSL certificates. We leverage wildcard certificates
+to reduce the amount of certificates we need to obtain from Let's Encrypt.
+
+The wildcard certificate is generated locally on Clavius and then pushed to
+the Callysto infrastructure.
+
+To generate the wildcard certificates, first review the following files:
+
+* `letsencrypt/<env>/config`
+* `letsencrypt/<env>/hook.sh`
+* `letsencrypt/<env>/domains.txt`
+
+Once the files are configured correctly, run:
+
+```
+pushd letsencrypt
+make generate env=dev
+popd
+```
+
+Finally, set the `callysto_ssl_cert_dir` variable in your `local_vars.yml` file.
 
 ## Building the Hub Image
 
