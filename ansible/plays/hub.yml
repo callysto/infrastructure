@@ -34,19 +34,6 @@
       include_role:
         name: base-packages
 
-    # group_vars/<group>/secret.yml
-    - name: Manage secrets
-      tags: ["secrets"]
-      include_role:
-       name: secret
-
-    # Configuration is stored in
-    # group_vars/<group>/deploy_keys.yml
-    - name: Manage deploy keys
-      tags: ["ssh"]
-      include_role:
-        name: deploy-keys
-
     # This will create and manage a zpool based on
     # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
     - name: Manage ZFS
