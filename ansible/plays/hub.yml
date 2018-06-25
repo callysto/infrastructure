@@ -34,12 +34,11 @@
       include_role:
         name: base-packages
 
-    # Configuration is stored in
     # group_vars/<group>/secret.yml
     - name: Manage secrets
       tags: ["secrets"]
       include_role:
-        name: secret
+       name: secret
 
     # Configuration is stored in
     # group_vars/<group>/deploy_keys.yml
@@ -86,12 +85,6 @@
       tags: ["httpd"]
       include_role:
         name: apache
-
-    # This requires the hub to have a resolvable FQDN.
-    - name: Configure letsencrypt
-      tags: ["ssl", "letsencrypt", "httpd"]
-      include_role:
-        name: dehydrate-letsencrypt
 
     - name: Manage Python3
       tags: ["python", "python3"]

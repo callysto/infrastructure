@@ -13,3 +13,6 @@ keys/id_rsa*
 ansible/roles/external
 ansible/group_vars/*/local_vars.yml
 ansible/inventory
+letsencrypt/*/accounts
+letsencrypt/*/certs
+letsencrypt/*/chains

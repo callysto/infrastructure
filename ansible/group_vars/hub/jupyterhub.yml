@@ -1,4 +1,0 @@
-jupyterhub_authenticator: 'shib'
-
-syzygy_html_logout_message: "You have been logged out of your Jupyter but you are still be signed in to google"
-syzygy_html_logout_message_extra: '<a href="https://accounts.google.com/Logout">SIGN OUT OF GOOGLE</a>'

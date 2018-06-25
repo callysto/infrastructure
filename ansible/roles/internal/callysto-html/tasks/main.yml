@@ -1,4 +1,23 @@
 ---
+- name: Copy the SSL certificates
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+  with_items:
+    - src: '{{ callysto_ssl_cert_dir }}/cert.pem'
+      dest: '/etc/pki/tls/certs/cert.pem'
+    - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
+      dest: '/etc/pki/tls/certs/chain.pem'
+    - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
+      dest: '/etc/pki/tls/private/privkey.pem'
+
+- name: Ensure proper permissions on private key file
+  file:
+    path: '/etc/pki/tls/private/privkey.pem'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
 - name: Install HTML files
   git:
     repo: '{{ callysto_hub_landing_page_repo }}'

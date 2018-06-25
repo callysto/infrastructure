@@ -1,10 +1,9 @@
-resource "random_id" "name" {
-  prefix      = "ci-"
-  byte_length = 4
+resource "random_pet" "name" {
+  length = 2
 }
 
 locals {
-  name = "hub-${random_id.name.hex}.callysto.farm"
+  name = "${random_pet.name.id}.callysto.farm"
 
   image_name   = "callysto-hub"
   flavor_name  = "m1.large"
@@ -20,7 +19,7 @@ data "openstack_images_image_v2" "hub" {
 }
 
 resource "openstack_compute_keypair_v2" "hub" {
-  name       = "hub-${random_id.name.hex}"
+  name       = "hub-${random_pet.name.id}"
   public_key = "${local.public_key}"
 }
 
@@ -41,7 +40,7 @@ resource "openstack_dns_recordset_v2" "hub" {
   type    = "AAAA"
 
   records = [
-    "${replace(module.hub-ci.access_ip_v6, "/[][]/", "")}",
+    "${replace(module.hub.access_ip_v6, "/[][]/", "")}",
   ]
 }
 
@@ -54,7 +53,7 @@ resource "ansible_group" "environment" {
 }
 
 resource "ansible_group" "local_vars" {
-  inventory_group_name = "hub-dev"
+  inventory_group_name = "hub-david"
 }
 
 resource "ansible_host" "hub" {
