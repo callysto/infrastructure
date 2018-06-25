@@ -1,7 +1,0 @@
-deploy_keys:
-  syzygyauthenticator:
-    name: "Syzygy Authenticator deploy keys"
-    user: "ptty2u"
-    key_file:
-      src: "{{ deploy_secrets }}/id_syzygyauthenticator_callysto_deploy"
-      dest: "/home/ptty2u/.ssh/id_syzygyauthenticator_callysto_deploy"

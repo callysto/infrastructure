@@ -10,15 +10,7 @@ export PATH := $(TF_PATH)/bin/$(UNAME):$(PATH)
 setup:
 	@echo "Setting up Ansible Inventory"
 	[[ -e "inventory" ]] || ln -s ./bin/$(UNAME)/ansible-terraform-inventory inventory
-	@echo "Making deploy_keys directory"
-	[[ -d ".hostfiles/secret/deploy_keys" ]] || mkdir -p .hostfiles/secret/deploy_keys
-	@echo "Creating syzygyauthenticator deploy key"
-	[[ -f ".hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy" ]] || ssh-keygen -t rsa -f .hostfiles/secret/deploy_keys/id_syzygyauthenticator_callysto_deploy
 	@echo ""
-	@echo "Add the public key as a deploy key to github.com/callysto/syzygyauthenticator!"
-	@echo "Press enter to continue"
-	@echo ""
-	@read
 	@echo "Creating group_vars/hub/local_vars.yml from the example template"
 	[[ -f "group_vars/hub/local_vars.yml" ]] || cp local_vars.yml.example group_vars/hub/local_vars.yml
 	@echo ""
