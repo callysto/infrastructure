@@ -16,12 +16,12 @@
       update_cache: yes
   with_items: '{{ elrepo_kernel_packages }}'
 
-- name: "Setting default kernel"
+- name: "Set default kernel family"
   lineinfile:
-    path: "/etc/default/grub"
-    regexp: '^GRUB_DEFAULT='
-    line: "GRUB_DEFAULT=0"
-  register: grub_changed
+    path: "/etc/sysconfig/kernel"
+    regexp: '^DEFAULTKERNEL=kernel'
+    line: "DEFAULTKERNEL=kernel-lt"
+  register: kernel_sysconfig_changed
   notify:
     - Recreate grub config
 
