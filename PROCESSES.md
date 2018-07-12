@@ -8,6 +8,7 @@ the Callysto environment.
 * [Building the Hub Image](#building-the-hub-image)
 * [Deploying the Development Environment](#deploying-the-development-environment)
 * [Deploying a CI Environment](#deploying-a-ci-environment)
+* [Deploying a Custom Environment](#deploying-a-custom-environment)
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
 
@@ -80,7 +81,7 @@ The development domain name must be added to OpenStack Designate. Currently
 this is done manually since it is a one-time step. Use the `designate` command
 or the Horizon web interface to add the domain/zone.
 
-Make note of the Zone ID and set it in `terraform/modules/dns/main.tf`.
+Make note of the Zone ID and set it as the `zone_id` in a `hub-*/main.tf` file.
 
 ### Bootstrapping
 
@@ -224,19 +225,6 @@ $ popd
 $ popd
 ```
 
-There can only be one development environment running at a time. If you want to
-run a second development environment, you have two options:
-
-1. Copy `terraform/hub-dev` as `terraform/hub-mydev` and replace all occurrences
-of `hub-dev` with `hub-mydev` within the `main.tf` file.  Then copy
-`ansible/group_vars/hub-dev` to `ansible/group_vars/hub-mydev` and modify
-as needed.
-
-2. Use the `terraform/hub-ci` environment or copy `terraform/hub-ci` to
-`terraform/hub-mydev`. There is no need to edit `main.tf` as the `hub-ci`
-environment will generate an environment with a random name. If you don't want
-a random name, go with Option 1 above.
-
 ## Deploying a CI Environment
 
 The CI environment is meant to be a disposable development environment for use
@@ -255,6 +243,20 @@ $ make env=hub-dev hub/apply
 $ popd
 $ popd
 ```
+
+## Deploying a Custom Environment
+
+To deploy a custom environment, run the following:
+
+```
+$ pushd terraform
+$ make new-hub env=<name>
+```
+
+This will do the following:
+
+1. Create a `terraform/hub-<name>` directory with customized `main.tf` file.
+2. Create a `ansible/group_vars/hub-<name>` directory with a copy of `local_vars.yml`.
 
 ## Building Docker Images
 
