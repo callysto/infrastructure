@@ -12,3 +12,4 @@ os_tools_pip_pkgs:
   - python-troveclient
   - python-heatclient
   - python-designateclient
+  - python-magnumclient
