@@ -52,3 +52,6 @@ new-hub: check-env
 	@echo ""
 	@echo "Make sure to edit ../ansible/group_vars/hub-$(env)/local_vars.yml."
 	@echo ""
+
+new-swarm: check-env
+	/usr/bin/cp -a swarm-template swarm-$(env)
