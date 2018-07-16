@@ -35,3 +35,7 @@ c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endif %}
 {% endif %}
 {% endblock %}
+
+{% if jupyterhub_announcement != "" %}
+c.JupyterHub.template_vars = {'announcement': '<div class="alert alert-danger">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'}
+{% endif %}

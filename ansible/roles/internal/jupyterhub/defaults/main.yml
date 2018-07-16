@@ -16,6 +16,9 @@ jhub_docker_cull_cull_s: 10800
 jupyterhub_docker_image: 'docker.io/callysto/pims-minimal'
 jupyterhub_docker_container: 'docker.io/callysto/pims-minimal:latest'
 
+jupyterhub_announcement: ""
+jupyterhub_notebook_template_dir: "/tank/notebook_templates"
+
 jupyterhub_global_options:
   - conf_object: 'JupyterHub.admin_access'
     value: False
@@ -53,6 +56,8 @@ jupyterhub_spawners:
         value: "'{{ jupyterhub_docker_container }}'"
       - conf_object: 'SystemUserSpawner.extra_host_config'
         value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.volumes'
+        value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
       - conf_object: 'SystemUserSpawner.remove_containers'
         value: 'True'
       - conf_object: 'SystemUserSpawner.host_ip'
@@ -68,6 +73,8 @@ jupyterhub_spawners:
         value: "'{{ jupyterhub_docker_container }}'"
       - conf_object: 'SystemUserSpawner.extra_host_config'
         value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.volumes'
+        value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
       - conf_object: 'SystemUserSpawner.remove_containers'
         value: 'True'
       - conf_object: 'SystemUserSpawner.host_ip'

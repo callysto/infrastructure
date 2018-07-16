@@ -104,3 +104,13 @@
     immediate: yes
     state: enabled
     permanent: true
+
+- name: Copy jupyter notebook template
+  template:
+    src: "notebooks/notebook.html.j2"
+    dest: "{{ jupyterhub_notebook_template_dir }}/notebook.html"
+
+- name: Copy jupyter tree template
+  template:
+    src: "notebooks/tree.html.j2"
+    dest: "{{ jupyterhub_notebook_template_dir }}/tree.html"

@@ -3,7 +3,7 @@ resource "random_pet" "name" {
 }
 
 locals {
-  name = "hub-${random_pet.name.id}.callysto.farm"
+  name = "${random_pet.name.id}.callysto.farm"
 
   image_name   = "callysto-hub"
   flavor_name  = "m1.large"
@@ -19,7 +19,7 @@ data "openstack_images_image_v2" "hub" {
 }
 
 resource "openstack_compute_keypair_v2" "hub" {
-  name       = "hub-${random_pet.name.id}"
+  name       = "${random_pet.name.id}"
   public_key = "${local.public_key}"
 }
 
@@ -40,7 +40,7 @@ resource "openstack_dns_recordset_v2" "hub" {
   type    = "AAAA"
 
   records = [
-    "${replace(module.hub-ci.access_ip_v6, "/[][]/", "")}",
+    "${replace(module.hub.access_ip_v6, "/[][]/", "")}",
   ]
 }
 

@@ -39,6 +39,9 @@ jupyterhub_spawner: syzygyswiftsystemuserspawner
 jupyterhub_docker_image: 'docker.io/callysto/callysto-swift'
 jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
 
+# Set an announcement on the user's control panel
+#jupyterhub_announcement: 'Some Text'
+
 # Set to True if wanting to speed up initialization
 disable_update: False
 
