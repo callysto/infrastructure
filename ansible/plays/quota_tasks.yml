@@ -1,0 +1,53 @@
+---
+- name: ZFS Quota Tasks
+  hosts: hub
+  become: true
+  tasks:
+    - name: Set quota for user
+      zfs:
+        name: "tank/home/{{ user | mandatory }}"
+        state: present
+        extra_zfs_properties:
+          refquota: "{{ refquota | mandatory }}"
+      when:
+        - set_quota is defined
+
+    - name: Get ZFS Data
+      zfs_facts:
+        name: tank/home
+        recurse: yes
+        type: filesystem
+
+    - name: Format ZFS
+      set_fact:
+        zfs_user_report:
+          #refquota: "{{ item['refquota'] }}"
+          #usage: "{{ item['used'] }}"
+          user: "{{ item['name'].split('/')[-1] }}"
+          pretty: "{{ item['name'].split('/')[-1] }}: {{ item['used'] }} / {{ item['refquota'] }}"
+      with_items: "{{ ansible_zfs_datasets }}"
+      register: zfs_users_report
+      no_log: true
+
+    - name: Combine report
+      set_fact:
+        zfs_user_report: "{{ item.item | combine(item.ansible_facts.zfs_user_report) }}"
+      with_items: "{{ zfs_users_report.results }}"
+      no_log: true
+
+    - name: Report ZFS
+      debug:
+        msg: "{{ zfs_users_report.results
+          | map(attribute='ansible_facts.zfs_user_report')
+          | map(attribute='pretty')
+          | list | sort }}"
+      when: user == ""
+
+    - name: Report ZFS
+      debug:
+        msg: "{{ zfs_users_report.results
+          | map(attribute='ansible_facts.zfs_user_report')
+          | selectattr('user', 'match', '^'+user+'$')
+          | map(attribute='pretty')
+          | list }}"
+      when: user != ""
