@@ -11,6 +11,8 @@ the Callysto environment.
 * [Deploying a Custom Environment](#deploying-a-custom-environment)
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
+* [Creating an Announcement](#creating-an-announcement)
+* [Modifying a Notebook Template](#modifying-a-notebook-template)
 
 ## Starting from Scratch
 
@@ -320,3 +322,42 @@ $ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --u
 Tweak the parameters as required.
 
 > Note: jupyterhub _must_ be configured with the "dummy" authenticator for `hubtraf` to work.
+
+## Creating an Announcement
+
+1. Set the `jupyterhub_announcement` variable in the `local_vars.yml` file.
+2. Run:
+
+```
+$ pushd ansible
+$ make env=<env> hub/apply
+$ popd
+```
+
+This will set the announcement in the following locations:
+
+* JupyterHub control panel
+* Jupyter Notebook file index / tree page
+* Jupyter Notebook notebook page
+
+## Modifying a Notebook Template
+
+If you need to alter the actual Jupyter Notebook itself, choose the appropriate
+page to update from here: https://github.com/jupyter/notebook/tree/master/notebook/templates.
+
+Next, copy the page to `ansible/roles/internal/jupyterhub/templates/notebooks`
+(if it doesn't already exist) and alter it accordingly.
+
+Finally, add the file to Ansible by editing `ansible/roles/internal/jupyterhub/tasks/main.yml`.
+
+Because Jupyter Notebook _also_ uses Jinja templating, it will interfere with
+Ansible's template processing. Therefore, you must wrap most template tags
+with:
+
+```
+{% raw -%}
+{% endraw -%}
+```
+
+See the `ansible/roles/internal/jupyterhub/templates/notebooks/notebook.html.j2`
+file as an example.
