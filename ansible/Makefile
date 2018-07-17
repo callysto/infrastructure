@@ -56,3 +56,17 @@ clavius/check: check-env
 
 clavius/apply: check-env
 	$(PLAYBOOK_CMD) --limit clavius plays/clavius.yml
+
+quota/get: check-env
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(user)
+
+quota/set: check-env
+ifndef refquota
+	$(error refquota is not defined)
+endif
+
+ifndef user
+	$(error user is not defined)
+endif
+
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars set_quota=1 --extra-vars user=$(user) --extra-vars refquota=$(refquota)

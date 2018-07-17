@@ -13,6 +13,7 @@ the Callysto environment.
 * [Installing hubtraf](#installing-hubtraf)
 * [Creating an Announcement](#creating-an-announcement)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
+* [Quota Management](#quota-management)
 
 ## Starting from Scratch
 
@@ -361,3 +362,15 @@ with:
 
 See the `ansible/roles/internal/jupyterhub/templates/notebooks/notebook.html.j2`
 file as an example.
+
+## Quota Management
+
+The `ansible/Makefile` contains a handful of tasks to manage a user's quota:
+
+```
+$ pushd ansible
+$ make quota/get env=<env>
+$ make quota/get env=<env> user=<user>
+$ make quota/set env=<env> user=<user> refquota=<10G>
+$ popd
+```
