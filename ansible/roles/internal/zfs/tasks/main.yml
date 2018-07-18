@@ -30,10 +30,10 @@
   command: /sbin/zpool create -f tank mirror '{{ zfs_disk_1 }}' '{{ zfs_disk_2 }}'
   args:
     creates: /tank
-  when: zfs_disk_1 is defined
+  when: zfs_disk_1 != "" and zfs_disk_2 != ""
 
 - name: Create ZFS home container
   command: /sbin/zfs create tank/home
   args:
     creates: /tank/home
-  when: zfs_disk_1 is defined
+  when: zfs_disk_1 != "" and zfs_disk_2 != ""

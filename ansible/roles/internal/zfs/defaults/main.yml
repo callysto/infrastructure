@@ -1,0 +1,3 @@
+# Set these to devices to create a mirror
+zfs_disk_1: ""
+zfs_disk_2: ""
