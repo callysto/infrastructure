@@ -1,6 +1,10 @@
 # Add any extra SSH keys here.
 # These will be merged with the ones defined in group_vars/all/local_vars.yml
 #ssh_public_keys:
+#  username:
+#    user: ptty2u
+#    state: present
+#    public_key: 'ssh-rsa ...'
 
 admin_email: user@example.com
 zfs_disk_1: /dev/sdc
