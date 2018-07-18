@@ -16,6 +16,7 @@ the Callysto environment.
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
 * [Adding a Base System Package](#adding-a-base-system-package)
+* [Managing SSH Keys](#managing-ssh-keys)
 
 > User Management
 
@@ -346,6 +347,26 @@ These should be generic packages that are applicable to a wide range of processe
 
 To add a base package, edit the `ansible/roles/internal/base-packages/vars/RedHat.yml`
 file.
+
+## Managing SSH Keys
+
+You can define SSH keys in the `local_vars.yml` file under the `ssh_public_keys`
+variable. If you want to define keys which should be deployed to _everything_,
+define them in the `group_vars/all/local_vars.yml` file.
+
+For per-environment keys, define them in `group_vars/<group name>/local_vars.yml`.
+
+The format of the `ssh_public_keys` dict is:
+
+```
+ssh_public_keys:
+  username:
+    user: <local user>
+    state: present/absent
+    public_key: 'ssh-rsa ...'
+```
+
+Ansible will merge all `ssh_public_key` definitions across all variable files.
 
 # User Management
 
