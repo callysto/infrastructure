@@ -7,12 +7,16 @@
 #    public_key: 'ssh-rsa ...'
 
 admin_email: user@example.com
-zfs_disk_1: /dev/sdc
-zfs_disk_2: /dev/sdd
+
+# All hubs have a ZFS mirror.
+# Specify their drive letters here.
+zfs_disk_1: /dev/sdd
+zfs_disk_2: /dev/sde
 
 # Uncomment this to use overlay2
-# Keep this commented out to use ZFS
-#openstack_ephemeral_docker_disk: /dev/sdd
+openstack_ephemeral_docker_disk: /dev/sdb
+# Uncomment this to use ZFS
+#docker_zfs_pool: "/tank"
 
 # Domain and SSL settings
 domain: subdomain.example.com
@@ -40,6 +44,7 @@ jupyterhub_authenticator: dummy
 jupyterhub_spawner: syzygyswiftsystemuserspawner
 
 # The docker image to use for notebooks
+# If not using swift, use docker.io/callysto/pims-minimal
 jupyterhub_docker_image: 'docker.io/callysto/callysto-swift'
 jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
 

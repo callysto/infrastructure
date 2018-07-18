@@ -1,7 +1,6 @@
 # Set this to a path to use ephemeral storage
 openstack_ephemeral_docker_disk: ""
 
-# openstack_ephemeral_docker_disk:
 openstack_ephemeral_docker_align: 'optimal'
 openstack_ephemeral_docker_partition: 1
 openstack_ephemeral_docker_start: '2048s'

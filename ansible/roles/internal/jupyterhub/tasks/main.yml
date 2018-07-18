@@ -105,6 +105,11 @@
     state: enabled
     permanent: true
 
+- name: Ensure jupyterhub_notebook_template_dir exists
+  file:
+    path: "{{ jupyterhub_notebook_template_dir }}"
+    state: directory
+
 - name: Copy jupyter notebook template
   template:
     src: "notebooks/notebook.html.j2"
