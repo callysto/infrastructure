@@ -3,6 +3,10 @@
 The following sections describe various operational processes for managing
 the Callysto environment.
 
+# Table of Contents
+
+> Infrastructure Management
+
 * [Starting from Scratch](#starting-from-scratch)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
 * [Building the Hub Image](#building-the-hub-image)
@@ -11,9 +15,15 @@ the Callysto environment.
 * [Deploying a Custom Environment](#deploying-a-custom-environment)
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
+* [Adding a Base System Package](#adding-a-base-system-package)
+
+> User Management
+
 * [Creating an Announcement](#creating-an-announcement)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
 * [Quota Management](#quota-management)
+
+# Infrastructure Management
 
 ## Starting from Scratch
 
@@ -323,6 +333,16 @@ $ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --u
 Tweak the parameters as required.
 
 > Note: jupyterhub _must_ be configured with the "dummy" authenticator for `hubtraf` to work.
+
+## Installing a Base System Package
+
+A Base Package is something you want to see on _all_ servers: `vi`, `tmux`, etc.
+These should be generic packages that are applicable to a wide range of processes.
+
+To add a base package, edit the `ansible/roles/internal/base-packages/vars/RedHat.yml`
+file.
+
+# User Management
 
 ## Creating an Announcement
 
