@@ -196,6 +196,11 @@ popd
 ```
 
 Finally, set the `callysto_ssl_cert_dir` variable in your `local_vars.yml` file.
+The value should be the _local_ path to where the certificates are located. For
+example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_farm`.
+
+`callysto_ssl_cert_dir` is used by the `callysto-html` ansible role to copy the
+certificates found in this directory to `/etc/pki/tls/` on the remote servers.
 
 ## Building the Hub Image
 
