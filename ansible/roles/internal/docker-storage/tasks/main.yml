@@ -9,14 +9,14 @@
     part_end: '{{ openstack_ephemeral_docker_end }}'
     part_type: '{{ openstack_ephemeral_part_type }}'
     state: present
-  when: openstack_ephemeral_docker_disk is defined
+  when: openstack_ephemeral_docker_disk != ""
   register: restartdocker
 
 - name: Create an XFS filesystem on the storage
   filesystem:
     fstype: xfs
     dev: '{{ openstack_ephemeral_docker_disk }}{{ openstack_ephemeral_docker_partition }}'
-  when: openstack_ephemeral_docker_disk is defined
+  when: openstack_ephemeral_docker_disk != ""
   register: restartdocker
 
 - name: Mount the ephemeral for docker
@@ -25,7 +25,7 @@
     path: '/var/lib/docker'
     fstype: 'xfs'
     state: 'mounted'
-  when: openstack_ephemeral_docker_disk is defined
+  when: openstack_ephemeral_docker_disk != ""
   register: restartdocker
 
 # ZFS
@@ -33,13 +33,13 @@
   file:
     path: /etc/systemd/system/docker.service.d
     state: directory
-  when: openstack_ephemeral_docker_disk is not defined
+  when: docker_zfs_pool != ""
 
 - name: Ensure /etc/systemd/system/docker.service.d/docker.conf exists
-  copy:
-    src: files/docker-zfs.conf
+  template:
+    src: docker-zfs.conf.j2
     dest: /etc/systemd/system/docker.service.d/docker.conf
-  when: openstack_ephemeral_docker_disk is not defined
+  when: docker_zfs_pool != ""
   register: dockerconf
 
 - name: Ensure /var/lib/docker does not exist
