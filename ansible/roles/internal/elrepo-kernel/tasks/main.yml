@@ -24,6 +24,7 @@
   register: kernel_sysconfig_changed
   notify:
     - Recreate grub config
+    - Boot to latest kernel
 
 - name: Force handlers to run
   meta: flush_handlers
