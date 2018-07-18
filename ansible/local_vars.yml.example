@@ -45,9 +45,6 @@ jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
 # Set to True if wanting to speed up initialization
 disable_update: False
 
-# Set to False to get a production-ready certificate
-dehydrate_test_cert: True
-
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
 #ssp_develop: True
 

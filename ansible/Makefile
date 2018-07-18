@@ -16,7 +16,6 @@ setup:
 	@echo ""
 	@echo "Update group_vars/hub/local_vars.yml to fit your environment."
 	@echo "Don't forget to generate the SSL certificates for simplesamlphp if you're using it for authentication."
-	@echo "And don't forget to set dehydrate_test_cert to False if you're sure Let's Encrypt is working."
 	@echo "Press enter to continue"
 	@read
 	@echo "Installing external Ansible roles"

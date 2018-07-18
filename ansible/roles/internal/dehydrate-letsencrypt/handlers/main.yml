@@ -1,4 +1,0 @@
----
-- name: run dehydrate
-  shell: '~{{ acme_user }}/wrapper.sh'
-  failed_when: False
