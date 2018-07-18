@@ -3,6 +3,10 @@
 The following sections describe various operational processes for managing
 the Callysto environment.
 
+# Table of Contents
+
+> Infrastructure Management
+
 * [Starting from Scratch](#starting-from-scratch)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
 * [Building the Hub Image](#building-the-hub-image)
@@ -11,9 +15,16 @@ the Callysto environment.
 * [Deploying a Custom Environment](#deploying-a-custom-environment)
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
+* [Adding a Base System Package](#adding-a-base-system-package)
+* [Managing SSH Keys](#managing-ssh-keys)
+
+> User Management
+
 * [Creating an Announcement](#creating-an-announcement)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
 * [Quota Management](#quota-management)
+
+# Infrastructure Management
 
 ## Starting from Scratch
 
@@ -186,6 +197,11 @@ popd
 ```
 
 Finally, set the `callysto_ssl_cert_dir` variable in your `local_vars.yml` file.
+The value should be the _local_ path to where the certificates are located. For
+example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_farm`.
+
+`callysto_ssl_cert_dir` is used by the `callysto-html` ansible role to copy the
+certificates found in this directory to `/etc/pki/tls/` on the remote servers.
 
 ## Building the Hub Image
 
@@ -323,6 +339,36 @@ $ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --u
 Tweak the parameters as required.
 
 > Note: jupyterhub _must_ be configured with the "dummy" authenticator for `hubtraf` to work.
+
+## Installing a Base System Package
+
+A Base Package is something you want to see on _all_ servers: `vi`, `tmux`, etc.
+These should be generic packages that are applicable to a wide range of processes.
+
+To add a base package, edit the `ansible/roles/internal/base-packages/vars/RedHat.yml`
+file.
+
+## Managing SSH Keys
+
+You can define SSH keys in the `local_vars.yml` file under the `ssh_public_keys`
+variable. If you want to define keys which should be deployed to _everything_,
+define them in the `group_vars/all/local_vars.yml` file.
+
+For per-environment keys, define them in `group_vars/<group name>/local_vars.yml`.
+
+The format of the `ssh_public_keys` dict is:
+
+```
+ssh_public_keys:
+  username:
+    user: <local user>
+    state: present/absent
+    public_key: 'ssh-rsa ...'
+```
+
+Ansible will merge all `ssh_public_key` definitions across all variable files.
+
+# User Management
 
 ## Creating an Announcement
 

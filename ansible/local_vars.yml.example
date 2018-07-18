@@ -1,6 +1,10 @@
 # Add any extra SSH keys here.
 # These will be merged with the ones defined in group_vars/all/local_vars.yml
 #ssh_public_keys:
+#  username:
+#    user: ptty2u
+#    state: present
+#    public_key: 'ssh-rsa ...'
 
 admin_email: user@example.com
 zfs_disk_1: /dev/sdc
@@ -44,9 +48,6 @@ jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
 
 # Set to True if wanting to speed up initialization
 disable_update: False
-
-# Set to False to get a production-ready certificate
-dehydrate_test_cert: True
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
 #ssp_develop: True
