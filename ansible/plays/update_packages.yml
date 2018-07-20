@@ -8,4 +8,4 @@
         name: "*"
         state: latest
       ignore_errors: true
-      when: "not disable_update | default(false)"
+      when: "not disable_package_updates | default(false)"

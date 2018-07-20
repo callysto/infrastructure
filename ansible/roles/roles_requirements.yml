@@ -21,3 +21,6 @@
   src:  https://github.com/weareinteractive/ansible-sudo
   version: 1.7.1
 
+- name: ssh_config
+  src: https://github.com/gaqzi/ansible-ssh-config
+  path: library

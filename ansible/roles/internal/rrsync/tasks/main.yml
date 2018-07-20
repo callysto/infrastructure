@@ -1,0 +1,37 @@
+---
+- name: Install rrsync script
+  template:
+    src: rrsync.j2
+    dest: /etc/cron.weekly/rrsync
+    owner: root
+    group: root
+    mode: 0750
+  when: rrsync_enable == true
+
+- name: Install rrsync SSH private key
+  copy:
+    content: "{{ rrsync_private_key }}"
+    dest: "{{ rrsync_private_key_path }}"
+    owner: "{{ rrsync_local_user }}"
+    group: "{{ rrsync_local_user }}"
+    mode: 0600
+  when: rrsync_enable == true
+
+- name: Install rrsync SSH public key
+  copy:
+    content: "{{ rrsync_public_key }}"
+    dest: "{{ rrsync_public_key_path }}"
+    owner: "{{ rrsync_local_user }}"
+    group: "{{ rrsync_local_user }}"
+    mode: 0600
+  when: rrsync_enable == true
+
+- name: Configure rrsync ssh
+  ssh_config:
+    state: present
+    user: "{{ rrsync_local_user }}"
+    host: "{{ rrsync_remote_host }}"
+    hostname: "{{ rrsync_remote_host }}"
+    remote_user: "{{ rrsync_remote_user }}"
+    identity_file: "{{ rrsync_private_key_path }}"
+  when: rrsync_enable == true

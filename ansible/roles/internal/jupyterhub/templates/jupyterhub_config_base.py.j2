@@ -11,8 +11,16 @@ c.{{ global_option.conf_object }} = {{ global_option.value }}
 c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% endfor %}
 {% endif %}
-
 {% endblock %}
+
+{% block cookie -%}
+{% if jupyterhub_auth_token != "" -%}
+c.ConfigurableHTTPProxy.auth_token = '{{ jupyterhub_auth_token }}'
+{% endif -%}
+{% if jupyterhub_cookie_secret_file != "" -%}
+c.JupyterHub.cookie_secret_file = '{{ jupyterhub_cookie_secret_file }}'
+{% endif -%}
+{% endblock -%}
 
 {% block spawner %}
 {% if jupyterhub_spawner in jupyterhub_spawners %}

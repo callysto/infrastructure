@@ -47,6 +47,23 @@ jupyterhub_global_options:
 
 jupyterhub_spawner: 'syzygysystemuserspawner'
 jupyterhub_spawners:
+  dockersystemuserspawner:
+    name: 'dockerspawner.SystemUserSpawner'
+    options:
+      - conf_object: 'DockerSpawner.use_internal_ip'
+        value: True
+      - conf_object: 'SystemUserSpawner.image'
+        value: "'{{ jupyterhub_docker_container }}'"
+      - conf_object: 'SystemUserSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.volumes'
+        value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
+      - conf_object: 'SystemUserSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'SystemUserSpawner.host_ip'
+        value: "'0.0.0.0'"
+      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
+        value: "'/tank/home/{username}'"
   syzygysystemuserspawner:
     name: 'syzygyauthenticator.systemuserspawner.SyzygySystemUserSpawner'
     options:
@@ -92,8 +109,28 @@ jupyterhub_spawners:
             'OS_USER_DOMAIN_NAME': '{{  openstack_user_domain_name }}',
             'OS_REGION_NAME': '{{  openstack_region_name }}',
           }
+
 jupyterhub_authenticator: 'pam'
 jupyterhub_authenticators:
+  google:
+    name: 'syzygyauthenticator.google.SyzygyGoogleOAuthenticator'
+    options:
+      - conf_object: 'SyzygyAuthenticator.user_id'
+        value: '{{ jupyterhub_user_uid }}'
+      - conf_object: 'SyzygyAuthenticator.homedir_string'
+        value: "'/tank/home/USERNAME'"
+      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
+        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
+      - conf_object: 'SyzygyAuthenticator.create_system_users'
+        value: False
+      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
+        value: True
+      - conf_object: 'SyzygyGoogleOAuthenticator.client_id'
+        value: 'os.environ["OAUTH_CLIENT_ID"]'
+      - conf_object: 'SyzygyGoogleOAuthenticator.client_secret'
+        value: 'os.environ["OAUTH_CLIENT_SECRET"]'
+      - conf_object: 'SyzygyGoogleOAuthenticator.callback_url'
+        value: 'os.environ["OAUTH_CALLBACK_URL"]'
   pam:
     name: 'syzygyauthenticator.SyzygyPAMAuthenticator'
     options:
@@ -149,6 +186,16 @@ jupyterhub_authenticators:
 
 jupyterhub_authenticator_dummy_password: ""
 
+# Set these to use a persistent token/cookie between the hub and proxy
+jupyterhub_auth_token: ""
+jupyterhub_cookie_secret_file: ""
+
+# Set these for Google/OAUTH authentication
+jupyterhub_oauth_client_id: ""
+jupyterhub_oauth_client_secret: ""
+jupyterhub_oauth_callback_url: ""
+
+# Set these when using Swift storage
 openstack_auth_url: ""
 openstack_username: ""
 openstack_password: ""

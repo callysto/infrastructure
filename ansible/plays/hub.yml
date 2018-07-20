@@ -6,7 +6,7 @@
     - name: Ensure callysto_ssl_cert_dir is set
       assert:
         that: >-
-          callysto_ssl_cert_dir != ''
+          callysto_ssl_cert_dir != ""
         msg: "Must set callysto_ssl_cert_dir"
 
     - name: Ensure either openstack_ephemeral_docker_disk or docker_zfs_pool is set
@@ -156,3 +156,8 @@
       tags: ["jupyter", "jupyterhub", "ssp"]
       include_role:
         name: jupyterhub
+
+    - name: Manage rrsync script
+      tags: ["ssh", "rrsync", "backup"]
+      include_role:
+        name: rrsync
