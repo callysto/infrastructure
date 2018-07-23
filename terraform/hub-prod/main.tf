@@ -14,7 +14,7 @@ locals {
   # If set to false and "", then IPv6 will be used.
   create_floating_ip = false
 
-  existing_floating_ip = ""
+  existing_floating_ip = "199.116.235.41"
 
   # Set this to use existing volumes. Make sure to only specify 2.
   #existing_volumes = ["uuid1", "uuid2"]
