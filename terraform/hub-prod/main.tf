@@ -2,7 +2,6 @@ resource "random_pet" "name" {
   length = 2
 }
 
-# These represent settings to tune the hub you're creating
 locals {
   name = "${random_pet.name.id}.callysto.farm"
 
@@ -15,7 +14,7 @@ locals {
   # If set to false and "", then IPv6 will be used.
   create_floating_ip = false
 
-  existing_floating_ip = ""
+  existing_floating_ip = "199.116.235.41"
 
   # Set this to use existing volumes. Make sure to only specify 2.
   #existing_volumes = ["uuid1", "uuid2"]
@@ -34,7 +33,7 @@ resource "openstack_compute_keypair_v2" "hub" {
 
 module "settings" {
   source      = "../modules/settings"
-  environment = "dev"
+  environment = "prod"
 }
 
 module "hub" {
@@ -115,7 +114,7 @@ resource "ansible_group" "environment" {
 }
 
 resource "ansible_group" "local_vars" {
-  inventory_group_name = "hub-ENV"
+  inventory_group_name = "hub-prod"
 }
 
 resource "ansible_host" "hub" {

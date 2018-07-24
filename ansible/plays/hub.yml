@@ -1,4 +1,40 @@
 ---
+- name: Validate hub configuration
+  hosts: hub
+  become: true
+  tasks:
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+    - name: Ensure either openstack_ephemeral_docker_disk or docker_zfs_pool is set
+      assert:
+        that: >-
+          openstack_ephemeral_docker_disk is defined or docker_zfs_pool is defined
+        msg: "Must set either openstack_ephemeral_docker_disk or docker_zfs_pool"
+
+    - name: Ensure either openstack credentials are supplied with syzygyswiftsystemuserspawner
+      assert:
+        that: >-
+          jupyterhub_spawner != 'syzygyswiftsystemuserspawner' or
+          (jupyterhub_spawner == 'syzygyswiftsystemuserspawner' and openstack_auth_url is defined)
+        msg: "Must supply openstack credentials when using syzygyswiftsystemuserspawner"
+
+    - name: Ensure callysto-swift is used when syzygyswiftsystemuserspawner is used
+      assert:
+        that: >-
+          jupyterhub_spawner != 'syzygyswiftsystemuserspawner' or
+          (jupyterhub_spawner == 'syzygyswiftsystemuserspawner' and jupyterhub_docker_image == 'docker.io/callysto/callysto-swift')
+        msg: "Must use callysto-swift image with syzygyswiftsystemuserspawner"
+
+    - name: Ensure callysto-swift is not used when syzygyswiftsystemuserspawner not is used
+      assert:
+        that: >-
+          jupyterhub_spawner != 'syzygyswiftsystemuserspawner' and jupyterhub_docker_image != 'docker.io/callysto/callysto-swift'
+        msg: "Can only use callysto-swift image with syzygyswiftsystemuserspawner"
+
 - name: Ensure sudo is configured correctly
   hosts: hub
   become: true
@@ -120,3 +156,8 @@
       tags: ["jupyter", "jupyterhub", "ssp"]
       include_role:
         name: jupyterhub
+
+    - name: Manage rrsync script
+      tags: ["ssh", "rrsync", "backup"]
+      include_role:
+        name: rrsync

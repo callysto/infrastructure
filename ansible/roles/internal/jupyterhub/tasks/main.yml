@@ -8,18 +8,18 @@
 - name: Manage dockerspawner
   include_role:
     name: dockerspawner
-  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role jhub-docker-cull into this role?
 - name: Manage Jupyterhub Docker Cull script
   include_role:
     name: jhub-docker-cull
-  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
     name: '{{ jupyterhub_docker_container }}'
-  when: jupyterhub_spawner in ['syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role syzygyauthenticator into this role?
 - name: Manage syzygyauthenticator
@@ -89,13 +89,15 @@
     mode: 0600
     owner: root
     group: root
+  notify:
+    - Restart JupyterHub
 
 - name: Jupyterhub Service definition
   template:
     src: jupyterhub.service.j2
     dest: /etc/systemd/system/jupyterhub.service
   notify:
-    - Start JupyterHub
+    - Restart JupyterHub
 
 - name: Add jupyterhub port to to home zone (assume firewalld)
   firewalld:
@@ -104,6 +106,11 @@
     immediate: yes
     state: enabled
     permanent: true
+
+- name: Ensure jupyterhub_notebook_template_dir exists
+  file:
+    path: "{{ jupyterhub_notebook_template_dir }}"
+    state: directory
 
 - name: Copy jupyter notebook template
   template:

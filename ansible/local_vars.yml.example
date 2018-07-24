@@ -7,21 +7,26 @@
 #    public_key: 'ssh-rsa ...'
 
 admin_email: user@example.com
-zfs_disk_1: /dev/sdc
-zfs_disk_2: /dev/sdd
+
+# All hubs have a ZFS mirror.
+# Specify their drive letters here.
+zfs_disk_1: /dev/sdd
+zfs_disk_2: /dev/sde
 
 # Uncomment this to use overlay2
-# Keep this commented out to use ZFS
-#openstack_ephemeral_docker_disk: /dev/sdd
+openstack_ephemeral_docker_disk: /dev/sdc
+# Uncomment this to use ZFS
+#docker_zfs_pool: "/tank"
 
 # Domain and SSL settings
 domain: subdomain.example.com
-callysto_ssl_cert_dir:
+callysto_ssl_cert_dir: ""
 
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
 
 # valid values:
+#   * google: current prod configuration
 #   * dummy: username: anything, no password
 #   * dummypw: username: anything, password via jupyterhub_authenticator_dummy_password
 #   * shib: log in through ssp/shib
@@ -30,24 +35,36 @@ callysto_html_longname: Callysto Dev
 jupyterhub_authenticator: dummy
 
 # uncomment this when using the dummypw authenticator
-#jupyterhub_authenticator_dummy_password: dummy
+#jupyterhub_authenticator_dummy_password: callysto
 
 # valid values:
 #
+#   * dockersystemuserspawner: current prod configuration
 #   * syzygysystemuserspawner: standard
 #   * syzygyswiftsystemuserspawner: openstack swift storage backend
 #
-jupyterhub_spawner: syzygyswiftsystemuserspawner
+jupyterhub_spawner: syzygysystemuserspawner
 
 # The docker image to use for notebooks
-jupyterhub_docker_image: 'docker.io/callysto/callysto-swift'
-jupyterhub_docker_container: 'docker.io/callysto/callysto-swift:latest'
+# If using swift, change this to callysto-swift
+jupyterhub_docker_image: 'docker.io/callysto/pims-r'
+jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 
 # Set an announcement on the user's control panel
 #jupyterhub_announcement: 'Some Text'
 
-# Set to True if wanting to speed up initialization
-disable_update: False
+# Set these to use a persistent token/cookie between the hub and proxy
+#jupyterhub_auth_token: ""
+#jupyterhub_cookie_secret_file: ""
+
+# Set these for GitHub/Google/OAUTH authentication
+#jupyterhub_oauth_github_host: ""
+#jupyterhub_oauth_client_id: ""
+#jupyterhub_oauth_client_secret: ""
+#jupyterhub_oauth_callback_url: ""
+
+# Set to True to disable updating package versions automatically
+disable_package_update: False
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
 #ssp_develop: True
@@ -96,3 +113,14 @@ ssp_idp_multi_saml_key: |
 #openstack_project_domain_name: "Default"
 #openstack_user_domain_name: "Default"
 #openstack_region_name: "RegionOne"
+
+# rrsync
+#rrsync_enable: true
+#rrsync_local_user: root
+#rrsync_source_directory: /tank/home/
+#rrsync_remote_user: root
+#rrsync_remote_host: foobar
+#rrsync_private_key: 'some private key'
+#rrsync_private_key_path: /root/.ssh/some_key
+#rrsync_public_key: 'some public key'
+#rrsync_public_key_path: /root/.ssh/some_key.pub
