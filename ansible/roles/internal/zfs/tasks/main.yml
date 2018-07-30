@@ -9,6 +9,11 @@
     src: files/RPM-GPG-KEY-zfsonlinux
     dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
 
+- name: Install zfs-release
+  yum:
+    name: '{{ zfs_release_rpm }}'
+    state: present
+
 - name: Install zfs kernel module
   yum:
     name: zfs
