@@ -1,4 +1,4 @@
-zfs_release_rpm: "http://download.zfsonlinux.org/epel/zfs-release.el{{ ansible_distribution_version | regex_replace('([0-9]+)\\.([0-9]+).*', '\\1_\\2')$' }}.noarch.rpm"
+zfs_release_rpm: "http://download.zfsonlinux.org/epel/zfs-release.el{{ ansible_distribution_version | regex_replace('([0-9]+)\\.([0-9]+).*', '\\1_\\2') }}.noarch.rpm"
 
 # Set these to devices to create a mirror
 zfs_disk_1: ""
