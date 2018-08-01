@@ -1,7 +1,0 @@
-[zfs]
-name=ZFS on Linux for EL 7 - dkms
-baseurl=http://download.zfsonlinux.org/epel/7/$basearch/
-enabled=1
-metadata_expire=7d
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
