@@ -26,6 +26,10 @@
         delay: 65
         timeout: 300
 
+- name: More initial tasks for Callysto Infrastructure
+  hosts: all
+  become: true
+  tasks:
     - name: Configure sudo
       tags: ["sudo", "always"]
       include_role:
