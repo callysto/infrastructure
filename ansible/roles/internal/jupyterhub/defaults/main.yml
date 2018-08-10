@@ -49,6 +49,7 @@ jupyterhub_spawner: 'syzygysystemuserspawner'
 jupyterhub_spawners:
   dockerspawner:
     name: 'dockerspawner.DockerSpawner'
+    options:
       - conf_object: 'Dockerspawner.use_internal_ip'
         value: True
       - conf_object: 'Dockerspawner.image'
@@ -152,17 +153,7 @@ jupyterhub_authenticators:
         value: "'/tank/home/USERNAME'"
   shib:
     name: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
-    options:
-      - conf_object: 'SyzygyAuthenticator.user_id'
-        value: '{{ jupyterhub_user_uid }}'
-      - conf_object: 'SyzygyAuthenticator.homedir_string'
-        value: "'/tank/home/USERNAME'"
-      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
-        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
-      - conf_object: 'SyzygyAuthenticator.create_system_users'
-        value: 'False'
-      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
-        value: 'True'
+    options: []
   dummy:
     name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
     options:
