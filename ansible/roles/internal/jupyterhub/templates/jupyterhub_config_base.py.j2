@@ -2,12 +2,14 @@
 {% block global %}
 import os
 
+{% if jupyterhub_spawner == 'dockerspawner' %}
 def create_fs_hook(spawner):
       username = spawner.user.name
       callysto_user = 'jupyter'
       check_call(['{{ jupyterhub_srv_dir }}/zfs-homedir.sh', username, callysto_user])
 
 c.Spawner.pre_spawn_hook = create_fs_hook
+{% endif %}
 
 {% for global_option in jupyterhub_global_options %}
 c.{{ global_option.conf_object }} = {{ global_option.value }}
