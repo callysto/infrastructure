@@ -3,10 +3,12 @@
 import os
 
 {% if jupyterhub_spawner == 'dockerspawner' %}
+from subprocess import check_call
+
 def create_fs_hook(spawner):
       username = spawner.user.name
       callysto_user = 'jupyter'
-      check_call(['{{ jupyterhub_srv_dir }}/zfs-homedir.sh', username, callysto_user])
+      check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user])
 
 c.Spawner.pre_spawn_hook = create_fs_hook
 {% endif %}
