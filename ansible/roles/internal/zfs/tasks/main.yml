@@ -1,13 +1,13 @@
 ---
-- name: Copy ZFS yum repo
-  copy:
-    src: files/zfs.repo
-    dest: /etc/yum.repos.d/zfs.repo
+- name: Install zfs-release
+  yum:
+    name: '{{ zfs_release_rpm }}'
+    state: present
+  notify:
+    - Remove existing zfs packages
 
-- name: Copy ZFS GPG key
-  copy:
-    src: files/RPM-GPG-KEY-zfsonlinux
-    dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-zfsonlinux
+- name: Flush ZFS Handlers
+  meta: flush_handlers
 
 - name: Install zfs kernel module
   yum:

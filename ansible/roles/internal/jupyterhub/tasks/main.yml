@@ -38,17 +38,8 @@
 
 - name: Add a jupyter user to run things as
   user:
-    name: "jupyter"
-
-- name: Get the jupyter uidNumber
-  getent:
-    database: passwd
-    key: "jupyter"
-    split: ':'
-
-- name: Collect the UserID for jupyter user
-  set_fact:
-    jupyterhub_user_uid: '{{ getent_passwd["jupyter"][1] }}'
+    name: '{{ jupyterhub_user_name }}'
+    uid: '{{ jupyterhub_user_uid }}'
 
 - name: Install Jupyterhub
   pip:

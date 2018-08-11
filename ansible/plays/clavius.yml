@@ -83,3 +83,11 @@
     - name: Ensure OpenStack CLI tools are installed
       include_role:
         name: openstack-tools
+
+    - name: Ensure mailx is installed
+      yum:
+        name: mailx
+
+    - name: Ensure bind-utils is installed
+      yum:
+        name: bind-utils
