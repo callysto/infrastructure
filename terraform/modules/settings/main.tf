@@ -5,7 +5,7 @@ variable "hub_flavor_name" {
 
   default = {
     prod = "m1.40g100g8c32g"
-    dev  = "m1.large"
+    dev  = "m1.40g100g4c8g"
   }
 }
 

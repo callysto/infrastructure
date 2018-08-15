@@ -67,6 +67,10 @@
       include_role:
         name: docker
 
+    - name: Manage Docker storage
+      include_role:
+        name: docker-storage
+
     - name: Ensure cryptsetup is installed
       yum:
         name: cryptsetup
@@ -91,3 +95,7 @@
     - name: Ensure bind-utils is installed
       yum:
         name: bind-utils
+
+    - name: Ensure docker python module is installed
+      pip:
+        name: docker

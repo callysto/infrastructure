@@ -2,7 +2,7 @@
 - name: Install rrsync script
   template:
     src: rrsync.j2
-    dest: /etc/cron.weekly/rrsync
+    dest: /etc/cron.weekly/rrsync-backup.sh
     owner: root
     group: root
     mode: 0750
