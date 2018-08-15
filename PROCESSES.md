@@ -282,11 +282,6 @@ This will do the following:
 Docker images are used for the individual Notebooks run from the hub. To build
 and manage these images, do the following on Clavius:
 
-> Alternatively, you can forgo building images and just make changes to the
-> `Dockerfile` files where appropriate. Pushing the changes to the Github repo
-> will trigger Travis to build the images. Upon merging changes to the `ianabc`
-> branch, the images will be pushed to DockerHub.
-
 First, clone the `docker-stacks` repo:
 
 ```
@@ -311,6 +306,19 @@ If Swift is being used for file storage, build the Swift image:
 
 ```
 $ make build/callysto-swift
+```
+
+Alternatively, build and test the entire stack all at once:
+
+```
+$ make build-test-all
+```
+
+Once the images have been built, you can push them to DockerHub by doing:
+
+```
+$ source ~/work/rc/dockerhub
+$ make callysto/push
 ```
 
 ## Installing hubtraf
