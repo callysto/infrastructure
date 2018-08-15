@@ -14,12 +14,12 @@
 - name: Manage Jupyterhub Docker Cull script
   include_role:
     name: jhub-docker-cull
-  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockerspawner', 'dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
     name: '{{ jupyterhub_docker_container }}'
-  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockerspawner', 'dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role syzygyauthenticator into this role?
 - name: Manage syzygyauthenticator
