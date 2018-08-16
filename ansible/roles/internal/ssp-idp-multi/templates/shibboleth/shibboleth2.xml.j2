@@ -36,7 +36,7 @@
         <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
         <AttributeResolver type="Query" subjectMatch="true"/>
         <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
-        <CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>
+        <CredentialResolver type="File" key="sp-signing-key.pem" certificate="sp-signing-cert.pem"/>
     </ApplicationDefaults>
 
     <!-- Policies that determine how to process and authenticate runtime messages. -->
