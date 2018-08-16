@@ -8,7 +8,7 @@
 - name: Manage dockerspawner
   include_role:
     name: dockerspawner
-  when: jupyterhub_spawner in ['dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
+  when: jupyterhub_spawner in ['dockerspawner', 'dockersystemuserspawner', 'syzygysystemuserspawner', 'syzygyswiftsystemuserspawner']
 
 # TODO: merge role jhub-docker-cull into this role?
 - name: Manage Jupyterhub Docker Cull script

@@ -35,6 +35,36 @@
           jupyterhub_spawner != 'syzygyswiftsystemuserspawner' and jupyterhub_docker_image != 'docker.io/callysto/callysto-swift'
         msg: "Can only use callysto-swift image with syzygyswiftsystemuserspawner"
 
+    - name: Ensure ssp_multi_salt is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_idp_multi_salt is defined and ssp_idp_multi_salt != '')
+        msg: "Must set ssp_idp_multi_salt when using shib authenticator"
+
+    - name: Ensure ssp_idp_multi_admin_password is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_idp_multi_admin_password is defined and ssp_idp_multi_admin_password != '')
+        msg: "Must set ssp_idp_multi_admin_password when using shib authenticator"
+
+    - name: Ensure ssp_refresh_key is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_refresh_key is defined and ssp_refresh_key != '')
+        msg: "Must set ssp_refresh_key when using shib authenticator"
+
+    - name: Ensure ssp_idp_multi_saml_cert is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_cert is defined and ssp_idp_multi_saml_cert != '')
+        msg: "Must set ssp_idp_multi_saml_cert when using shib authenticator"
+
+    - name: Ensure ssp_idp_multi_saml_key is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != '')
+        msg: "Must set ssp_idp_multi_saml_key when using shib authenticator"
+
 - name: Ensure sudo is configured correctly
   hosts: hub
   become: true

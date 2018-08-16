@@ -1,15 +1,12 @@
-module "dns" "dns" {
-  source = "../modules/dns"
-}
-
 locals {
-  name = "clavius.${module.dns.domain_name}"
+  name = "clavius.callysto.farm"
 
   image_id        = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
   flavor_name     = "m1.small"
   network_name    = "default"
   public_key      = "${file("../../keys/id_rsa.pub")}"
   floatingip_pool = "public"
+  zone_id         = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595"
 }
 
 module "clavius" "clavius" {
@@ -36,7 +33,7 @@ resource "openstack_compute_floatingip_associate_v2" "clavius" {
 }
 
 resource "openstack_dns_recordset_v2" "clavius_v4" {
-  zone_id = "${module.dns.zone_id}"
+  zone_id = "${local.zone_id}"
   name    = "${local.name}."
   ttl     = 60
   type    = "A"
@@ -47,7 +44,7 @@ resource "openstack_dns_recordset_v2" "clavius_v4" {
 }
 
 resource "openstack_dns_recordset_v2" "clavius_v6" {
-  zone_id = "${module.dns.zone_id}"
+  zone_id = "${local.zone_id}"
   name    = "${local.name}."
   ttl     = 60
   type    = "AAAA"
