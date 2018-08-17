@@ -30,7 +30,7 @@ callysto_html_longname: Callysto Dev
 #   * dummy: username: anything, no password
 #   * dummypw: username: anything, password via jupyterhub_authenticator_dummy_password
 #   * shib: log in through ssp/shib
-#   * pam: log in with system users
+#   * pam: authenticate against system users
 #
 jupyterhub_authenticator: dummy
 
@@ -39,11 +39,10 @@ jupyterhub_authenticator: dummy
 
 # valid values:
 #
-#   * dockersystemuserspawner: current prod configuration
-#   * syzygysystemuserspawner: standard
-#   * syzygyswiftsystemuserspawner: openstack swift storage backend
+#   * dockerspawner: current prod configuration
+#   * syzygyswiftspawner: openstack swift storage backend
 #
-jupyterhub_spawner: syzygysystemuserspawner
+jupyterhub_spawner: dockerspawner
 
 # The docker image to use for notebooks
 # If using swift, change this to callysto-swift
@@ -93,7 +92,7 @@ ssp_idp_multi_saml_cert:
 ssp_idp_multi_saml_key:
 
 # OpenStack auth information
-# Fill this in when using the syzygyswiftsystemuserspawner spawner
+# Fill this in when using the syzygyswiftspawner spawner
 #openstack_auth_url: "https://example.com:5000/v3"
 #openstack_username: "username"
 #openstack_password: "password"

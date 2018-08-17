@@ -48,7 +48,7 @@ jupyterhub_global_options:
             }
         ]
 
-jupyterhub_spawner: 'syzygysystemuserspawner'
+jupyterhub_spawner: 'dockerspawner'
 jupyterhub_spawners:
   dockerspawner:
     name: 'dockerspawner.DockerSpawner'
@@ -59,58 +59,22 @@ jupyterhub_spawners:
         value: "'{{ jupyterhub_docker_container }}'"
       - conf_object: 'DockerSpawner.volumes'
         value: "{ '/tank/home/{username}': '/home/jupyter', '{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
-  dockersystemuserspawner:
-    name: 'dockerspawner.SystemUserSpawner'
+  syzygyswiftspawner:
+    name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
       - conf_object: 'DockerSpawner.use_internal_ip'
         value: True
-      - conf_object: 'SystemUserSpawner.image'
+      - conf_object: 'DockerSpawner.image'
         value: "'{{ jupyterhub_docker_container }}'"
-      - conf_object: 'SystemUserSpawner.extra_host_config'
+      - conf_object: 'DockerSpawner.extra_host_config'
         value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
       - conf_object: 'DockerSpawner.volumes'
         value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
-      - conf_object: 'SystemUserSpawner.remove_containers'
+      - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
-      - conf_object: 'SystemUserSpawner.host_ip'
+      - conf_object: 'DockerSpawner.host_ip'
         value: "'0.0.0.0'"
-      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
-        value: "'/tank/home/{username}'"
-  syzygysystemuserspawner:
-    name: 'syzygyauthenticator.systemuserspawner.SyzygySystemUserSpawner'
-    options:
-      - conf_object: 'DockerSpawner.use_internal_ip'
-        value: True
-      - conf_object: 'SystemUserSpawner.image'
-        value: "'{{ jupyterhub_docker_container }}'"
-      - conf_object: 'SystemUserSpawner.extra_host_config'
-        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
-      - conf_object: 'DockerSpawner.volumes'
-        value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
-      - conf_object: 'SystemUserSpawner.remove_containers'
-        value: 'True'
-      - conf_object: 'SystemUserSpawner.host_ip'
-        value: "'0.0.0.0'"
-      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
-        value: "'/tank/home/{username}'"
-  syzygyswiftsystemuserspawner:
-    name: 'syzygyauthenticator.swiftsystemuserspawner.SyzygySwiftSystemUserSpawner'
-    options:
-      - conf_object: 'DockerSpawner.use_internal_ip'
-        value: True
-      - conf_object: 'SystemUserSpawner.image'
-        value: "'{{ jupyterhub_docker_container }}'"
-      - conf_object: 'SystemUserSpawner.extra_host_config'
-        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
-      - conf_object: 'DockerSpawner.volumes'
-        value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
-      - conf_object: 'SystemUserSpawner.remove_containers'
-        value: 'True'
-      - conf_object: 'SystemUserSpawner.host_ip'
-        value: "'0.0.0.0'"
-      - conf_object: 'SystemUserSpawner.host_homedir_format_string'
-        value: "'/tank/home/{username}'"
-      - conf_object: 'SystemUserSpawner.openstack_auth_info'
+      - conf_object: 'SyzygySwiftSpawner.openstack_auth_info'
         value: |
           {
             'OS_AUTH_URL': '{{ openstack_auth_url }}',
@@ -125,64 +89,26 @@ jupyterhub_spawners:
 jupyterhub_authenticator: 'pam'
 jupyterhub_authenticators:
   google:
-    name: 'syzygyauthenticator.google.SyzygyGoogleOAuthenticator'
+    name: 'oauthenticator.GoogleOAuthenticator'
     options:
-      - conf_object: 'SyzygyAuthenticator.user_id'
-        value: '{{ jupyterhub_user_uid }}'
-      - conf_object: 'SyzygyAuthenticator.homedir_string'
-        value: "'/tank/home/USERNAME'"
-      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
-        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
-      - conf_object: 'SyzygyAuthenticator.create_system_users'
-        value: False
-      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
-        value: True
-      - conf_object: 'SyzygyGoogleOAuthenticator.client_id'
+      - conf_object: 'GoogleOAuthenticator.client_id'
         value: 'os.environ["OAUTH_CLIENT_ID"]'
-      - conf_object: 'SyzygyGoogleOAuthenticator.client_secret'
+      - conf_object: 'GoogleOAuthenticator.client_secret'
         value: 'os.environ["OAUTH_CLIENT_SECRET"]'
-      - conf_object: 'SyzygyGoogleOAuthenticator.callback_url'
+      - conf_object: 'GoogleOAuthenticator.callback_url'
         value: 'os.environ["OAUTH_CALLBACK_URL"]'
   pam:
-    name: 'syzygyauthenticator.SyzygyPAMAuthenticator'
-    options:
-      - conf_object: 'SyzygyAuthenticator.create_system_users'
-        value: False
-      - conf_object: 'SyzygyAuthenticator.create_user_homedir'
-        value: True
-      - conf_object: 'SyzygyAuthenticator.create_homedir_cmd'
-        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'USERNAME']"
-      - conf_object: 'SyzygyAuthenticator.homedir_string'
-        value: "'/tank/home/USERNAME'"
+    name: 'jupyterhub.auth.PAMAuthenticator'
+    options: []
   shib:
     name: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
     options: []
   dummy:
     name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
-    options:
-      - conf_object: 'SyzygyDummyAuthenticator.user_id'
-        value: '{{ jupyterhub_user_uid }}'
-      - conf_object: 'SyzygyDummyAuthenticator.homedir_string'
-        value: "'/tank/home/USERNAME'"
-      - conf_object: 'SyzygyDummyAuthenticator.create_homedir_cmd'
-        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
-      - conf_object: 'SyzygyDummyAuthenticator.create_system_users'
-        value: 'False'
-      - conf_object: 'SyzygyDummyAuthenticator.create_user_homedir'
-        value: 'True'
+    options: []
   dummypw:
     name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
     options:
-      - conf_object: 'SyzygyDummyAuthenticator.user_id'
-        value: '{{ jupyterhub_user_uid }}'
-      - conf_object: 'SyzygyDummyAuthenticator.homedir_string'
-        value: "'/tank/home/USERNAME'"
-      - conf_object: 'SyzygyDummyAuthenticator.create_homedir_cmd'
-        value: "['/opt/syzygyauthenticator/zfs-homedir.sh', 'USERNAME', 'jupyter']"
-      - conf_object: 'SyzygyDummyAuthenticator.create_system_users'
-        value: 'False'
-      - conf_object: 'SyzygyDummyAuthenticator.create_user_homedir'
-        value: 'True'
       - conf_object: 'SyzygyDummyAuthenticator.password'
         value: "'{{ jupyterhub_authenticator_dummy_password }}'"
 
