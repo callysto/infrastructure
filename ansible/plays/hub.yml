@@ -32,7 +32,8 @@
     - name: Ensure callysto-swift is not used when syzygyswiftspawner not is used
       assert:
         that: >-
-          jupyterhub_spawner != 'syzygyswiftspawner' and jupyterhub_docker_image != 'docker.io/callysto/callysto-swift'
+          (jupyterhub_spawner == 'syzygyswiftspawner' and jupyterhub_docker_image == 'docker.io/callysto/callysto-swift') or
+          jupyterhub_docker_image != 'docker.io/callysto/callysto-swift'
         msg: "Can only use callysto-swift image with syzygyswiftspawner"
 
     - name: Ensure ssp_multi_salt is set
