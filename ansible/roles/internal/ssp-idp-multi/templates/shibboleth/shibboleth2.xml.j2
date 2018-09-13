@@ -10,7 +10,7 @@
                          REMOTE_USER="persistent-id targeted-id" signing="true" encryption="true"
                         signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
 
-        <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
+        <Sessions lifetime="28800" timeout="{{ shib_session_timeout }}" relayState="ss:mem"
                   checkAddress="false" handlerSSL="true" cookieProps="http">
 
             <SSO entityID="https://{{ ssp_domain }}/simplesaml/saml2/idp/metadata.php">SAML2</SSO>

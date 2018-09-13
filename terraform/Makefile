@@ -44,9 +44,17 @@ hub/taint/volumes: check-env
 
 hub/rebuild: | hub/taint/instance hub/taint/volumes apply
 
-new-hub: check-env
-	/usr/bin/cp -a hub-template hub-$(env)
+new-hub/dev: check-env
+	/usr/bin/cp -a hub-dev-template hub-$(env)
 	/usr/bin/sed -i -e 's/ENV/$(env)/g' hub-$(env)/main.tf
+	/usr/bin/mkdir ../ansible/group_vars/hub-$(env)
+	/usr/bin/cp ../ansible/local_vars.yml.example ../ansible/group_vars/hub-$(env)/local_vars.yml
+	@echo ""
+	@echo "Make sure to edit ../ansible/group_vars/hub-$(env)/local_vars.yml."
+	@echo ""
+
+new-hub/prod: check-env
+	/usr/bin/cp -a hub-prod-template hub-$(env)
 	/usr/bin/mkdir ../ansible/group_vars/hub-$(env)
 	/usr/bin/cp ../ansible/local_vars.yml.example ../ansible/group_vars/hub-$(env)/local_vars.yml
 	@echo ""

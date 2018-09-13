@@ -10,6 +10,7 @@ the Callysto environment.
 * [Starting from Scratch](#starting-from-scratch)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
 * [Building the Hub Image](#building-the-hub-image)
+* [Deploying the Production Environment](#deploying-the-production-environment)
 * [Deploying the Development Environment](#deploying-the-development-environment)
 * [Deploying a CI Environment](#deploying-a-ci-environment)
 * [Deploying a Custom Environment](#deploying-a-custom-environment)
@@ -231,6 +232,47 @@ or a new ZFS kernel module.
 By default, Terraform is configured to automatically search for the generated
 "callysto-hub" image and use this image to build the hub (see below).
 
+## Deploying the Production Environment
+
+Deploying the production environment is different than deploying a development
+environment (described below).
+
+While Terraform does a great job at handling the full lifecycle of compute
+resources, we want to take certain measures to ensure data doesn't get
+accidentally deleted.
+
+First, create two 250gb volumes:
+
+```
+$ openstack volume create --size 250 hub.callysto.ca-home-1
+$ openstack volume create --size 250 hub.callysto.ca-home-2
+```
+
+Next, allocate a Floating IP:
+
+```
+$ openstack floating ip create public
+```
+
+Next, create a new Terraform environment:
+
+```
+$ pushd terraform
+$ make new-hub/prod env=prod
+```
+
+Next, edit `hub-prod/main.tf` and modify as needed. Notably:
+
+1. Add the 2 volume UUIDs to `existing_volumes`.
+2. Add the floating IP to `existing_floating_ip`.
+
+Finally, deploy the hub:
+
+```
+$ make apply env=hub-prod
+$ popd
+```
+
 ## Deploying the Development Environment
 
 To deploy a development environment, run the following:
@@ -244,32 +286,13 @@ $ popd
 $ popd
 ```
 
-## Deploying a CI Environment
-
-The CI environment is meant to be a disposable development environment for use
-with automated acceptance testing. You normally won't launch a CI environment
-yourself, but a CI tool, such as Jenkins or Travis, will create (and destroy)
-it.
-
-To deploy a ci environment, have a CI system run the following:
-
-```
-$ pushd terraform
-$ make env=hub-dev apply
-$ pushd ../ansible
-$ make env=hub-dev hub/init/apply
-$ make env=hub-dev hub/apply
-$ popd
-$ popd
-```
-
 ## Deploying a Custom Environment
 
 To deploy a custom environment, run the following:
 
 ```
 $ pushd terraform
-$ make new-hub env=<name>
+$ make new-hub/dev env=<name>
 ```
 
 This will do the following:
