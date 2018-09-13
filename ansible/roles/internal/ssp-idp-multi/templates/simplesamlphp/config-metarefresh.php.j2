@@ -26,6 +26,7 @@ $config = array(
          array(
           'src' => 'https://{{ ssp_domain }}/Shibboleth.sso/Metadata',
           'template' => array(
+              'sign.logout' => TRUE,
               'attributes'    => array('eduPersonTargetedID'),
               'tags'  => array('sp','callysto'),
           ),

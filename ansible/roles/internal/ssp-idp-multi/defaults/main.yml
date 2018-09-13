@@ -19,3 +19,6 @@ ssp_theme_install: True
 
 # False by default until install is done
 ssp_installed_now: False
+
+# shibboleth sp idle timeout
+shib_session_timeout: 0

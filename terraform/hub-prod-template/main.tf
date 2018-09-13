@@ -6,12 +6,9 @@ locals {
   network_name = "default"
   public_key   = "${file("../../keys/id_rsa.pub")}"
 
-  existing_floating_ip = "162.246.156.219"
+  existing_floating_ip = ""
 
-  existing_volumes = [
-    "f537d65c-4a22-4cec-ad3f-4a8875fc8b7b",
-    "85aed780-0dd2-47a9-919e-a7b19fb24ec9",
-  ]
+  existing_volumes = []
 }
 
 data "openstack_images_image_v2" "hub" {
