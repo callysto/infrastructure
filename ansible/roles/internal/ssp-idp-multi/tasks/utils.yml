@@ -1,0 +1,7 @@
+- name: Copy findhash.php script
+  copy:
+    src: files/findhash.php
+    dest: /usr/local/bin/findhash.php
+    owner: root
+    group: root
+    mode: 0750
