@@ -10,11 +10,12 @@ admin_email: user@example.com
 
 # All hubs have a ZFS mirror.
 # Specify their drive letters here.
-zfs_disk_1: /dev/sdd
-zfs_disk_2: /dev/sde
+# The "d854b345-1600-478a-9" part is a portion of the volumes' UUID.
+zfs_disk_1: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
+zfs_disk_2: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
 
 # Uncomment this to use overlay2
-openstack_ephemeral_docker_disk: /dev/sdc
+openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0-0-0-1
 # Uncomment this to use ZFS
 #docker_zfs_pool: "/tank"
 

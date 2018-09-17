@@ -1,3 +1,5 @@
+export PATH := $(TOP)/bin/$(UNAME):/bin:/usr/bin
+SHELL := /bin/bash
 UNAME := $(shell uname)
 TOP := $(shell pwd)
 TF_PATH := $(TOP)/../terraform
@@ -11,13 +13,8 @@ setup:
 	@echo "Setting up Ansible Inventory"
 	[[ -e "inventory" ]] || ln -s ./bin/$(UNAME)/ansible-terraform-inventory inventory
 	@echo ""
-	@echo "Creating group_vars/hub/local_vars.yml from the example template"
-	[[ -f "group_vars/hub/local_vars.yml" ]] || cp local_vars.yml.example group_vars/hub/local_vars.yml
+	@echo "Remember to update group_vars/<env>/local_vars.yml to fit your environment."
 	@echo ""
-	@echo "Update group_vars/hub/local_vars.yml to fit your environment."
-	@echo "Don't forget to generate the SSL certificates for simplesamlphp if you're using it for authentication."
-	@echo "Press enter to continue"
-	@read
 	@echo "Installing external Ansible roles"
 	/bin/bash scripts/role_update.sh
 
@@ -25,6 +22,12 @@ check-env:
 ifndef env
 	$(error env is not defined)
 endif
+
+check-user:
+ifndef user
+	$(error user is not defined)
+endif
+
 
 list-init-tasks:
 	ansible-playbook --list-tasks plays/init.yml
@@ -59,13 +62,12 @@ clavius/apply: check-env
 quota/get: check-env
 	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(user)
 
-quota/set: check-env
+quota/set: check-env check-user
 ifndef refquota
 	$(error refquota is not defined)
 endif
 
-ifndef user
-	$(error user is not defined)
-endif
-
 	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars set_quota=1 --extra-vars user=$(user) --extra-vars refquota=$(refquota)
+
+user/findhash: check-env check-user
+	$(PLAYBOOK_CMD) --limit hub plays/find_hash.yml --extra-vars user=$(user)
