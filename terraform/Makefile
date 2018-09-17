@@ -1,6 +1,7 @@
+export PATH := $(TOP)/bin/$(UNAME):/bin:/usr/bin
 UNAME = $(shell uname)
 TOP := $(shell pwd)
-PATH := $(TOP)/bin/$(UNAME)
+TF_PATH := $(TOP)/bin/$(UNAME)
 
 check-env:
 ifndef env
@@ -15,32 +16,32 @@ setup:
 
 init: check-env
 	cd $(env) ; \
-	$(PATH)/terraform init
+	$(TF_PATH)/terraform init
 
 plan: init
 	cd $(env) ; \
-	$(PATH)/terraform plan
+	$(TF_PATH)/terraform plan
 
 apply: plan
 	cd $(env) ; \
-	$(PATH)/terraform apply
+	$(TF_PATH)/terraform apply
 
 destroy: check-env
 	cd $(env) ; \
-	$(PATH)/terraform destroy
+	$(TF_PATH)/terraform destroy
 
 show: check-env
 	cd $(env) ; \
-	$(PATH)/terraform show
+	$(TF_PATH)/terraform show
 
 hub/taint/instance: check-env
 	cd $(env) ; \
-	$(PATH)/terraform taint -module=hub openstack_compute_instance_v2.hub
+	$(TF_PATH)/terraform taint -module=hub openstack_compute_instance_v2.hub
 
 hub/taint/volumes: check-env
 	cd $(env) ; \
-	$(PATH)/terraform taint -module=hub openstack_blockstorage_volume_v2.zfs.0 ; \
-	$(PATH)/terraform taint -module=hub openstack_blockstorage_volume_v2.zfs.1
+	$(TF_PATH)/terraform taint -module=hub openstack_blockstorage_volume_v2.zfs.0 ; \
+	$(TF_PATH)/terraform taint -module=hub openstack_blockstorage_volume_v2.zfs.1
 
 hub/rebuild: | hub/taint/instance hub/taint/volumes apply
 

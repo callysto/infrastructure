@@ -1,0 +1,12 @@
+---
+- name: Get User Hash
+  hosts: hub
+  become: true
+  tasks:
+    - name: Get user hash
+      shell: "/usr/local/bin/findhash.php {{ user | mandatory }}"
+      register: findhash_results
+
+    - name: Report hash
+      debug:
+        msg: "{{ findhash_results.stdout_lines }}"

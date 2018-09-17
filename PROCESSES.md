@@ -23,6 +23,7 @@ the Callysto environment.
 
 * [Creating an Announcement](#creating-an-announcement)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
+* [Determining a User's Hash](#determining-a-users-hash)
 * [Quota Management](#quota-management)
 
 # Infrastructure Management
@@ -440,9 +441,47 @@ with:
 See the `ansible/roles/internal/jupyterhub/templates/notebooks/notebook.html.j2`
 file as an example.
 
+## Determining a User's Hash
+
+When a user logs in for the first time, SimpleSAMLphp will generate a unique
+hash of that user's username. This provides two benefits:
+
+1. It allows a user to log in with the same username from different sources
+(ex: Google and a Federation) and not have the accounts collide.
+2. It prevents any type of identifiable information of that user being stored
+within the hub.
+
+The user's home directory will then be `/tank/home/<hash>` instead of
+`/tank/home/<readable username>`.
+
+However, this makes managing users more difficult because we have no way of
+easily determining a user's home directory. For example, if user
+john.doe@example.com reports a problem, there's no immediate way of determining
+if `/tank/home/3a33be55004107d5202a4fcf32a0a2d804a9e137` is their home
+directory or if `/tank/home/6fc583e6ba82d7c7f1e6fd7908afe48906e1093f` is.
+
+We have created a script located at `/usr/local/bin/findhash.php` to help
+assist with this problem.
+
+You can run this script directly on the hub by doing:
+
+```
+$ /usr/local/bin/findhash.php john.doe@example.com
+```
+
+Or by running the following task on Clavius:
+
+```
+pushd ansible
+make user/findhash user=john.doe@example.com env=hub-prod
+popd
+```
+
 ## Quota Management
 
 The `ansible/Makefile` contains a handful of tasks to manage a user's quota:
+
+> Note: <user>` will be the _hash_ of the user and not the readable username.
 
 ```
 $ pushd ansible
