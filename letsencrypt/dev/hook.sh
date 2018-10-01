@@ -22,7 +22,7 @@ deploy_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate add _acme-challenge.%s 300 IN TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
-    source ~/work/rc/dev
+    source ~/work/rc/openrc
     openstack recordset delete callysto.farm. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
     openstack recordset create callysto.farm. _acme-challenge.${DOMAIN}. --type TXT --record \"${TOKEN_VALUE}\";
     sleep 10
@@ -39,7 +39,7 @@ clean_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate delete _acme-challenge.%s TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
-    source ~/work/rc/dev
+    source ~/work/rc/openrc
     openstack recordset delete callysto.farm. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
 }
 
