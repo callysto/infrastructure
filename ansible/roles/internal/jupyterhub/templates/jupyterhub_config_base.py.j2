@@ -7,7 +7,9 @@ from subprocess import check_call
 def create_fs_hook(spawner):
       username = spawner.user.name
       callysto_user = 'jupyter'
-      check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user])
+      env = os.environ
+      env['GETTING_STARTED'] = '{{ jupyterhub_getting_started_url }}'
+      check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user], env=env)
 
 c.Spawner.pre_spawn_hook = create_fs_hook
 
@@ -52,6 +54,8 @@ c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endif %}
 {% endif %}
 {% endblock %}
+
+c.JupyterHub.template_paths = ["{{ jupyterhub_hub_template_dir }}"]
 
 {% if jupyterhub_announcement != "" %}
 c.JupyterHub.template_vars = {'announcement': '<div class="alert alert-danger">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'}

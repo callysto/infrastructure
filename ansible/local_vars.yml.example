@@ -7,6 +7,7 @@
 #    public_key: 'ssh-rsa ...'
 
 admin_email: user@example.com
+support_email: support@example.com
 
 # All hubs have a ZFS mirror.
 # Specify their drive letters here.
@@ -25,6 +26,9 @@ callysto_ssl_cert_dir: ""
 
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
+
+# URL to a notebook which will be added to each home directory.
+jupyterhub_getting_started_url: 'https://raw.githubusercontent.com/callysto/getting-started/master/getting-started.ipynb'
 
 # valid values:
 #   * google: current prod configuration
