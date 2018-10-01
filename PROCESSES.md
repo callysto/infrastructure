@@ -18,10 +18,12 @@ the Callysto environment.
 * [Installing hubtraf](#installing-hubtraf)
 * [Adding a Base System Package](#adding-a-base-system-package)
 * [Managing SSH Keys](#managing-ssh-keys)
+* [Modifying the JupyterHub Error Page](#modifying-the-jupyterhub-error-page)
 
 > User Management
 
 * [Creating an Announcement](#creating-an-announcement)
+* [Setting a Getting Started Notebook](#setting-a-getting-started-notebook)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
 * [Determining a User's Hash](#determining-a-users-hash)
 * [Quota Management](#quota-management)
@@ -400,6 +402,18 @@ ssh_public_keys:
 
 Ansible will merge all `ssh_public_key` definitions across all variable files.
 
+## Modifying the JupyterHub Error Page
+
+To modify the JupyterHub Error page, edit the template located at
+`ansible/roles/internal/jupyterhub/templates/hub-error.html.j2`.
+
+Since both Ansible and JupyterHub use Jinja, this is a double-nested Jinja
+file which can make alterations difficult. Make sure you wrap the
+JupyterHub-specific Jinja logic in `{% raw -%}` tags.
+
+You can change the value of the displayed email address by setting the
+`support_email` variable in the `local_vars.yml` file.
+
 # User Management
 
 ## Creating an Announcement
@@ -418,6 +432,15 @@ This will set the announcement in the following locations:
 * JupyterHub control panel
 * Jupyter Notebook file index / tree page
 * Jupyter Notebook notebook page
+
+## Setting a Getting Started Notebook
+
+When a user logs in for the first time, it's sometimes helpful to have an
+initial notebook available to them. This is known as a Getting Started notebook.
+
+To enable this, set the `jupyterhub_getting_started_url` variable in the
+`local_vars.yml` file. This should be a direct link to an `.ipynb` file. For
+example: `https://raw.githubusercontent.com/callysto/getting-started/master/getting-started.ipynb`
 
 ## Modifying a Notebook Template
 
