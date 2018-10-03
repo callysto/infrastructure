@@ -111,3 +111,13 @@
   template:
     src: "notebooks/tree.html.j2"
     dest: "{{ jupyterhub_notebook_template_dir }}/tree.html"
+
+- name: Ensure jupyterhub_hub_template_dir exists
+  file:
+    path: "{{ jupyterhub_hub_template_dir }}"
+    state: directory
+
+- name: Copy jupyterhub error template
+  template:
+    src: "hub-error.html.j2"
+    dest: "{{ jupyterhub_hub_template_dir }}/error.html"
