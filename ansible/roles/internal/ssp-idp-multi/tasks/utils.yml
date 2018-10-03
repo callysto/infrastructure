@@ -1,6 +1,6 @@
 - name: Copy findhash.php script
-  copy:
-    src: files/findhash.php
+  template:
+    src: "findhash.php.j2"
     dest: /usr/local/bin/findhash.php
     owner: root
     group: root

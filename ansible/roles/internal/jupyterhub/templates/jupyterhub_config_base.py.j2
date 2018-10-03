@@ -17,6 +17,10 @@ c.Spawner.pre_spawn_hook = create_fs_hook
 c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% endfor %}
 
+{% if jupyterhub_admin_users | length > 0 -%}
+c.Authenticator.admin_users  = set([{% for user in jupyterhub_admin_users -%}'{{ user }}'{% if not loop.last -%},{% endif -%}{% endfor -%}])
+{% endif %}
+
 {% if jupyterhub_global_options_extra is defined %}
 {% for global_option in jupyterhub_global_options_extra %}
 c.{{ global_option.conf_object }} = {{ global_option.value }}
