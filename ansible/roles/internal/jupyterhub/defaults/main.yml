@@ -63,6 +63,12 @@ jupyterhub_spawners:
         value: "'{{ jupyterhub_docker_container }}'"
       - conf_object: 'DockerSpawner.volumes'
         value: "{ '/tank/home/{username}': '/home/jupyter', '{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
+      - conf_object: 'DockerSpawner.extra_host_config'
+        value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
+      - conf_object: 'DockerSpawner.remove_containers'
+        value: 'True'
+      - conf_object: 'DockerSpawner.environment'
+        value: "{ 'TZ': 'America/Edmonton' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
