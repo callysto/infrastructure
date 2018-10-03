@@ -67,8 +67,6 @@ jupyterhub_spawners:
         value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
-      - conf_object: 'DockerSpawner.environment'
-        value: "{ 'TZ': 'America/Edmonton' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
