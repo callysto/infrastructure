@@ -67,6 +67,10 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 #jupyterhub_oauth_client_secret: ""
 #jupyterhub_oauth_callback_url: ""
 
+# Add the email addresses or hashes of addresses for admin users
+jupyterhub_admin_users:
+  - fd1f75f968e4781519f03bfc90a7204be8d27592
+
 # Set to True to disable updating package versions automatically
 disable_package_update: False
 

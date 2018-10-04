@@ -26,6 +26,7 @@ the Callysto environment.
 * [Setting a Getting Started Notebook](#setting-a-getting-started-notebook)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
 * [Determining a User's Hash](#determining-a-users-hash)
+* [Managing Admin Users](#managing-admin-users)
 * [Quota Management](#quota-management)
 
 # Infrastructure Management
@@ -499,6 +500,12 @@ pushd ansible
 make user/findhash user=john.doe@example.com env=hub-prod
 popd
 ```
+
+## Managing Admin Users
+
+To grant admin privileges to certain users, first find their hash. Next,
+edit the `local_vars.yml` file and add them to the `jupyterhub_admin_users`
+variable.
 
 ## Quota Management
 
