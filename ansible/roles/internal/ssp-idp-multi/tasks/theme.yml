@@ -1,0 +1,5 @@
+- name: Clone the theme repo
+  git:
+    repo: "{{ ssp_theme_repo }}"
+    version: "{{ ssp_theme_version }}"
+    dest: "{{ ssp_theme_dir }}"

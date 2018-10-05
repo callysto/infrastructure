@@ -19,6 +19,7 @@ the Callysto environment.
 * [Adding a Base System Package](#adding-a-base-system-package)
 * [Managing SSH Keys](#managing-ssh-keys)
 * [Modifying the JupyterHub Error Page](#modifying-the-jupyterhub-error-page)
+* [SimpleSAMLphp Theme](#simplesamlphp-theme)
 
 > User Management
 
@@ -28,6 +29,7 @@ the Callysto environment.
 * [Determining a User's Hash](#determining-a-users-hash)
 * [Managing Admin Users](#managing-admin-users)
 * [Quota Management](#quota-management)
+* [Logout Redirect](#logout-redirect)
 
 # Infrastructure Management
 
@@ -415,6 +417,24 @@ JupyterHub-specific Jinja logic in `{% raw -%}` tags.
 You can change the value of the displayed email address by setting the
 `support_email` variable in the `local_vars.yml` file.
 
+## SimpleSAMLphp Theme
+
+SimpleSAMLphp handles the authentication when the `shib` authenticator
+is used.
+
+You can apply a custom SimpleSAMLphp theme to customize the look of the
+login and logout pages.
+
+See https://github.com/callysto/callysto-ssp-theme as an example of
+how to build a theme.
+
+To set a custom theme, modify the following settings in `local_vars.yml`:
+
+* `ssp_theme_name`
+* `ssp_theme_repo`
+* `ssp_theme_version`
+* `ssp_theme_dir`
+
 # User Management
 
 ## Creating an Announcement
@@ -520,3 +540,9 @@ $ make quota/get env=<env> user=<user>
 $ make quota/set env=<env> user=<user> refquota=<10G>
 $ popd
 ```
+
+## Logout Redirect
+
+When a user logs out, they will be redirected to `/simplesaml/logout.php`. To
+set this to a custom URL, set the `jupyterhub_shib_return_url` setting in
+`local_vars.yml`.
