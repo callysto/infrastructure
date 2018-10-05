@@ -39,6 +39,10 @@ jupyterhub_getting_started_url: 'https://raw.githubusercontent.com/callysto/gett
 #
 jupyterhub_authenticator: dummy
 
+# uncomment this to specify a return URL when the user logs out.
+# by default this is /simplesaml/logout.php.
+#jupyterhub_shib_return_url:
+
 # uncomment this when using the dummypw authenticator
 #jupyterhub_authenticator_dummy_password: callysto
 
@@ -99,6 +103,14 @@ ssp_idp_multi_sources:
 # openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"
 ssp_idp_multi_saml_cert:
 ssp_idp_multi_saml_key:
+
+# SimpleSAMLphp Theme
+# by default, the `callysto` theme will be used.
+# there's no need to uncomment this if you want to use the default.
+#ssp_theme_name: 'callysto:callysto'
+#ssp_theme_repo: 'https://github.com/callysto/callysto-ssp-theme'
+#ssp_theme_version: 'master'
+#ssp_theme_dir: "{{ ssp_dir }}/modules/callysto"
 
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner

@@ -1,4 +1,5 @@
 - import_tasks: php.yml
 - import_tasks: shibboleth.yml
 - import_tasks: simplesamlphp.yml
+- import_tasks: theme.yml
 - import_tasks: utils.yml

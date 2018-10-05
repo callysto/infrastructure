@@ -12,6 +12,7 @@ jupyterhub_srv_dir: '/srv/jupyterhub'
 jupyterhub_api_port: '8081'
 
 jupyterhub_shib_dir: '/opt/shib_authenticator'
+jupyterhub_shib_return_url: '/simplesaml/logout.php'
 
 jhub_docker_cull_run_s: 1800
 jhub_docker_cull_cull_s: 10800
@@ -112,7 +113,9 @@ jupyterhub_authenticators:
     options: []
   shib:
     name: 'syzygyauthenticator.shib.RemoteUserAuthenticator'
-    options: []
+    options:
+      - conf_object: 'RemoteUserAuthenticator.shibReturnURL'
+        value: '{{ jupyterhub_shib_return_url }}'
   dummy:
     name: 'syzygyauthenticator.dummy.SyzygyDummyAuthenticator'
     options: []
