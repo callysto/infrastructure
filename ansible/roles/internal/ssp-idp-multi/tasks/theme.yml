@@ -3,3 +3,4 @@
     repo: "{{ ssp_theme_repo }}"
     version: "{{ ssp_theme_version }}"
     dest: "{{ ssp_theme_dir }}"
+  when: ssp_theme_repo is defined and ssp_theme_repo != ""

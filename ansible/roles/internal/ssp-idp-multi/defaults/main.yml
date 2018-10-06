@@ -24,7 +24,7 @@ ssp_installed_now: False
 shib_session_timeout: 0
 
 # ssp theme
-ssp_theme_name: 'callysto:callysto'
-ssp_theme_repo: 'https://github.com/callysto/callysto-ssp-theme'
-ssp_theme_version: 'master'
-ssp_theme_dir: "{{ ssp_dir }}/modules/callysto"
+ssp_theme_name: "default"
+ssp_theme_repo: ""
+ssp_theme_version: ""
+ssp_theme_dir: ""
