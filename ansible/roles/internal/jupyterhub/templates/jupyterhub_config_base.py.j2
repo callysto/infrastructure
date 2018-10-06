@@ -59,6 +59,10 @@ c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endif %}
 {% endblock %}
 
+{% if jupyterhub_shib_return_url != "" -%}
+c.RemoteUserAuthenticator.shibReturnURL = '{{ jupyterhub_shib_return_url }}'
+{% endif %}
+
 c.JupyterHub.template_paths = ["{{ jupyterhub_hub_template_dir }}"]
 
 {% if jupyterhub_announcement != "" %}

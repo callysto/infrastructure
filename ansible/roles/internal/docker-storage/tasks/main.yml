@@ -3,6 +3,7 @@
 - name: Check the current filesystem
   command: "lsblk -no fstype {{ openstack_ephemeral_docker_disk }}"
   when: openstack_ephemeral_docker_disk != ""
+  check_mode: no
   register: filesystem_ephemeral
 
 - name: Create an XFS filesystem on the storage
