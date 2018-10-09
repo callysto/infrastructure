@@ -1,5 +1,12 @@
 <?php
 
+{% set enable_saml = [] -%}
+{% for s in ssp_idp_multi_sources -%}
+  {% if s.type == 'saml' -%}
+    {% set _ = enable_saml.append(1) -%}
+  {% endif -%}
+{% endfor -%}
+
 $config = array(
     'admin' => array(
         // The default is to use core:AdminPassword, but it can be replaced with
@@ -7,23 +14,28 @@ $config = array(
 
         'core:AdminPassword',
     ),
+
+    {% if enable_saml %}
     'default-sp' => array(
         'saml:SP',
         'entityID' => null,
         'idp' => null,
         'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
     ),
-{% if ssp_develop %}
-'mock-idp' => array(
-    'exampleauth:UserPass',
-    'user1:password' => array(
-        'eduPersonTargetedID' => array('lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu'),
-    ),
-    'user2:password' => array(
-        'eduPersonPrincipalName' => array('user2@example.ca'),
-    ),
-),
-{% endif %}
+    {% endif %}
+
+  {% if ssp_develop %}
+  'mock-idp' => array(
+      'exampleauth:UserPass',
+      'user1:password' => array(
+          'eduPersonTargetedID' => array('lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu'),
+      ),
+      'user2:password' => array(
+          'eduPersonPrincipalName' => array('user2@example.ca'),
+      ),
+  ),
+  {% endif %}
+
 {% for s in ssp_idp_multi_sources %}
   {% if s.type == 'google' %}
     '{{ s.display_name | lower | replace(' ','') }}' => array(
@@ -55,6 +67,7 @@ $config = array(
     'multiauth:MultiAuth',
 
     'sources' => array(
+        {% if enable_saml %}
         'default-sp' => array(
             'text' => array(
                 'en' => 'Login with Institution account',
@@ -62,14 +75,17 @@ $config = array(
             ),
             'css-class' => 'SAML',
         ),
-{% if ssp_develop %}
+        {% endif %}
+
+        {% if ssp_develop %}
         'mock-idp' => array(
             'text' => array(
                 'en' => 'Login with mock account',
                 'fr' => 'Login with mock account',
                 )
             ),
-{% endif %}
+        {% endif %}
+
 {% for s in ssp_idp_multi_sources %}
     {% if s.type != 'saml' %}
         '{{ s.display_name | lower | replace(' ','') }}' => array(
