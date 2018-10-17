@@ -1,0 +1,23 @@
+---
+- name: Find files to backup
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Backup files
+      find:
+        paths: "{{ backup_base_directory|expanduser }}"
+        patterns: "{{ item }}"
+        recurse: true
+        hidden: true
+        file_type: any
+      loop: "{{ backup_files }}"
+      register: files
+
+    - name: Copy files to backup location
+      copy:
+        src: "{{ item[1].path }}"
+        dest: "{{ backup_dest_directory|expanduser ~ '/' ~ item[1].path|dirname|relpath(backup_base_directory|expanduser) ~ '/' }}"
+      with_subelements:
+        - "{{ files.results }}"
+        - files
+
