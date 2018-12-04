@@ -71,3 +71,6 @@ endif
 
 user/findhash: check-env check-user
 	$(PLAYBOOK_CMD) --limit hub plays/find_hash.yml --extra-vars user=$(user)
+
+backup:
+	$(PLAYBOOK_CMD) --limit localhost plays/backup.yml

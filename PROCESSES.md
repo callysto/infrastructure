@@ -8,6 +8,7 @@ the Callysto environment.
 > Infrastructure Management
 
 * [Starting from Scratch](#starting-from-scratch)
+* [Backing up Important Files](#backing-up-important-files)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
 * [Building the Hub Image](#building-the-hub-image)
 * [Deploying the Production Environment](#deploying-the-production-environment)
@@ -180,6 +181,33 @@ $ popd
 >
 > Additionally, you should also copy the `terraform/clavius/terraform.tfstate`
 > file from the workstation which deployed clavius to the new location, too.
+
+## Backing Up Important Files
+
+If you review the `.gitignore` file for this repository, you'll see that it's
+ignoring a good amount of files. Some of these files are being ignored because
+of their sensitive nature. If we didn't ignore these files, we could not make this
+a public repository.
+
+However, these sensitive files are still critical to operations and need to be
+backed up.
+
+To configure backups, look at the bottom of the `local_vars.yml.example` file for
+the `Infrastructure / Clavius backup` section. Copy these settings to the
+`group_vars/all/local_vars.yml` file. Change the settings appropriately for your
+environment.
+
+Next, run the following:
+
+```shell
+$ pushd ansible
+$ make backup
+$ popd
+```
+
+The backup destination directory (by default, `~/work/backup`) should now be populated
+with some files. We recommend running this `Make` task regularly copying these files
+off-site.
 
 ## Generating Let's Encrypt Certificates
 

@@ -132,3 +132,12 @@ ssp_idp_multi_saml_key:
 #rrsync_private_key_path: /root/.ssh/some_key
 #rrsync_public_key: 'some public key'
 #rrsync_public_key_path: /root/.ssh/some_key.pub
+
+# Infrastructure / Clavius backup
+#backup_base_directory: "~/work/callysto-infra"
+#backup_dest_directory: "~/work/backup"
+#backup_files:
+#  - "local_vars.yml"
+#  - "*.tfstate"
+#  - "id_rsa*"
+#  - "letsencrypt"
