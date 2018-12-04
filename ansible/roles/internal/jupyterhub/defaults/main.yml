@@ -70,6 +70,8 @@ jupyterhub_spawners:
         value: "{'mem_limit': '2g', 'memswap_limit': '2g', 'cpu_period': 100000, 'cpu_quota': 100000 }"
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
+      - conf_object: 'DockerSpawner.environment'
+        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
@@ -83,6 +85,8 @@ jupyterhub_spawners:
         value: "{'{{ jupyterhub_notebook_template_dir }}': { 'bind': '/opt/notebook/local_templates', 'mode': 'ro' } }"
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
+      - conf_object: 'DockerSpawner.environment'
+        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp' }"
       - conf_object: 'DockerSpawner.host_ip'
         value: "'0.0.0.0'"
       - conf_object: 'SyzygySwiftSpawner.openstack_auth_info'
