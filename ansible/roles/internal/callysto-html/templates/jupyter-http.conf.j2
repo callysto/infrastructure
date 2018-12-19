@@ -7,7 +7,7 @@ RequestHeader unset REMOTE_USER
   LogLevel warn
   CustomLog /var/log/httpd/jupyter-access.log combined
 
-  Redirect / https://{{ inventory_hostname }}/
+  Redirect permanent / https://{{ inventory_hostname }}/
 </VirtualHost>
 
 <VirtualHost *:443>
