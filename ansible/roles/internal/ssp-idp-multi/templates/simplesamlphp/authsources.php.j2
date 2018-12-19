@@ -15,7 +15,7 @@ $config = array(
         'core:AdminPassword',
     ),
 
-    {% if enable_saml %}
+    {% if enable_saml -%}
     'default-sp' => array(
         'saml:SP',
         'entityID' => null,
@@ -41,15 +41,15 @@ $config = array(
     '{{ s.display_name | lower | replace(' ','') }}' => array(
             'authoauth2:OAuth2',
             'urlAuthorize' => 'https://accounts.google.com/o/oauth2/auth',
-            'urlAccessToken' => 'https://accounts.google.com/o/oauth2/token',
-            'urlResourceOwnerDetails' => 'https://www.googleapis.com/plus/v1/people/me/openIdConnect',
-            //'urlResourceOwnerDetails' => 'https://www.googleapis.com/plus/v1/people/me?fields=id,name',
-            'clientId' => '{{ s.client_id }}',
-            'clientSecret' => '{{ s.client_secret }}',
+            'urlAccessToken' => 'https://www.googleapis.com/oauth2/v4/token',
+            'urlResourceOwnerDetails' => 'https://www.googleapis.com/oauth2/v3/userinfo',
             'scopes' =>  array(
+                'openid',
                 'email'
             ),
             'scopeSeparator' => ' ',
+            'clientId' => '{{ s.client_id }}',
+            'clientSecret' => '{{ s.client_secret }}',
         ),
   {% endif %}
 
@@ -67,7 +67,7 @@ $config = array(
     'multiauth:MultiAuth',
 
     'sources' => array(
-        {% if enable_saml %}
+        {% if enable_saml -%}
         'default-sp' => array(
             'text' => array(
                 'en' => 'Login with Institution account',

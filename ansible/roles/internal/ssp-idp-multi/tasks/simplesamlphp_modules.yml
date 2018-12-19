@@ -15,4 +15,3 @@
   args:
     chdir: "{{ ssp_dir }}"
     creates: "{{ ssp_dir }}/modules/authoauth2/lib/OAuth2ResponseHandler.php"
-
