@@ -3,11 +3,16 @@
   yum:
     name: '{{ zfs_release_rpm }}'
     state: present
+  register: zfs_repo
   notify:
     - Remove existing zfs packages
 
 - name: Flush ZFS Handlers
   meta: flush_handlers
+
+- name: Clean yum if zfs repo pkg installed
+  command: yum clean all
+  when: zfs_repo.changed
 
 - name: Install zfs kernel module
   yum:

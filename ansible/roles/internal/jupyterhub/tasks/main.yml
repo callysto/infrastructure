@@ -121,3 +121,9 @@
   template:
     src: "hub-error.html.j2"
     dest: "{{ jupyterhub_hub_template_dir }}/error.html"
+
+- name: Start + Enable jupyterhub
+  service:
+    name: jupyterhub
+    state: started
+    enabled: yes
