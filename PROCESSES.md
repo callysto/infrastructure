@@ -353,22 +353,16 @@ Next, build the images in succession:
 
 ```
 $ make build/base-notebook
-$ make build/minimal-notebook
-$ make build/scipy-notebook
-$ make build/pims-minimal
-$ make build/pims-r
+$ make build/minimal-notebook DARGS="--build-arg BASE_CONTAINER=callysto/base-notebook"
+$ make build/scipy-notebook DARGS="--build-arg BASE_CONTAINER=callysto/minimal-notebook"
+$ make build/pims-minimal DARGS="--build-arg BASE_CONTAINER=callysto/scipy-notebook"
+$ make build/pims-r DARGS="--build-arg BASE_CONTAINER=callysto/pims-minimal"
 ```
 
 If Swift is being used for file storage, build the Swift image:
 
 ```
-$ make build/callysto-swift
-```
-
-Alternatively, build and test the entire stack all at once:
-
-```
-$ make build-test-all
+$ make build/callysto-swift DARGS="--build-arg BASE_CONTAINER=callysto/pims-r"
 ```
 
 Once the images have been built, you can push them to DockerHub by doing:
