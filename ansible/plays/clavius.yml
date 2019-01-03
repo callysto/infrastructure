@@ -1,7 +1,5 @@
 ---
-# This set of tasks are meant to be run on the clavius
-# virtual machine.
-#
+## Configures the clavius virtual machine
 - name: Ensure sudo is configured correctly
   hosts: clavius
   become: true

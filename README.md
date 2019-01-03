@@ -14,6 +14,17 @@ following services:
 * Neutron
 * Designate
 
+## Master Makefile
+
+There is a master `Makefile` located in the root directory. This `Makefile`
+is used to more easily interact with the below services.
+
+To see all tasks that the `Makefile` supports, run:
+
+```
+  $ make help
+```
+
 ## Packer
 
 Packer is used to create OpenStack images with pre-installed packages and
@@ -22,19 +33,19 @@ and CI environments.
 
 ### Binaries
 
-The `./packer/bin` directory contains the binaries required to run Packer.
+The `./bin` directory contains the binaries required to run Packer.
 These binaries are bundled in this repository to ensure all project members are
 using the same version.
 
 ### Makefile
 
-The `./packer/Makefile` provides an easy way to interact with Packer to create
+The master `Makefile` provides an easy way to interact with Packer to create
 images.
 
 For example, to create the base hub image:
 
 ```
-  $ make build/hub
+  $ make packer/build/hub
 ```
 
 > Note: review the `Makefile` and Packer build files to ensure their settings
@@ -49,7 +60,7 @@ All Terraform-related files are stored in the `./terraform` directory.
 
 ### Binaries
 
-The `./terraform/bin` directory contains the binaries required to run Terraform.
+The main `./bin` directory contains the binaries required to run Terraform.
 These binaries are bundled in this repository to ensure all project members are
 using the same version.
 
@@ -64,14 +75,14 @@ are defined:
 
 ### Makefile
 
-The `./terraform/Makefile` provides an easy way to interact with Terraform to
+The master `Makefile` provides an easy way to interact with Terraform to
 deploy and manage infrastructure.
 
 For example, to redeploy the `hub-dev` environment, do
 
 ```
-  $ make destroy env=hub-dev
-  $ make apply env=hub-dev
+  $ make terraform/destroy ENV=hub-dev
+  $ make terraform/apply ENV=hub-dev
 ```
 
 This will use the Terraform binary in `./bin` to apply the Terraform configuration
@@ -84,8 +95,8 @@ The `Makefile` is only a convenience and it is not required. If you want to use 
 directly, simply do:
 
 ```
-$ cd hub-dev
-$ ../bin/<arch>/terraform <action>
+$ cd terraform/hub-dev
+$ ../../bin/<arch>/terraform <action>
 ```
 
 ### Deploying an Environment
@@ -96,8 +107,8 @@ Environments are grouped in directories under the `terraform` directory.
 Use the `Makefile` to deploy an environment:
 
 ```
-$ make plan env=hub-dev
-$ make apply env=hub-dev
+$ make terraform/plan ENV=hub-dev
+$ make terraform/apply ENV=hub-dev
 ```
 
 ## Ansible
@@ -107,9 +118,9 @@ which _deploys_ resources.
 
 ### Makefile
 
-There's an `ansible/Makefile` which can assist with running various Ansible
-commands. Using the `Makefile` makes it easy to ensure the command has all
-required information.
+The master `Makefile` can assist with running various Ansible commands.
+Using the `Makefile` makes it easy to ensure the command has all required
+information.
 
 If you prefer to not use the `Makefile`, check the contents of the `Makefile`
 for all required Ansible arguments and then just run `ansible` or
@@ -124,27 +135,14 @@ creates an appropriate Ansible Inventory result.
 
 ## Running Ansible
 
-The instance must be initialized the first time. This will update all packages,
-and use a suitable kernel to run zfs with. The instance will reboot once during
-the process to use a new kernel version.
+To deploy a hub, run:
 
 ```
-  $ cd ansible
-  $ make env=hub-dev hub/init/check
-  $ make env=hub-dev hub/init/apply
+  $ make ansible/playbook/check PLAYBOOK=hub ENV=hub-dev
+  $ make ansible/playbook PLAYBOOK=hub ENV=hub-dev
 ```
 
-> Note: `init/check` might fail due to Ansible unable to accurately predict the
-> commands it will run.
-
-After a successful initialization, you can continue provisioning the hub with:
-
-```
-  $ make env=hub-dev hub/check
-  $ make env=hub-dev hub/apply
-```
-
-> Note: again, `hub/check` might fail because Ansible.
+> Note: `check` might fail because Ansible's inability to accurately do noop.
 
 ## Identity Proxy
 

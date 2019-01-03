@@ -1,8 +1,5 @@
 ---
-# This set of tasks are meant to be run only once,
-# after the infrastructure has been deployed by
-# Terraform.
-#
+## Runs basic tasks after infrastructure has been deployed via Terraform
 - name: Initial tasks for Callysto Infrastructure
   hosts: all
   become: true

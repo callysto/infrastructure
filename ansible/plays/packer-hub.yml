@@ -1,6 +1,5 @@
 ---
-# This set of tasks are meant to be run via packer.
-#
+## Used by Packer to create a basic JupyterHub OpenStack image
 - name: Initial tasks for Callysto Infrastructure
   hosts: all
   become: true

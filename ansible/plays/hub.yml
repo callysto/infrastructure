@@ -1,4 +1,5 @@
 ---
+## Manages a JuptyerHub installation
 - name: Validate hub configuration
   hosts: hub
   become: true
