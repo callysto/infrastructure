@@ -1,4 +1,5 @@
 ---
+## Backs up sensitive files to ~/work/backup
 - name: Find files to backup
   hosts: localhost
   become: true

@@ -1,4 +1,5 @@
 ---
+## Calculates the hash of a JupyterHub user
 - name: Get User Hash
   hosts: hub
   become: true

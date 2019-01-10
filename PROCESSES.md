@@ -75,22 +75,18 @@ $ ssh-keygen -t rsa -f ./keys/id_rsa
 Next, set up Terraform:
 
 ```
-$ pushd terraform
-$ make setup
-$ popd
+$ make terraform/setup
 ```
 
-> Read the `setup` task in the `Makefile` to understand all steps being performed.
+> Read the `terraform/setup` task in the `Makefile` to understand all steps being performed.
 
 Next, set up Ansible
 
 ```
-$ pushd ansible
-$ make setup
-$ popd
+$ make ansible/setup
 ```
 
-> Read the `setup` task in the `Makefile` to understand all steps being performed.
+> Read the `ansible/setup` task in the `Makefile` to understand all steps being performed.
 
 ### Domain Names
 
@@ -118,9 +114,7 @@ details. Make any changes as appropriate.
 Once reviewed, run:
 
 ```
-$ pushd terraform
-$ make env=clavius apply
-$ popd
+$ make terraform/apply ENV=clavius
 ```
 
 Once Terraform has finished, use Ansible to provision it. Review the
@@ -141,10 +135,8 @@ ssh_public_keys:
 Finally, run Ansible:
 
 ```
-$ pushd ansible
-$ make env=clavius clavius/init/apply
-$ make env=clavius clavius/apply
-$ popd
+$ make ansible/playbook PLAYBOOK=init ENV=clavius
+$ make ansible/playbook PLAYBOOK=clavius ENV=clavius
 ```
 
 Once this is complete, log in to `clavius.callysto.farm` (or whatever the name
@@ -171,9 +163,7 @@ Next, re-clone the infrastructure repository and repeat the initial setup:
 $ git clone https://github.com/callysto/infrastructure callysto-infra
 $ cd callysto-infra
 $ ssh-keygen -t rsa -f ./keys/id_rsa
-$ pushd ansible
-$ make setup
-$ popd
+$ make anisble/setup
 ```
 
 > Notice how you've just repeated the steps from the beginning of this section.
@@ -200,9 +190,7 @@ environment.
 Next, run the following:
 
 ```shell
-$ pushd ansible
 $ make backup
-$ popd
 ```
 
 The backup destination directory (by default, `~/work/backup`) should now be populated
@@ -226,9 +214,7 @@ To generate the wildcard certificates, first review the following files:
 Once the files are configured correctly, run:
 
 ```
-pushd letsencrypt
-make generate env=dev
-popd
+make letsencrypt/generate ENV=dev
 ```
 
 Finally, set the `callysto_ssl_cert_dir` variable in your `local_vars.yml` file.
@@ -247,17 +233,13 @@ As a pre-requisite, you will need to ensure an OpenStack security group exists
 for Packer:
 
 ```
-$ pushd terraform
-$ make env=packer apply
-$ popd
+$ make terraform/apply ENV=packer
 ```
 
 Next, build the image:
 
 ```
-$ pushd packer
-$ make build/hub
-$ popd
+$ make packer/build/hub
 ```
 
 You only need to repeat this process when there are significant OS upgrades
@@ -291,8 +273,7 @@ $ openstack floating ip create public
 Next, create a new Terraform environment:
 
 ```
-$ pushd terraform
-$ make new-hub/prod env=prod
+$ make terraform/hub/new/prod  ENV=prod
 ```
 
 Next, edit `hub-prod/main.tf` and modify as needed. Notably:
@@ -303,8 +284,7 @@ Next, edit `hub-prod/main.tf` and modify as needed. Notably:
 Finally, deploy the hub:
 
 ```
-$ make apply env=hub-prod
-$ popd
+$ make terraform/apply ENV=hub-prod
 ```
 
 ## Deploying the Development Environment
@@ -312,12 +292,8 @@ $ popd
 To deploy a development environment, run the following:
 
 ```
-$ pushd terraform
-$ make env=hub-dev apply
-$ pushd ../ansible
-$ make env=hub-dev hub/apply
-$ popd
-$ popd
+$ make terraform/apply ENV=hub-dev
+$ make ansible/playbook PLAYBOOK=hub ENV=hub-dev
 ```
 
 ## Deploying a Custom Environment
@@ -325,8 +301,7 @@ $ popd
 To deploy a custom environment, run the following:
 
 ```
-$ pushd terraform
-$ make new-hub/dev env=<name>
+$ make terraform/hub/new/dev ENV=<name>
 ```
 
 This will do the following:
@@ -344,6 +319,7 @@ First, clone the `docker-stacks` repo:
 ```
 $ pushd ~/work
 $ git clone https://github.com/callysto/docker-stacks
+$ cd docker-stacks
 $ git checkout ianabc
 ```
 
@@ -465,9 +441,7 @@ To set a custom theme, modify the following settings in `local_vars.yml`:
 2. Run:
 
 ```
-$ pushd ansible
-$ make env=<env> hub/apply
-$ popd
+$ make ansible/playbook ENV=<env>
 ```
 
 This will set the announcement in the following locations:
@@ -538,9 +512,7 @@ $ /usr/local/bin/findhash.php john.doe@example.com
 Or by running the following task on Clavius:
 
 ```
-pushd ansible
-make user/findhash user=john.doe@example.com env=hub-prod
-popd
+make user/findhash USER=john.doe@example.com ENV=hub-prod
 ```
 
 ## Managing Admin Users
@@ -551,16 +523,14 @@ variable.
 
 ## Quota Management
 
-The `ansible/Makefile` contains a handful of tasks to manage a user's quota:
+The `Makefile` contains a handful of tasks to manage a user's quota:
 
 > Note: <user>` will be the _hash_ of the user and not the readable username.
 
 ```
-$ pushd ansible
-$ make quota/get env=<env>
-$ make quota/get env=<env> user=<user>
-$ make quota/set env=<env> user=<user> refquota=<10G>
-$ popd
+$ make quota/get ENV=<env>
+$ make quota/get ENV=<env> USER=<user>
+$ make quota/set ENV=<env> USER=<user> REFQUOTA=<10G>
 ```
 
 ## Logout Redirect
