@@ -4,6 +4,12 @@
   hosts: hub
   become: true
   tasks:
+    - name: Ensure zfs_disk_1 and zfs_disk_2 are set
+      assert:
+        that: >-
+          zfs_disk_1 is defined and zfs_disk_1 != "" and zfs_disk_2 is defined and zfs_disk_2 != ""
+        msg: "Must set zfs_disk_1 and zfs_disk_2. This is usually done automatically with Terraform"
+
     - name: Ensure callysto_ssl_cert_dir is set
       assert:
         that: >-

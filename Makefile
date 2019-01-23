@@ -50,8 +50,17 @@ ifndef HOST
 endif
 
 check-module:
-ifndef MODULE
+ifdef MODULE
+export _MODULE = $(MODULE)
+else
 	$(error MODULE is not defined)
+endif
+
+check-args:
+ifdef ARGS
+export _ARGS = "-a $(ARGS)"
+else
+export _ARGS =
 endif
 
 check-playbook:
@@ -218,9 +227,9 @@ ansible/ping: check-env check-group-optional
 	$(ANSIBLE_CMD) $(_GROUP) -m ping
 
 HELP: Executes $MODULE on $GROUP with $ARGS in $ENV
-ansible/exec: check-env check-group-optional check-module
+ansible/exec: check-env check-group-optional check-module check-args
 	@cd $(ANSIBLE_PATH) ; \
-	$(ANSIBLE_CMD) $(_GROUP) $(_MODULE) -a "$(ARGS)"
+	$(ANSIBLE_CMD) $(_GROUP) -m $(_MODULE) $(_ARGS)
 
 # Quota tasks
 HELP: Gets a quota for $USER in $ENV
