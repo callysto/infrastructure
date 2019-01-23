@@ -50,8 +50,17 @@ ifndef HOST
 endif
 
 check-module:
-ifndef MODULE
+ifdef MODULE
+export _MODULE = $(MODULE)
+else
 	$(error MODULE is not defined)
+endif
+
+check-args:
+ifdef ARGS
+export _ARGS = -a "$(ARGS)"
+else
+export _ARGS =
 endif
 
 check-playbook:
@@ -218,20 +227,20 @@ ansible/ping: check-env check-group-optional
 	$(ANSIBLE_CMD) $(_GROUP) -m ping
 
 HELP: Executes $MODULE on $GROUP with $ARGS in $ENV
-ansible/exec: check-env check-group-optional check-module
+ansible/exec: check-env check-group-optional check-module check-args
 	@cd $(ANSIBLE_PATH) ; \
-	$(ANSIBLE_CMD) $(_GROUP) $(_MODULE) -a "$(ARGS)"
+	$(ANSIBLE_CMD) $(_GROUP) -m $(_MODULE) $(_ARGS)
 
 # Quota tasks
 HELP: Gets a quota for $USER in $ENV
-quota/get: check-env check-user check-refquota
+quota/get: check-env check-user
 	@cd $(ANSIBLE_PATH) ; \
-	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(USER)
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars user=$(USER)
 
 HELP: Sets a quota to $REFQUOTA for $USER in $ENV
 quota/set: check-env check-user check-refquota
 	@cd $(ANSIBLE_PATH) ; \
-	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(USER) --extra-vars refquota=$(REFQUOTA)
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars set_quota=1 --extra-vars user=$(USER) --extra-vars refquota=$(REFQUOTA)
 
 # User tasks
 HELP: Finds a hash for $USER in $ENV

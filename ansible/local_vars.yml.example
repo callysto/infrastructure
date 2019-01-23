@@ -12,8 +12,10 @@ support_email: support@example.com
 # All hubs have a ZFS mirror.
 # Specify their drive letters here.
 # The "d854b345-1600-478a-9" part is a portion of the volumes' UUID.
-zfs_disk_1: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
-zfs_disk_2: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
+# NOTE: This is done automatically by Terraform now. You do not need to set
+# this unless there's a special situation.
+#zfs_disk_1: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
+#zfs_disk_2: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
 
 # Uncomment this to use overlay2
 openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0-0-0-1

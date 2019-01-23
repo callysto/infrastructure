@@ -132,5 +132,7 @@ resource "ansible_host" "hub" {
     ansible_user            = "ptty2u"
     ansible_host            = "${local.hub_ip}"
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    zfs_disk_1              = "${module.hub.vol_id_1}"
+    zfs_disk_2              = "${module.hub.vol_id_2}"
   }
 }

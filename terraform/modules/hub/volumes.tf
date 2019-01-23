@@ -32,3 +32,11 @@ resource "openstack_compute_volume_attach_v2" "zfs_2" {
   instance_id = "${openstack_compute_instance_v2.hub.id}"
   volume_id   = "${local.vol_id_2}"
 }
+
+output "vol_id_1" {
+  value = "${local.vol_id_1}"
+}
+
+output "vol_id_2" {
+  value = "${local.vol_id_2}"
+}
