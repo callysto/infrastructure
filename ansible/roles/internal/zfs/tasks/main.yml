@@ -32,7 +32,7 @@
 - name: Create tank zpool
   notify:
    - Start zfs
-  command: /sbin/zpool create -f tank mirror '{{ zfs_disk_1 }}' '{{ zfs_disk_2 }}'
+  command: /sbin/zpool create -f tank mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
   args:
     creates: /tank
   when: zfs_disk_1 != "" and zfs_disk_2 != ""
