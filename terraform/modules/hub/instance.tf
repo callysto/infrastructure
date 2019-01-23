@@ -10,6 +10,10 @@ resource "openstack_compute_instance_v2" "hub" {
   network {
     name = "${var.network_name}"
   }
+
+  lifecycle {
+    ignore_changes = ["image_id"]
+  }
 }
 
 output "instance_uuid" {

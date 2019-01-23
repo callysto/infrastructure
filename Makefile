@@ -58,7 +58,7 @@ endif
 
 check-args:
 ifdef ARGS
-export _ARGS = "-a $(ARGS)"
+export _ARGS = -a "$(ARGS)"
 else
 export _ARGS =
 endif
@@ -233,14 +233,14 @@ ansible/exec: check-env check-group-optional check-module check-args
 
 # Quota tasks
 HELP: Gets a quota for $USER in $ENV
-quota/get: check-env check-user check-refquota
+quota/get: check-env check-user
 	@cd $(ANSIBLE_PATH) ; \
-	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(USER)
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars user=$(USER)
 
 HELP: Sets a quota to $REFQUOTA for $USER in $ENV
 quota/set: check-env check-user check-refquota
 	@cd $(ANSIBLE_PATH) ; \
-	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars get_quota=1 --extra-vars user=$(USER) --extra-vars refquota=$(REFQUOTA)
+	$(PLAYBOOK_CMD) --limit hub plays/quota_tasks.yml --extra-vars set_quota=1 --extra-vars user=$(USER) --extra-vars refquota=$(REFQUOTA)
 
 # User tasks
 HELP: Finds a hash for $USER in $ENV
