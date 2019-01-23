@@ -21,6 +21,10 @@ $config = array(
         'entityID' => null,
         'idp' => null,
         'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+        'authproc' => array(
+                1 => array( 'class' => 'core:AttributeMap', 'urn2name'),
+                2 => array( 'class' => 'saml:FilterScopes', 'attributes' => array( 'mail', 'email', 'eduPersonPrincipalName', ) ),
+        ),
     ),
     {% endif %}
 
