@@ -1,0 +1,32 @@
+##### user Info
+# OPENRC file is part of openstack installation
+#     It can be obtained from the OpenStack panel
+#     Change the OPENRC_PATH to your openstack openrc file location
+export OPENRC_PATH="~/work/rc/openrc"
+export ADMIN_EMAIL="user@example.com"
+export SUPPORT_EMAIL="support@example.com"
+
+##### Callysto environment setup
+# CALLYSTO_DOMAINNAME sets fully qualified domain name (FQDN) for project
+#    This value is also required by terraform
+export CALLYSTO_DOMAINNAME="callysto.farm"
+export TF_VAR_CALLYSTO_DOMAINNAME="${CALLYSTO_DOMAINNAME}"
+
+# CALLYSTO_ZONE_ID is an Openstack UUID of the domain used for project
+#    This is the case when Openstack DNS is in use as primary
+#    This value is also required by terraform
+export CALLYSTO_ZONE_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+export TF_VAR_CALLYSTO_ZONE_ID="${CALLYSTO_ZONE_ID}"
+
+# CALLYSTO_LCRYPT_BASE is part of Dehydrated configuration
+#     Base directory for account key, generated certificates and list of domains
+#     (default: $SCRIPTDIR -- uses config directory if undefined)
+export CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt/dev
+
+# Name of the folder to store certificates
+export CALLYSTO_SSL_DIR_NAME=star_callysto_farm
+
+
+
+##### Do not edit below variables
+export CALLYSTO_SSL_CERT_DIRECTORY="./../../letsencrypt/dev/certs/${CALLYSTO_SSL_DIR_NAME}"

@@ -289,6 +289,12 @@ $ make terraform/apply ENV=hub-prod
 
 ## Deploying the Development Environment
 
+Make sure the direnv is enabled and variables in .envrc file have all required values
+If direnv reports error please follow with:
+```
+$ direnv allow
+```
+
 To deploy a development environment, run the following:
 
 ```

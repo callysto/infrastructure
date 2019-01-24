@@ -6,8 +6,8 @@
 #    state: present
 #    public_key: 'ssh-rsa ...'
 
-admin_email: user@example.com
-support_email: support@example.com
+admin_email: "{{ lookup('env','ADMIN_EMAIL') | default('user@example.com', true) }}"
+support_email: "{{ lookup('env','SUPPORT_EMAIL') | default('support@example.com', true) }}"
 
 # All hubs have a ZFS mirror.
 # Specify their drive letters here.
@@ -23,8 +23,8 @@ openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-
 #docker_zfs_pool: "/tank"
 
 # Domain and SSL settings
-domain: subdomain.example.com
-callysto_ssl_cert_dir: ""
+domain: "{{ ansible_env.CALLYSTO_DOMAINNAME | default('subdomain.example.com', true) }}"
+callysto_ssl_cert_dir: "{{ lookup('env','CALLYSTO_SSL_CERT_DIRECTORY') | default('', true) }}"
 
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
