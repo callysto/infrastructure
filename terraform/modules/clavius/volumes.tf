@@ -19,3 +19,7 @@ resource "openstack_compute_volume_attach_v2" "docker" {
   instance_id = "${openstack_compute_instance_v2.clavius.id}"
   volume_id   = "${openstack_blockstorage_volume_v2.docker.id}"
 }
+
+output "docker_storage" {
+  value = "${openstack_blockstorage_volume_v2.docker.id}"
+}

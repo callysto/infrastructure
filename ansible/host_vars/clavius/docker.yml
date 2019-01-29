@@ -1,1 +1,4 @@
-openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_b8cd502e-7268-40fa-8
+openstack_ephemeral_docker_disk: "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ docker_storage[0:20] }}"
+
+# Reset the docker_zfs_pool if set as Clavius is using the ephemeral storage above
+docker_zfs_pool: ""

@@ -1,12 +1,15 @@
+variable "CALLYSTO_DOMAINNAME" {}
+variable "CALLYSTO_ZONE_ID" {}
+
 locals {
-  name = "clavius.callysto.farm"
+  name = "clavius.${var.CALLYSTO_DOMAINNAME}"
 
   image_id        = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
   flavor_name     = "m1.small"
   network_name    = "default"
   public_key      = "${file("../../keys/id_rsa.pub")}"
   floatingip_pool = "public"
-  zone_id         = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595"
+  zone_id         = "${var.CALLYSTO_ZONE_ID}"
 }
 
 module "clavius" "clavius" {
@@ -66,5 +69,6 @@ resource "ansible_host" "clavius" {
     ansible_user            = "ptty2u"
     ansible_host            = "${openstack_dns_recordset_v2.clavius_v4.records[0]}"
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    docker_storage          = "${module.clavius.docker_storage}"
   }
 }
