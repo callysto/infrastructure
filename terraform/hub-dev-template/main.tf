@@ -1,15 +1,20 @@
+# DEV_CALLYSTO_DOMAINNAME and DEV_CALLYSTO_ZONE_ID are set in env or .envrc file
+variable "DEV_CALLYSTO_DOMAINNAME" {}
+
+variable "DEV_CALLYSTO_ZONE_ID" {}
+
 resource "random_pet" "name" {
   length = 2
 }
 
 # These represent settings to tune the hub you're creating
 locals {
-  name = "${random_pet.name.id}.callysto.farm"
+  name = "${random_pet.name.id}.${var.DEV_CALLYSTO_DOMAINNAME}"
 
   image_name   = "callysto-hub"
   network_name = "default"
   public_key   = "${file("../../keys/id_rsa.pub")}"
-  zone_id      = "fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595"
+  zone_id      = "${var.DEV_CALLYSTO_ZONE_ID}"
 
   # Create a new floating IP or use an existing one.
   # If set to false and "", then IPv6 will be used.

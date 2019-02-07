@@ -282,16 +282,7 @@ The configuration is stored in `letsencrypt`.
 
 ## Direnv Integration for Dev Environment
 
-The direnv is storing set of variables required by Terraform, Ansible and Letsencrypt in one .envrc file to speed up deployment (only dev environment at the moment)
+The direnv is storing set of variables required by Terraform, Ansible and Letsencrypt
+in one .envrc file to speed up deployment (only dev environment at the moment).
 
-To enable direnv:
-###### On Mac OS X (http://macappstore.org/direnv/)
-```
-brew install direnv
-echo 'eval $(direnv hook bash)' >> ~/.bash_profile
-```
-###### Ubuntu
-```
-apt install direnv
-echo 'eval $(direnv hook bash)' >> ~/.bash_profile   # or ~/.profile or ~/.bashrc
-```
+A binary for both Linux and Darwin (Mac) have been bundled in the `/bin` directory.
