@@ -3,6 +3,7 @@ UNAME = $(shell uname)
 TF_PATH := $(CURDIR)/terraform
 ANSIBLE_PATH := $(CURDIR)/ansible
 PACKER_PATH := $(CURDIR)/packer
+DEHYDRATED_PATH = $(CURDIR)/vendor/dehydrated/dehydrated
 export PATH := $(CURDIR)/bin:$(CURDIR)/bin/$(UNAME):$(PATH)
 
 SHELL := /bin/bash
@@ -265,7 +266,12 @@ letsencrypt/generate: check-env
 	@cd letsencrypt/$(ENV) ; \
 	unset OS_USERNAME ; \
 	unset OS_PASSWORD ; \
-	RECIPIENT=sysadmin@callysto.ca dehydrated -c --accept-terms -f 'config' -k './hook.sh'
+	if [[ ${ENV} =~ 'dev' ]]; then \
+	  echo "*.${CALLYSTO_DOMAINNAME} > ${CALLYSTO_SSL_DIR_NAME}" > domains.txt ; \
+	  RECIPIENT=${ADMIN_EMAIL} ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
+	else \
+	  RECIPIENT=sysadmin@callysto.ca ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
+	fi
 
 # SSH tasks
 HELP: SSH to a given $HOST in $ENV

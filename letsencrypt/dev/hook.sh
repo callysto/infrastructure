@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z ${OPENRC_PATH+x} ]; then
+  echo "OPENRC_PATH var is unset in env or .envrc file"
+  exit 5
+fi
+
 deploy_challenge() {
     local DOMAIN="${1}" TOKEN_FILENAME="${2}" TOKEN_VALUE="${3}"
 
@@ -22,9 +27,9 @@ deploy_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate add _acme-challenge.%s 300 IN TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
-    source ~/work/rc/openrc
-    openstack recordset delete callysto.farm. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
-    openstack recordset create callysto.farm. _acme-challenge.${DOMAIN}. --type TXT --record \"${TOKEN_VALUE}\";
+    source ${OPENRC_PATH}
+    openstack recordset delete ${DOMAIN}. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
+    openstack recordset create ${DOMAIN}. _acme-challenge.${DOMAIN}. --type TXT --record \"${TOKEN_VALUE}\";
     sleep 10
 }
 
@@ -39,8 +44,8 @@ clean_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate delete _acme-challenge.%s TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
-    source ~/work/rc/openrc
-    openstack recordset delete callysto.farm. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
+    source ${OPENRC_PATH}
+    openstack recordset delete ${DOMAIN}. _acme-challenge.${DOMAIN}. > /dev/null 2>&1;
 }
 
 deploy_cert() {

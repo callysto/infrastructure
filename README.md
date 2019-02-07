@@ -279,3 +279,19 @@ Clavius server and then pushed to the various Callysto servers.
 Dehydrated is stored in the `vendor` directory.
 
 The configuration is stored in `letsencrypt`.
+
+## Direnv Integration for Dev Environment
+
+The direnv is storing set of variables required by Terraform, Ansible and Letsencrypt in one .envrc file to speed up deployment (only dev environment at the moment)
+
+To enable direnv:
+###### On Mac OS X (http://macappstore.org/direnv/)
+```
+brew install direnv
+echo 'eval $(direnv hook bash)' >> ~/.bash_profile
+```
+###### Ubuntu
+```
+apt install direnv
+echo 'eval $(direnv hook bash)' >> ~/.bash_profile   # or ~/.profile or ~/.bashrc
+```

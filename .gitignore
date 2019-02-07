@@ -16,3 +16,4 @@ ansible/inventory
 letsencrypt/*/accounts
 letsencrypt/*/certs
 letsencrypt/*/chains
+.envrc
