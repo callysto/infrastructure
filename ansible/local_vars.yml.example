@@ -65,6 +65,7 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 
 # Set an announcement on the user's control panel
 #jupyterhub_announcement: 'Some Text'
+#jupyterhub_alert: 'Some Emergency Text'
 
 # Set these to use a persistent token/cookie between the hub and proxy
 #jupyterhub_auth_token: ""
