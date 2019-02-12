@@ -21,12 +21,14 @@ export TF_VAR_CALLYSTO_ZONE_ID="${CALLYSTO_ZONE_ID}"
 # CALLYSTO_LCRYPT_BASE is part of Dehydrated configuration
 #     Base directory for account key, generated certificates and list of domains
 #     (default: $SCRIPTDIR -- uses config directory if undefined)
-export CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt/dev
+export CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt
 
 # Name of the folder to store certificates
-export CALLYSTO_SSL_DIR_NAME=star_callysto_farm
+export CALLYSTO_SSL_DIR_NAME_DEV=star_callysto_farm
+export CALLYSTO_SSL_DIR_NAME_PROD=star_callysto_ca
 
 
 
 ##### Do not edit below variables
-export CALLYSTO_SSL_CERT_DIRECTORY="./../../letsencrypt/dev/certs/${CALLYSTO_SSL_DIR_NAME}"
+export CALLYSTO_SSL_CERT_DIRECTORY_DEV="./../../letsencrypt/dev/certs/${CALLYSTO_SSL_DIR_NAME_DEV}"
+export CALLYSTO_SSL_CERT_DIRECTORY_PROD="./../../letsencrypt/prod/certs/${CALLYSTO_SSL_DIR_NAME_PROD}"

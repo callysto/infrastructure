@@ -1,15 +1,16 @@
-variable "CALLYSTO_DOMAINNAME" {}
-variable "CALLYSTO_ZONE_ID" {}
+variable "DEV_CALLYSTO_DOMAINNAME" {}
+
+variable "DEV_CALLYSTO_ZONE_ID" {}
 
 locals {
-  name = "clavius.${var.CALLYSTO_DOMAINNAME}"
+  name = "clavius.${var.DEV_CALLYSTO_DOMAINNAME}"
 
   image_id        = "10076751-ace0-49b2-ba10-cfa22a98567d" # CentOS 7
   flavor_name     = "m1.small"
   network_name    = "default"
   public_key      = "${file("../../keys/id_rsa.pub")}"
   floatingip_pool = "public"
-  zone_id         = "${var.CALLYSTO_ZONE_ID}"
+  zone_id         = "${var.DEV_CALLYSTO_ZONE_ID}"
 }
 
 module "clavius" "clavius" {

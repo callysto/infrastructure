@@ -1,6 +1,9 @@
+# PROD_CALLYSTO_DOMAINNAME is set in env or .envrc file
+variable "PROD_CALLYSTO_DOMAINNAME" {}
+
 # These represent settings to tune the hub you're creating
 locals {
-  name = "hub.callysto.ca"
+  name = "hub.${var.PROD_CALLYSTO_DOMAINNAME}"
 
   image_name   = "callysto-hub"
   network_name = "default"

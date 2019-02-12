@@ -1,16 +1,17 @@
-variable "CALLYSTO_DOMAINNAME" {}
-variable "CALLYSTO_ZONE_ID" {}
+variable "DEV_CALLYSTO_DOMAINNAME" {}
+
+variable "DEV_CALLYSTO_ZONE_ID" {}
 
 locals {
-  # CALLYSTO_DOMAINNAME and CALLYSTO_ZONE_ID are set in env or .envrc file
-  name = "hub-dev.${var.CALLYSTO_DOMAINNAME}"
+  # DEV_CALLYSTO_DOMAINNAME and DEV_CALLYSTO_ZONE_ID are set in env or .envrc file
+  name = "hub-dev.${var.DEV_CALLYSTO_DOMAINNAME}"
 
   image_name   = "callysto-hub"
   flavor_name  = "m1.large"
   network_name = "default"
   public_key   = "${file("../../keys/id_rsa.pub")}"
   vol_zfs_size = 50
-  zone_id      = "${var.CALLYSTO_ZONE_ID}"
+  zone_id      = "${var.DEV_CALLYSTO_ZONE_ID}"
 }
 
 data "openstack_images_image_v2" "hub" {

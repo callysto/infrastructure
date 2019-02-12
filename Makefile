@@ -267,7 +267,7 @@ letsencrypt/generate: check-env
 	unset OS_USERNAME ; \
 	unset OS_PASSWORD ; \
 	if [[ ${ENV} =~ 'dev' ]]; then \
-	  echo "*.${CALLYSTO_DOMAINNAME} > ${CALLYSTO_SSL_DIR_NAME}" > domains.txt ; \
+	  echo "*.${DEV_CALLYSTO_DOMAINNAME} > ${DEV_CALLYSTO_SSL_DIR_NAME}" > domains.txt ; \
 	  RECIPIENT=${ADMIN_EMAIL} ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
 	else \
 	  RECIPIENT=sysadmin@callysto.ca ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
@@ -279,3 +279,8 @@ ssh/shell: check-env check-host
 	@_host=$(shell make ansible/get-ipv4 ENV=$(ENV) HOST=$(HOST)) ; \
 	_user=$(shell make ansible/get-ssh-user ENV=$(ENV) HOST=$(HOST)) ; \
 	$(SSH_CMD) $$_user@$$_host
+
+# direnv tasks
+HELP: Run direnv allow
+direnv/allow:
+	direnv allow
