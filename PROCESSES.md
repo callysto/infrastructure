@@ -24,7 +24,7 @@ the Callysto environment.
 
 > User Management
 
-* [Creating an Announcement](#creating-an-announcement)
+* [Creating an Announcement or Alert](#creating-an-announcement-or-alert)
 * [Setting a Getting Started Notebook](#setting-a-getting-started-notebook)
 * [Modifying a Notebook Template](#modifying-a-notebook-template)
 * [Determining a User's Hash](#determining-a-users-hash)
@@ -162,8 +162,8 @@ ssh_public_keys:
 Finally, run Ansible:
 
 ```
-$ make ansible/playbook PLAYBOOK=init ENV=clavius
-$ make ansible/playbook PLAYBOOK=clavius ENV=clavius
+$ make ansible/playbook PLAYBOOK=init ENV=clavius GROUP=clavius
+$ make ansible/playbook PLAYBOOK=clavius ENV=clavius GROUP=clavius
 ```
 
 Once this is complete, log in to `clavius.callysto.farm` (or whatever the name
@@ -326,7 +326,7 @@ To deploy a development environment, run the following:
 
 ```
 $ make terraform/apply ENV=hub-dev
-$ make ansible/playbook PLAYBOOK=hub ENV=hub-dev
+$ make ansible/playbook PLAYBOOK=hub ENV=hub-dev GROUP=hub
 ```
 
 ## Deploying a Custom Environment
@@ -468,16 +468,16 @@ To set a custom theme, modify the following settings in `local_vars.yml`:
 
 # User Management
 
-## Creating an Announcement
+## Creating an Announcement or Alert
 
-1. Set the `jupyterhub_announcement` variable in the `local_vars.yml` file.
+1. Set the `jupyterhub_announcement` or `jupyterhub_alert` variable in the `local_vars.yml` file.
 2. Run:
 
 ```
-$ make ansible/playbook ENV=<env>
+$ make ansible/playbook ENV=<env> GROUP=hub PLAYBOOK=hub
 ```
 
-This will set the announcement in the following locations:
+This will set an announcement or alert in the following locations:
 
 * JupyterHub control panel
 * Jupyter Notebook file index / tree page

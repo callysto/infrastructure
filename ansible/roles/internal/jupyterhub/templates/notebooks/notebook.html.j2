@@ -8,13 +8,26 @@
 {% endblock %}
 {% endraw -%}
 
+{# add an alert -#}
+{% if jupyterhub_alert != "" -%}
+{# raw so that ansible doesn't render -#}
+{% raw -%}
+{% block header %}
+{% endraw -%}
+<br><div class="container alert alert-danger">{{ jupyterhub_alert }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+{% raw -%}
+{{ super() }}
+{% endblock %}
+{% endraw -%}
+{% endif -%}
+
 {# add an announcement -#}
 {% if jupyterhub_announcement != "" -%}
 {# raw so that ansible doesn't render -#}
 {% raw -%}
 {% block header %}
 {% endraw -%}
-<br><div class="container alert alert-danger">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+<br><div class="container alert alert-info">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
 {% raw -%}
 {{ super() }}
 {% endblock %}

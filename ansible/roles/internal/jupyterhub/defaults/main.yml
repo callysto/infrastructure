@@ -21,6 +21,7 @@ jupyterhub_docker_image: 'docker.io/callysto/pims-minimal'
 jupyterhub_docker_container: 'docker.io/callysto/pims-minimal:latest'
 
 jupyterhub_announcement: ""
+jupyterhub_alert: ""
 
 jupyterhub_notebook_template_dir: "/tank/notebook_templates"
 jupyterhub_hub_template_dir: "/tank/hub_templates"
