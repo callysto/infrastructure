@@ -9,26 +9,33 @@ export SUPPORT_EMAIL="support@example.com"
 ##### Callysto environment setup
 # CALLYSTO_DOMAINNAME sets fully qualified domain name (FQDN) for project
 #    This value is also required by terraform
-export CALLYSTO_DOMAINNAME="callysto.farm"
-export TF_VAR_CALLYSTO_DOMAINNAME="${CALLYSTO_DOMAINNAME}"
+export DEV_CALLYSTO_DOMAINNAME="callysto.farm"
+export TF_VAR_DEV_CALLYSTO_DOMAINNAME="${DEV_CALLYSTO_DOMAINNAME}"
+
+export PROD_CALLYSTO_DOMAINNAME="callysto.ca"
+export TF_VAR_PROD_CALLYSTO_DOMAINNAME="${PROD_CALLYSTO_DOMAINNAME}"
 
 # CALLYSTO_ZONE_ID is an Openstack UUID of the domain used for project
 #    This is the case when Openstack DNS is in use as primary
 #    This value is also required by terraform
-export CALLYSTO_ZONE_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-export TF_VAR_CALLYSTO_ZONE_ID="${CALLYSTO_ZONE_ID}"
+export DEV_CALLYSTO_ZONE_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+export TF_VAR_CALLYSTO_ZONE_ID="${DEV_CALLYSTO_ZONE_ID}"
+
+export PROD_CALLYSTO_ZONE_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+export TF_VAR_CALLYSTO_ZONE_ID="${PROD_CALLYSTO_ZONE_ID}"
 
 # CALLYSTO_LCRYPT_BASE is part of Dehydrated configuration
 #     Base directory for account key, generated certificates and list of domains
 #     (default: $SCRIPTDIR -- uses config directory if undefined)
-export CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt
+export DEV_CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt
+export PROD_CALLYSTO_LCRYPT_BASE=~/work/callysto-infra/letsencrypt
 
 # Name of the folder to store certificates
-export CALLYSTO_SSL_DIR_NAME_DEV=star_callysto_farm
-export CALLYSTO_SSL_DIR_NAME_PROD=star_callysto_ca
+export DEV_CALLYSTO_SSL_DIR_NAME=star_callysto_farm
+export PROD_CALLYSTO_SSL_DIR_NAME=star_callysto_ca
 
 
 
 ##### Do not edit below variables
-export CALLYSTO_SSL_CERT_DIRECTORY_DEV="./../../letsencrypt/dev/certs/${CALLYSTO_SSL_DIR_NAME_DEV}"
-export CALLYSTO_SSL_CERT_DIRECTORY_PROD="./../../letsencrypt/prod/certs/${CALLYSTO_SSL_DIR_NAME_PROD}"
+export DEV_CALLYSTO_SSL_CERT_DIRECTORY="./../../letsencrypt/dev/certs/${DEV_CALLYSTO_SSL_DIR_NAME}"
+export PROD_CALLYSTO_SSL_CERT_DIRECTORY="./../../letsencrypt/prod/certs/${PROD_CALLYSTO_SSL_DIR_NAME}"
