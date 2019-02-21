@@ -1,0 +1,13 @@
+{# raw so that ansible doesn't render most of the error template -#}
+{% raw -%}
+{% extends "error.html" %}
+
+{% block error_detail %}
+<p>You've run out of space, contact the callysto admin team to help you out!</p>
+<ul>
+<li>We might be able to dump space usage numbers here</li>
+<li>Add a contact form?</li>
+<li>Add a tidyup action do destroy user snapshots?</li>
+</ul>
+{% endblock %}
+{% endraw %}
