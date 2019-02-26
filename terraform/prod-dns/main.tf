@@ -7,8 +7,7 @@ resource "openstack_dns_recordset_v2" "callysto_ca" {
   type    = "A"
 
   records = [
-    "192.0.78.151",
-    "192.0.78.202",
+    "178.128.229.90",
   ]
 }
 
