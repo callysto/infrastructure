@@ -23,13 +23,16 @@
     update_cache: yes
   become: yes
 
-- name: Install yum-cron
+- name: Install centos-package-cron from RPM
   yum:
-    name: yum-cron
-  become: yes
+    name: '{{ base_packages_centos_cron_rpm_url }}'
+    state: 'present'
 
-- name: Copy yum-cron template
-  copy:
-    src: yum-cron.conf
-    dest: /etc/yum/yum-cron.conf
-  become: yes
+- name: Add cron job for centos-package-cron
+  cron:
+    name: "check for updates"
+    minute: 14
+    hour: 5
+    user: root
+    cron_file: centos-package-cron
+    job: '/usr/bin/centos-package-cron &>/dev/null'
