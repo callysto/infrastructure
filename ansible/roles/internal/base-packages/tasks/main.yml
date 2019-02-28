@@ -11,3 +11,11 @@
 - import_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian'
   static: no
+
+- name: Update email alias for root
+  lineinfile:
+    path: /etc/aliases
+    regexp: '^root:'
+    line: 'root: {{ admin_email }}'
+  notify:
+    Rebuild aliases

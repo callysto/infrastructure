@@ -6,3 +6,10 @@ base_packages:
   - { name: 'tmux', state: 'present' }
   - { name: 'screen', state: 'present' }
   - { name: 'python2-pip', state: 'present' }
+
+base_packages_centos_cron_major: 1
+base_packages_centos_cron_minor: 0
+base_packages_centos_cron_patch: 10
+base_packages_centos_cron_rpm_version: '{{ base_packages_centos_cron_major }}.{{ base_packages_centos_cron_minor }}.{{ base_packages_centos_cron_patch }}'
+base_packages_centos_cron_rpm_version_s: '{{ base_packages_centos_cron_major }}.{{ base_packages_centos_cron_minor }}-{{ base_packages_centos_cron_patch }}'
+base_packages_centos_cron_rpm_url: 'https://github.com/wied03/centos-package-cron/releases/download/releases%2F{{ base_packages_centos_cron_rpm_version }}/centos-package-cron-{{ base_packages_centos_cron_rpm_version_s }}.el7.centos.x86_64.rpm'
