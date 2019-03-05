@@ -73,6 +73,12 @@
           jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != '')
         msg: "Must set ssp_idp_multi_saml_key when using shib authenticator"
 
+    - name: Ensure hub_metrics is set
+      assert:
+        that: >-
+          hub_metrics is defined
+        msg: "Must set hub_metrics to true or false"
+
 - name: Ensure sudo is configured correctly
   hosts: hub
   become: true
@@ -199,3 +205,18 @@
       tags: ["ssh", "rrsync", "backup"]
       include_role:
         name: rrsync
+
+    - name: Prometheus node-exporter
+      tags: ["stats","prometheus"]
+      include_role:
+        name: prometheus-node-exporter
+      vars:
+        prometheus_exporters_common_root_dir: /prometheus/exporters
+        prometheus_node_exporter_config_flags:
+           'web.listen-address': '127.0.0.1:9100'
+           'log.level': 'info'
+
+    - name: cAdvisor container
+      tags: ["stats","prometheus"]
+      include_role:
+        name: prometheus-cadvisor

@@ -62,19 +62,33 @@ RequestHeader unset REMOTE_USER
   </Location>
   {% endif %}
 
+{% if hub_metrics == true %}
+  <Location /metrics/cadvisor/metrics>
+    ProxyPass http://127.0.0.1:8080/metrics
+    ProxyPassReverse http://127.0.0.1:8080/metrics
+    ProxyPreserveHost on
+  </Location>
+  {% endif %}
+
+{% if hub_metrics == true %}
+  <Location /metrics/node/metrics>
+    ProxyPass http://127.0.0.1:9100/metrics
+    ProxyPassReverse http://127.0.0.1:9100/metrics
+    ProxyPreserveHost on
+  </Location>
+  {% endif %}
+
   <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
-    {% if jupyterhub_authenticator == 'shib' %}
+  {% if jupyterhub_authenticator == 'shib' %}
     AuthType shibboleth
     Require shibboleth
     ShibRequestSetting requireSession true
     ShibUseHeaders off
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
-    {% endif %}
-
+  {% endif %}
     ProxyPassMatch ws://127.0.0.1:8000/jupyter/$1/$2$3
     ProxyPassReverse ws://127.0.0.1:8000/jupyter/$1/$2$3
   </LocationMatch>
-
 
   ErrorLog /var/log/httpd/jupyter-ssl-error.log
   LogLevel warn
@@ -101,8 +115,8 @@ RequestHeader unset REMOTE_USER
 
 </VirtualHost>
 
-SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
-SSLCipherSuite          ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+SSLProtocol             all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
+SSLCipherSuite          EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
 SSLHonorCipherOrder     on
 SSLCompression          off
 

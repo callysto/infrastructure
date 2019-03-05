@@ -3,3 +3,10 @@ zfs_release_rpm: "http://download.zfsonlinux.org/epel/zfs-release.el{{ ansible_d
 # Set these to devices to create a mirror
 zfs_disk_1: ""
 zfs_disk_2: ""
+
+# Name should contain leading slash char for pool
+# default for docker_zfs_pool is '/tank' from local_vars.yml - removing leading /
+zfs_pool_name: "{{ docker_zfs_pool[1:] }}"
+# Specify list of zfs containers, default only home for hub
+zfs_containers:
+  - home
