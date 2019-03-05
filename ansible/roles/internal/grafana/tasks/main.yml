@@ -1,0 +1,87 @@
+---
+- name: Add grafana storage and configuration locations
+  file:
+    path: '{{ item.path }}'
+    state: 'directory'
+    owner: '{{ grafana_user_uid }}'
+    group: '{{ grafana_user_gid }}'
+    mode: '{{ item.mode }}'
+  with_items:
+    - { 'path': '{{ grafana_host_path }}', 'mode': '0755' }
+
+- name: Add a network for grafana container
+  docker_network:
+    name: '{{ grafana_network }}'
+
+- name: Create required folders
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ grafana_user_uid }}'
+    group: '{{ grafana_user_gid }}'
+    mode: 0775
+  with_items:
+    - '{{ grafana_host_provisioning }}'
+    - '{{ grafana_host_datasources_path }}'
+    - '{{ grafana_host_dashboards_path }}'
+    - '{{ grafana_host_notifiers_path }}'
+    - '{{ grafana_host_data_path }}'
+    - '{{ grafana_dashboards_data }}'
+
+- name: Add data sources definitions
+  copy:
+    src: prometheus.yml
+    dest: '{{ grafana_host_datasources_path }}/prometheus.yml'
+
+- name: Add dashboards definitions
+  copy:
+    src: dashboards.yml
+    dest: '{{ grafana_host_dashboards_path }}/dashboards.yml'
+
+- name: Add notifiers definitions
+  copy:
+    src: slack.yml
+    dest: '{{ grafana_host_notifiers_path }}/slack.yml'
+
+- name: Clean managed dashboards
+  file:
+    path: "{{ grafana_dashboards_data }}/{{ item.dashboard_id }}.json"
+    state: absent
+  #ignore_errors: yes
+  with_items: "{{ grafana_dashboards }}"
+
+- name: Download Grafana managed dashboards
+  get_url:
+    url: "https://grafana.com/api/dashboards/{{ item.dashboard_id }}/revisions/{{ item.revision_id }}/download"
+    dest: "{{ grafana_dashboards_data }}/{{ item.dashboard_id }}.json"
+  register: _download_dashboards
+  until: _download_dashboards is success
+  retries: 5
+  delay: 2
+  run_once: yes
+  with_items: "{{ grafana_dashboards }}"
+
+- name: Set the correct data source name in the dashboard
+  replace:
+    dest: "{{ grafana_dashboards_data }}/{{ item.dashboard_id }}.json"
+    regexp: '"(?:\${)?DS_[A-Z]+(?:})?"'
+    replace: '"{{ item.datasource }}"'
+  run_once: yes
+  with_items: "{{ grafana_dashboards }}"
+
+- name: Start grafana/grafana container
+  docker_container:
+    image: '{{ grafana_image }}:{{ grafana_image_tag }}'
+    name: '{{ grafana_name }}'
+    user: '{{ grafana_user_uid }}'
+    ports: '{{ grafana_listen_address }}:{{ grafana_internal_port }}:{{ grafana_external_port }}'
+    state: started
+    network_mode: 'host'
+    env: {
+      'GF_SERVER_ROOT_URL': '{{ grafana_root_url }}',
+      'GF_SERVER_DOMAIN': '{{ grafana_domain }}'
+    }
+    volumes:
+      - '{{ grafana_host_data_path }}:/var/lib/grafana:rw'
+      - '{{ grafana_host_provisioning }}:/etc/grafana/provisioning:rw'
+

@@ -29,16 +29,28 @@
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
-- name: Create tank zpool
+- name: Check zpool {{ zfs_pool_name }} exsits
+  zpool_facts: pool={{ zfs_pool_name }}
+  register: zpool_exist
+  ignore_errors: yes
+
+- name: Remove {{ zfs_pool_name }} mount point
+  file:
+    state: absent
+    path: '/{{ zfs_pool_name }}'
+  when: zpool_exist.failed ==  true
+
+- name: Create {{ zfs_pool_name }} zpool
   notify:
    - Start zfs
-  command: /sbin/zpool create -f tank mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
+  command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
   args:
-    creates: /tank
+    creates: "/{{ zfs_pool_name }}"
   when: zfs_disk_1 != "" and zfs_disk_2 != ""
 
-- name: Create ZFS home container
-  command: /sbin/zfs create tank/home
+- name: Create ZFS containers
+  command: "/sbin/zfs create {{ zfs_pool_name }}/{{ item }}"
   args:
-    creates: /tank/home
+    creates: "/{{ zfs_pool_name }}/{{ item }}"
+  with_items: "{{ zfs_containers }}"
   when: zfs_disk_1 != "" and zfs_disk_2 != ""

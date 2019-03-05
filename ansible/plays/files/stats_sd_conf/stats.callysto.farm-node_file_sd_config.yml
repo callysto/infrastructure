@@ -1,0 +1,7 @@
+- labels:
+    type: 'node'
+    group: 'stats'
+    host: 'stats.callysto.farm'
+    '__metrics_path__': '/metrics/node/metrics'
+    '__scheme__': 'https'
+  targets: ['stats.callysto.farm:443']

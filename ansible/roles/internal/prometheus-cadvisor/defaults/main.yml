@@ -1,0 +1,6 @@
+---
+prom_cadvisor_image: 'google/cadvisor'
+prom_cadvisor_tag: 'latest'
+prom_cadvisor_name: 'cadvisor'
+prom_cadvisor_internal_port: 8080 
+prom_cadvisor_external_port: '{{ prom_cadvisor_internal_port }}'
