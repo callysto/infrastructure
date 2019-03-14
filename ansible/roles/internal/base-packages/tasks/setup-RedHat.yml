@@ -28,7 +28,6 @@
     name: '{{ item.name }}'
     state: '{{ item.state }}'
     update_cache: yes
-  tags: yum-cron
   with_items:
     - { name: 'mailx',  state: 'present' }
     - { name: 'yum-plugin-changelog',  state: 'present' }
@@ -43,7 +42,7 @@
     src: '{{ base_packages_centos_yum_security_url }}'
     dest: '/usr/bin/centos-yum-security'
     checksum: 'sha256:{{ base_packages_centos_yum_security_sha256 }}'
-    mode: 0700
+    mode: 0750
     owner: root
     group: root
 
@@ -55,3 +54,20 @@
     user: root
     cron_file: centos-package-cron
     job: '/usr/bin/centos-yum-security &>/dev/null'
+
+- name: Add a cron job for need-restarting
+  cron:
+    name: "Systemd services asking for a restart"
+    minute: 40
+    hour: 12
+    weekday: 5
+    cron_file
+    job: '/usr/bin/needs-restarting -s'
+
+- name: Add a cron job for systemd services needing a reboot
+  template:
+    src: needs-restarting.sh.j2
+    dest: /etc/cron.daily/needs-restarting.sh
+    mode: 0750
+    owner: root
+    group: root
