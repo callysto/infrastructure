@@ -23,16 +23,35 @@
     update_cache: yes
   become: yes
 
+- name: Install centos-yum-security dependencies
+  yum:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+    update_cache: yes
+  tags: yum-cron
+  with_items:
+    - { name: 'mailx',  state: 'present' }
+    - { name: 'yum-plugin-changelog',  state: 'present' }
+
 - name: Install centos-package-cron from RPM
   yum:
     name: '{{ base_packages_centos_cron_rpm_url }}'
     state: 'present'
 
+- name: Install centos-yum-security script
+  get_url:
+    src: '{{ base_packages_centos_yum_security_url }}'
+    dest: '/usr/bin/centos-yum-security'
+    checksum: 'sha256:{{ base_packages_centos_yum_security_sha256 }}'
+    mode: 0700
+    owner: root
+    group: root
+
 - name: Add cron job for centos-package-cron
   cron:
     name: "check for updates"
-    minute: 14
-    hour: 5
+    minute: 30 
+    hour: 12 
     user: root
     cron_file: centos-package-cron
-    job: '/usr/bin/centos-package-cron &>/dev/null'
+    job: '/usr/bin/centos-yum-security &>/dev/null'

@@ -13,3 +13,7 @@ base_packages_centos_cron_patch: 10
 base_packages_centos_cron_rpm_version: '{{ base_packages_centos_cron_major }}.{{ base_packages_centos_cron_minor }}.{{ base_packages_centos_cron_patch }}'
 base_packages_centos_cron_rpm_version_s: '{{ base_packages_centos_cron_major }}.{{ base_packages_centos_cron_minor }}-{{ base_packages_centos_cron_patch }}'
 base_packages_centos_cron_rpm_url: 'https://github.com/wied03/centos-package-cron/releases/download/releases%2F{{ base_packages_centos_cron_rpm_version }}/centos-package-cron-{{ base_packages_centos_cron_rpm_version_s }}.el7.centos.x86_64.rpm'
+
+# This doesn't seem to be versioned, so grab the current master and checksum
+base_packages_centos_yum_security_url: 'https://raw.githubusercontent.com/maulinglawns/centos-yum-security/master/centos-yum-security'
+base_packages_centos_yum_security_sha256: '9caa4fedc8c1f8754867bafdba1de23cffb6912a1e87339ac326a1deb439a0e7'
