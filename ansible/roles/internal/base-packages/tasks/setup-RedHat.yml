@@ -39,35 +39,45 @@
 
 - name: Install centos-yum-security script
   get_url:
-    src: '{{ base_packages_centos_yum_security_url }}'
+    url: '{{ base_packages_centos_yum_security_url }}'
     dest: '/usr/bin/centos-yum-security'
     checksum: 'sha256:{{ base_packages_centos_yum_security_sha256 }}'
     mode: 0750
     owner: root
     group: root
 
-- name: Add cron job for centos-package-cron
-  cron:
-    name: "check for updates"
-    minute: 30 
-    hour: 12 
-    user: root
-    cron_file: centos-package-cron
-    job: '/usr/bin/centos-yum-security &>/dev/null'
-
-- name: Add a cron job for need-restarting
-  cron:
-    name: "Systemd services asking for a restart"
-    minute: 40
-    hour: 12
-    weekday: 5
-    cron_file
-    job: '/usr/bin/needs-restarting -s'
-
-- name: Add a cron job for systemd services needing a reboot
+- name: Add wrapper for centos-yum-security
   template:
-    src: needs-restarting.sh.j2
-    dest: /etc/cron.daily/needs-restarting.sh
+    src: centos-yum-security.sh.j2
+    dest: /usr/bin/centos-yum-security.sh
     mode: 0750
     owner: root
     group: root
+
+- name: Add cron job for centos-yum-security
+  cron:
+    name: 'centos-yum-security'
+    cron_file: 'centos-yum-security'
+    job: '/usr/bin/centos-yum-security.sh'
+    user: root
+    minute: 30
+    hour: 12
+
+- name: Add wrapper for needs-restarting
+  template:
+    src: needs-restarting.sh.j2
+    dest: /usr/bin/needs-restarting.sh
+    mode: 0750
+    owner: root
+    group: root
+
+- name: Add cron job for centos-yum-security
+  cron:
+    name: 'needs-restarting'
+    cron_file: 'needs-restarting'
+    job: '/usr/bin/needs-restarting.sh'
+    user: root
+    weekday: 5
+    minute: 00
+    hour: 13
+
