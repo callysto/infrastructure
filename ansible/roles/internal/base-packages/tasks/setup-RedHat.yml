@@ -23,13 +23,61 @@
     update_cache: yes
   become: yes
 
-- name: Install yum-cron
+- name: Install centos-yum-security dependencies
   yum:
-    name: yum-cron
-  become: yes
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+    update_cache: yes
+  with_items:
+    - { name: 'mailx',  state: 'present' }
+    - { name: 'yum-plugin-changelog',  state: 'present' }
 
-- name: Copy yum-cron template
+- name: Install centos-package-cron from RPM
+  yum:
+    name: '{{ base_packages_centos_cron_rpm_url }}'
+    state: 'present'
+
+- name: Install centos-yum-security script
+  get_url:
+    url: '{{ base_packages_centos_yum_security_url }}'
+    dest: '/usr/bin/centos-yum-security'
+    checksum: 'sha256:{{ base_packages_centos_yum_security_sha256 }}'
+    mode: 0750
+    owner: root
+    group: root
+
+- name: Add wrapper for centos-yum-security
   copy:
-    src: yum-cron.conf
-    dest: /etc/yum/yum-cron.conf
-  become: yes
+    src: centos-yum-security.sh
+    dest: /usr/bin/centos-yum-security.sh
+    mode: 0750
+    owner: root
+    group: root
+
+- name: Add cron job for centos-yum-security
+  cron:
+    name: 'centos-yum-security'
+    cron_file: 'centos-yum-security'
+    job: '/usr/bin/centos-yum-security.sh'
+    user: root
+    minute: 30
+    hour: 12
+
+- name: Add wrapper for needs-restarting
+  copy:
+    src: needs-restarting.sh
+    dest: /usr/bin/needs-restarting.sh
+    mode: 0750
+    owner: root
+    group: root
+
+- name: Add cron job for centos-yum-security
+  cron:
+    name: 'needs-restarting'
+    cron_file: 'needs-restarting'
+    job: '/usr/bin/needs-restarting.sh'
+    user: root
+    weekday: 5
+    minute: 00
+    hour: 13
+
