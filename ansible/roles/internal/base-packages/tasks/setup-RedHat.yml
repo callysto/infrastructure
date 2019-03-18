@@ -47,8 +47,8 @@
     group: root
 
 - name: Add wrapper for centos-yum-security
-  template:
-    src: centos-yum-security.sh.j2
+  copy:
+    src: centos-yum-security.sh
     dest: /usr/bin/centos-yum-security.sh
     mode: 0750
     owner: root
@@ -64,8 +64,8 @@
     hour: 12
 
 - name: Add wrapper for needs-restarting
-  template:
-    src: needs-restarting.sh.j2
+  copy:
+    src: needs-restarting.sh
     dest: /usr/bin/needs-restarting.sh
     mode: 0750
     owner: root

@@ -24,7 +24,7 @@ fi
 
 if [ -n "${body}" ] ; then
 printf -v body 'This is the "needs-restarting" script on %s run at %s.  The following actions should be taken in the next maintenance window\n%s' "${HOSTNAME}" "${DATE}" "${body}"
-cat <<EOF | mailx -s "${subject}" {{ admin_email }}
+cat <<EOF | mailx -s "${subject}"
 ${body}
 EOF
 fi
