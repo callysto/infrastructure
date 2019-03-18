@@ -1,0 +1,8 @@
+{# raw so that ansible doesn't render most of the error template -#}
+{% raw -%}
+{% extends "error.html" %}
+
+{% block error_detail %}
+<p>{{ user['settings']['config']['Spawner']['extra_error_html'] }}</p>
+{% endblock %}
+{% endraw %}

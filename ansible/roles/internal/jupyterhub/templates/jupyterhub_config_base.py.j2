@@ -2,7 +2,8 @@
 {% block global %}
 import os
 
-from subprocess import check_call
+from subprocess import check_call, check_output
+from tornado import web
 
 def create_fs_hook(spawner):
       username = spawner.user.name
@@ -10,6 +11,22 @@ def create_fs_hook(spawner):
       env = os.environ
       env['GETTING_STARTED'] = '{{ jupyterhub_getting_started_url }}'
       check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user], env=env)
+      refquota,available = map(int, check_output(
+                                                  ['/usr/sbin/zfs',
+                                                   'get',
+                                                   '-H',
+                                                   '-p',
+                                                   '-o', 'value',
+                                                   'refquota,available',
+                                                   f'tank/home/{username}']
+                                                  ).split())
+      # If there are fewer than free_bytes_required available, don't try to spawn
+      free_bytes_required = 512 * 1024
+
+      c.Spawner.extra_error_html = f'{ (available / (1024 * 1024)):.1f} MB free; {(refquota - available) / (1024 * 1024):.1f} / {refquota / (1024 * 1024):.1f} MB used'
+      if int(available) < free_bytes_required:
+             raise web.HTTPError(507)
+
 
 c.Spawner.pre_spawn_hook = create_fs_hook
 
