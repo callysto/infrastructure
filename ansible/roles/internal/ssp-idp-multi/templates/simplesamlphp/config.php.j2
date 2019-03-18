@@ -814,11 +814,20 @@ $config = array(
             'add_candidate' => FALSE,
             'id_attribute' => 'smart_id',
         ),
+        {% if ssp_hash_usernames -%}
         21 => array(
             'class' => 'core:TargetedID',
             'attributename' => 'smart_id',
             'nameId' => FALSE,
         ),
+        {% else -%}
+        22 => array (
+            'class' => 'core:AttributeAlter',
+            'subject' => 'smart_id',
+            'pattern' => '/@/',
+            'replacement' => '_',
+        ),
+        {% endif -%}
         45 => array(
             'class'         => 'core:StatisticsWithAttribute',
             'attributename' => 'realm',
