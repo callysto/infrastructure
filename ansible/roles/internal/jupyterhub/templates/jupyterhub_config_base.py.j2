@@ -9,7 +9,7 @@ def create_fs_hook(spawner):
       username = spawner.user.name
       callysto_user = 'jupyter'
       env = os.environ
-      env['GETTING_STARTED'] = ''
+      env['GETTING_STARTED'] = '{{ jupyterhub_getting_started_url }}'
       check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user], env=env)
       refquota,available = map(int, check_output(
                                                   ['/usr/sbin/zfs',
