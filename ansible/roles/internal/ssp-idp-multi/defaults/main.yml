@@ -28,3 +28,6 @@ ssp_theme_name: "default"
 ssp_theme_repo: ""
 ssp_theme_version: ""
 ssp_theme_dir: ""
+
+# hash the usernames
+ssp_hash_usernames: True

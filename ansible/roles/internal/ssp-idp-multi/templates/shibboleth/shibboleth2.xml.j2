@@ -7,8 +7,12 @@
 
 
     <ApplicationDefaults entityID="https://{{ ssp_domain }}/shibboleth"
+                         {% if ssp_hash_usernames -%}
                          REMOTE_USER="persistent-id targeted-id" signing="true" encryption="true"
-                        signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
+                         {% else -%}
+                         REMOTE_USER="smart-id persistent-id" signing="true" encryption="true"
+                         {% endif -%}
+                         signingAlg="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
 
         <Sessions lifetime="28800" timeout="{{ shib_session_timeout }}" relayState="ss:mem"
                   checkAddress="false" handlerSSL="true" cookieProps="http">
