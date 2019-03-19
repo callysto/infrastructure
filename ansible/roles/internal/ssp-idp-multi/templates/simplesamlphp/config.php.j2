@@ -828,11 +828,11 @@ $config = array(
        	22 => array (
            	'class' => 'core:PHP',
            	'code' => '
-             	if (!empty($attributes["smart_id"])) {
-               	$smart_id = $attributes["smart_id"][0];
-               	$smart_id = strtolower(str_replace("@", "_", $smart_id));
-               	$attributes["smart_id"] = array($smart_id);
-             	}
+                if (!empty($attributes["smart_id"])) {
+                  $smart_id = $attributes["smart_id"][0];
+                  $smart_id = strtolower(str_replace("@", "_", $smart_id));
+                  $attributes["smart_id"] = array($smart_id);
+                }
            	',
        	),
         {% endif -%}
