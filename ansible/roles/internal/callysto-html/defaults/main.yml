@@ -1,4 +1,5 @@
 callysto_hub_landing_page_repo: "https://github.com/callysto/hub-landing-page"
+callysto_landing_branch: "template-callysto"
 callysto_html_hostname: "{{ inventory_hostname }}"
 callysto_html_domain: "callysto.ca"
 callysto_html_support_email: "support@callysto.ca"
