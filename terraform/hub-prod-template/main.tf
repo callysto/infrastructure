@@ -1,5 +1,6 @@
-# PROD_CALLYSTO_DOMAINNAME is set in env or .envrc file
+# These are set in env or .envrc file
 variable "PROD_CALLYSTO_DOMAINNAME" {}
+variable "PROD_CALLYSTO_ZONE_ID" {}
 
 # These represent settings to tune the hub you're creating
 locals {
@@ -68,5 +69,6 @@ resource "ansible_host" "hub" {
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
     zfs_disk_1              = "${module.hub.vol_id_1}"
     zfs_disk_2              = "${module.hub.vol_id_2}"
+    docker_storage          = "${module.hub.docker_storage}"
   }
 }

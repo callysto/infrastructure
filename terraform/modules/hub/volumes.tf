@@ -40,3 +40,8 @@ output "vol_id_1" {
 output "vol_id_2" {
   value = "${local.vol_id_2}"
 }
+
+# This is purposely ""
+output "docker_storage" {
+  value = ""
+}

@@ -1,6 +1,5 @@
-# DEV_CALLYSTO_DOMAINNAME and DEV_CALLYSTO_ZONE_ID are set in env or .envrc file
+# These are set in env or .envrc file
 variable "DEV_CALLYSTO_DOMAINNAME" {}
-
 variable "DEV_CALLYSTO_ZONE_ID" {}
 
 resource "random_pet" "name" {
@@ -139,5 +138,6 @@ resource "ansible_host" "hub" {
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
     zfs_disk_1              = "${module.hub.vol_id_1}"
     zfs_disk_2              = "${module.hub.vol_id_2}"
+    docker_storage          = "${module.hub.docker_storage}"
   }
 }
