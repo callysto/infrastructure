@@ -146,10 +146,10 @@ terraform/hub/rebuild: check-env
 HELP: Creates a new dev Terraform $ENV
 terraform/hub/new/dev: check-env
 	@cd $(TF_PATH) ; \
-	/usr/bin/cp -a hub-dev-template hub-$(ENV) ; \
-	/usr/bin/sed -i -e 's/ENV/$(ENV)/g' hub-$(ENV)/main.tf ; \
-	/usr/bin/mkdir $(ANSIBLE_PATH)/group_vars/hub-$(ENV) ; \
-	/usr/bin/cp $(ANSIBLE_PATH)/local_vars.yml.example $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml
+	cp -a hub-dev-template hub-$(ENV) ; \
+	sed -i -e 's/ENV/$(ENV)/g' hub-$(ENV)/main.tf ; \
+	mkdir $(ANSIBLE_PATH)/group_vars/hub-$(ENV) ; \
+	cp $(ANSIBLE_PATH)/local_vars.yml.example $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml
 	@echo ""
 	@echo "Make sure to edit $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml."
 	@echo ""
@@ -157,10 +157,10 @@ terraform/hub/new/dev: check-env
 HELP: Creates a new production Terraform $ENV
 terraform/hub/new/prod: check-env
 	@cd $(TF_PATH) ; \
-	/usr/bin/cp -a hub-prod-template hub-$(ENV) ; \
-	/usr/bin/sed -i -e 's/ENV/$(ENV)/g' hub-$(ENV)/main.tf ; \
-	/usr/bin/mkdir $(ANSIBLE_PATH)/group_vars/hub-$(ENV) ; \
-	/usr/bin/cp $(ANSIBLE_PATH)/local_vars.yml.example $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml
+	cp -a hub-prod-template hub-$(ENV) ; \
+	sed -i -e 's/ENV/$(ENV)/g' hub-$(ENV)/main.tf ; \
+	mkdir $(ANSIBLE_PATH)/group_vars/hub-$(ENV) ; \
+	cp $(ANSIBLE_PATH)/local_vars.yml.example $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml
 	@echo ""
 	@echo "Make sure to edit $(ANSIBLE_PATH)/group_vars/hub-$(ENV)/local_vars.yml."
 	@echo ""
