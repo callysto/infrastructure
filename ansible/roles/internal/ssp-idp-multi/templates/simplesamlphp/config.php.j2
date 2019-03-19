@@ -809,7 +809,11 @@ $config = array(
         ),
         20 => array(
             'class' => 'smartattributes:SmartID',
+            {% if ssp_hash_usernames -%}
             'candidates' => array('eduPersonTargetedID', 'eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            {% else -%}
+            'candidates' => array('eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            {% endif -%}
             'add_authority' => FALSE,
             'add_candidate' => FALSE,
             'id_attribute' => 'smart_id',
@@ -821,12 +825,16 @@ $config = array(
             'nameId' => FALSE,
         ),
         {% else -%}
-        22 => array (
-            'class' => 'core:AttributeAlter',
-            'subject' => 'smart_id',
-            'pattern' => '/@/',
-            'replacement' => '_',
-        ),
+       	22 => array (
+           	'class' => 'core:PHP',
+           	'code' => '
+             	if (!empty($attributes["smart_id"])) {
+               	$smart_id = $attributes["smart_id"][0];
+               	$smart_id = strtolower(str_replace("@", "_", $smart_id));
+               	$attributes["smart_id"] = array($smart_id);
+             	}
+           	',
+       	),
         {% endif -%}
         45 => array(
             'class'         => 'core:StatisticsWithAttribute',
