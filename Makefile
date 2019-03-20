@@ -268,9 +268,10 @@ letsencrypt/generate: check-env
 	unset OS_PASSWORD ; \
 	if [[ ${ENV} =~ 'dev' ]]; then \
 	  echo "*.${DEV_CALLYSTO_DOMAINNAME} > ${DEV_CALLYSTO_SSL_DIR_NAME}" > domains.txt ; \
-	  RECIPIENT=${ADMIN_EMAIL} ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
+	  ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
 	else \
-	  RECIPIENT=sysadmin@callysto.ca ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
+	  echo "*.${PROD_CALLYSTO_DOMAINNAME} > ${PROD_CALLYSTO_SSL_DIR_NAME}" > domains.txt ; \
+	  ${DEHYDRATED_PATH} -c --accept-terms -f 'config' -k './hook.sh' ; \
 	fi
 
 # SSH tasks
