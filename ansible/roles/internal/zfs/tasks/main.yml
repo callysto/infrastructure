@@ -1,4 +1,9 @@
 ---
+- name: Set zfs_pool_name to empty if ZFS pool not defined
+  set_fact:
+    zfs_pool_name: ""
+  when: zfs_pool_name is not defined and docker_zfs_pool is not defined
+
 - name: Install zfs-release
   yum:
     name: '{{ zfs_release_rpm }}'
@@ -6,13 +11,14 @@
   register: zfs_repo
   notify:
     - Remove existing zfs packages
+  when: zfs_pool_name != ""
 
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
 - name: Clean yum if zfs repo pkg installed
   command: yum clean all
-  when: zfs_repo.changed
+  when: zfs_repo.changed and zfs_pool_name != ""
 
 - name: Install zfs kernel module
   yum:
@@ -21,10 +27,12 @@
     update_cache: yes
   notify:
     - Modprobe zfs
+  when: zfs_pool_name != ""
 
 - name: Ensure the ZFS kernel module is loaded
   modprobe:
     name: zfs
+  when: zfs_pool_name != ""
 
 - name: Flush ZFS Handlers
   meta: flush_handlers
@@ -38,7 +46,7 @@
   file:
     state: absent
     path: '/{{ zfs_pool_name }}'
-  when: zpool_exist.failed ==  true
+  when: zpool_exist.failed ==  true and zfs_pool_name != ""
 
 - name: Create {{ zfs_pool_name }} zpool
   notify:
@@ -46,11 +54,11 @@
   command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
   args:
     creates: "/{{ zfs_pool_name }}"
-  when: zfs_disk_1 != "" and zfs_disk_2 != ""
+  when: zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""
 
 - name: Create ZFS containers
   command: "/sbin/zfs create {{ zfs_pool_name }}/{{ item }}"
   args:
     creates: "/{{ zfs_pool_name }}/{{ item }}"
   with_items: "{{ zfs_containers }}"
-  when: zfs_disk_1 != "" and zfs_disk_2 != ""
+  when: zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""

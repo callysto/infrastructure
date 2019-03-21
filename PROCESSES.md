@@ -15,6 +15,7 @@ the Callysto environment.
 * [Deploying the Development Environment](#deploying-the-development-environment)
 * [Deploying a CI Environment](#deploying-a-ci-environment)
 * [Deploying a Custom Environment](#deploying-a-custom-environment)
+* [Deploying Metrics Server](#deploying-metrics-server)
 * [Building Docker Images](#building-docker-images)
 * [Installing hubtraf](#installing-hubtraf)
 * [Adding a Base System Package](#adding-a-base-system-package)
@@ -341,6 +342,19 @@ This will do the following:
 
 1. Create a `terraform/hub-<name>` directory with customized `main.tf` file.
 2. Create a `ansible/group_vars/hub-<name>` directory with a copy of `local_vars.yml`.
+
+## Deploying Metrics Server
+
+To deploy metrics/stats server, make sure the ENVIRONMENT variable is set to *DEV* or *PROD* in the local_vars.yml and TF/stats/main.tf
+Additionally, to enable zfs storage for stats set zfs_containers and zfs_pool_name in local_vars.yml
+
+Then run the following:
+```
+$ make terraform/apply ENV=stats
+$ make ansible/playbook PLAYBOOK=stats ENV=stats GROUP=stats
+```
+
+To access metrics please go to https://stats.<domain_name>/grafana/ in a browser and log in with default Grafana password to set a new one. Please store the password in password manager like 1password.
 
 ## Building Docker Images
 

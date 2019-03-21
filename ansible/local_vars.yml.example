@@ -32,6 +32,15 @@ callysto_ssl_cert_dir: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_SSL_CERT_DIREC
 # Enable hub metrics
 hub_metrics: true
 
+# For stats server
+# domain: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') | default('subdomain.example.com', true) }}"
+#zfs_pool_name: "opt"
+#zfs_containers:
+#    - home
+#    - prometheus
+#    - grafana
+#    - containerd
+
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
 

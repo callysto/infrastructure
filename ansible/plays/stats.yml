@@ -136,7 +136,7 @@
         nginx_http_template_enable: true
         nginx_http_template:
           default:
-            template_file: nginx_default.conf.j2
+            template_file: './../../internal/stats/templates/nginx_default.conf.j2'
             conf_file_name: default.conf
             conf_file_location: /etc/nginx/conf.d/
             ipv6_address: '[::]'
@@ -216,6 +216,11 @@
            'web.listen-address': '127.0.0.1:9100'
            'log.level': 'info'
 
+    - name: Add file_sd_config from node to stats server
+      tags: ["stats","prometheus"]
+      include_role:
+        name: stats
+
     - name: cAdvisor container
       tags: ["stats","prometheus"]
       include_role:
@@ -223,7 +228,7 @@
       vars:
         prometheus_exporters_common_conf_dir: "/etc/prometheus/exporters"
         prometheus_exporters_common_sd_conf_dir: '{{ prometheus_exporters_common_conf_dir }}'
-        prometheus_exporters_common_local_sd_conf_dir: '{{ playbook_dir }}/files/stats_sd_conf'
+        prometheus_exporters_common_local_sd_conf_dir: './../roles/internal/stats/files/stats_sd_conf'
 
     - name: Manage prometheus
       tags: ["stats","prometheus-server"]
@@ -231,7 +236,7 @@
         name: prometheus
       vars:
         prometheus_alertmanager_url: 'localhost:9093'
-        prometheus_tgroups_src_dir: '{{ playbook_dir }}/files/stats_sd_conf'
+        prometheus_tgroups_src_dir: './../roles/internal/stats/files/stats_sd_conf'
         prometheus_web_external_url: 'https://{{ ansible_nodename }}/prometheus/'
         prometheus_config_flags_extra:
           '--web.route-prefix': '/prometheus/'

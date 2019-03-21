@@ -216,7 +216,16 @@
            'web.listen-address': '127.0.0.1:9100'
            'log.level': 'info'
 
+    - name: Add file_sd_config from node to stats server
+      tags: ["stats","prometheus"]
+      include_role:
+        name: stats
+
     - name: cAdvisor container
       tags: ["stats","prometheus"]
       include_role:
         name: prometheus-cadvisor
+      vars:
+        prometheus_exporters_common_conf_dir: "/etc/prometheus/exporters"
+        prometheus_exporters_common_sd_conf_dir: '{{ prometheus_exporters_common_conf_dir }}'
+        prometheus_exporters_common_local_sd_conf_dir: './../roles/internal/stats/files/stats_sd_conf'
