@@ -1,0 +1,25 @@
+- name: Validate SSL configuration
+  hosts: hub
+  become: true
+  tasks:
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+- name: Deploy SSL certificates
+  hosts: hub
+  become: true
+  tasks:
+    - name: Deploy SSL certificates
+      copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+      with_items:
+        - src: '{{ callysto_ssl_cert_dir }}/cert.pem'
+          dest: '/etc/pki/tls/certs/cert.pem'
+        - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
+          dest: '/etc/pki/tls/certs/chain.pem'
+        - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
+          dest: '/etc/pki/tls/private/privkey.pem'
