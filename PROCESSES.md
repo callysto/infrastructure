@@ -10,6 +10,7 @@ the Callysto environment.
 * [Starting from Scratch](#starting-from-scratch)
 * [Backing up Important Files](#backing-up-important-files)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
+* [Deploying Certificates](#deploying-certificates)
 * [Building the Hub Image](#building-the-hub-image)
 * [Deploying the Production Environment](#deploying-the-production-environment)
 * [Deploying the Development Environment](#deploying-the-development-environment)
@@ -250,6 +251,24 @@ example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_farm`.
 
 `callysto_ssl_cert_dir` is used by the `callysto-html` ansible role to copy the
 certificates found in this directory to `/etc/pki/tls/` on the remote servers.
+
+## Deploying Certificates
+
+After the Let's Encrypt-based certificates have been generated, you can deploy them
+one of two ways:
+
+1. Run the full `hub.yml` playbook.
+2. Deploy only the certificates by doing:
+
+```
+make ansible/playbook ENV=hub-prod GROUP=hub PLAYBOOK=deploy-certs
+```
+
+The above is useful for production environments where you _only_ want to deploy
+the certificates.
+
+Note that Apache will not be automatically restarted. You must do this manually.
+This is to provide the ability to wait until a window to restart Apache.
 
 ## Building the Hub Image
 
