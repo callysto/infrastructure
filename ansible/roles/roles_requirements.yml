@@ -24,3 +24,15 @@
 - name: ssh_config
   src: https://github.com/gaqzi/ansible-ssh-config
   path: library
+
+- name: nginx
+  src: https://github.com/nginxinc/ansible-role-nginx
+  version: 0.11.0
+
+- name: UnderGreen.prometheus-exporters-common
+  src: https://github.com/UnderGreen/ansible-prometheus-exporters-common.git
+  version: v1.2.0
+
+- name: prometheus-node-exporter
+  src: https://github.com/UnderGreen/ansible-prometheus-node-exporter.git
+  version: v1.4.0

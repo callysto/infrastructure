@@ -286,3 +286,13 @@ The direnv is storing set of variables required by Terraform, Ansible and Letsen
 in one .envrc file to speed up deployment (only dev environment at the moment).
 
 A binary for both Linux and Darwin (Mac) have been bundled in the `/bin` directory.
+
+## Metrics and OS Statistics
+
+The system of gathering statistics from the Callysto environment has been introduced (thanks to Ian Allison's initial work)
+- [Grafana](https://grafana.com/) provides graphs for default stats
+- [Prometheus](https://prometheus.io) is used to gather and store all information
+- [Prometheus Exporter](https://github.com/UnderGreen/ansible-prometheus-node-exporter.git) and [cAdvisor](https://github.com/google/cadvisor) are being installed on monitored nodes
+All above systems are behind Nginx and/or Apache2 as proxy for SSL/TLS communication
+
+To view default graphs please follow to dashboards at *https://stats.<domain_name>*/grafana/
