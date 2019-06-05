@@ -4,6 +4,7 @@
   command: "lsblk -no fstype {{ openstack_ephemeral_docker_disk }}"
   when: openstack_ephemeral_docker_disk != ""
   check_mode: no
+  changed_when: False
   register: filesystem_ephemeral
 
 - name: Create an XFS filesystem on the storage
