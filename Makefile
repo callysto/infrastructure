@@ -17,6 +17,7 @@ SSH_CMD = ssh -i $(PRIVATE_KEY) -o UserKnownHostsFile=/dev/null -o StrictHostKey
 # Ansible information
 PLAYBOOK_CMD = TF_STATE=$(TF_PATH)/$(ENV) ansible-playbook --private-key=$(PRIVATE_KEY) -i ./inventory
 ANSIBLE_CMD = TF_STATE=$(TF_PATH)/$(ENV) ansible --private-key=$(PRIVATE_KEY) -i ./inventory
+ANSIBLE_EXEC_CMD = TF_STATE=$(TF_PATH)/$(ENV) ansible -b --private-key=$(PRIVATE_KEY) -i ./inventory
 
 # Packer information
 PACKER_CMD = packer
@@ -62,6 +63,13 @@ ifdef ARGS
 export _ARGS = -a "$(ARGS)"
 else
 export _ARGS =
+endif
+
+check-ansible-args:
+ifdef ANSIBLE_ARGS
+export _ANSIBLE_ARGS = "$(ANSIBLE_ARGS)"
+else
+export _ANSIBLE_ARGS =
 endif
 
 check-playbook:
@@ -228,9 +236,9 @@ ansible/ping: check-env check-group-optional
 	$(ANSIBLE_CMD) $(_GROUP) -m ping
 
 HELP: Executes $MODULE on $GROUP with $ARGS in $ENV
-ansible/exec: check-env check-group-optional check-module check-args
+ansible/exec: check-env check-group-optional check-module check-args check-ansible-args
 	@cd $(ANSIBLE_PATH) ; \
-	$(ANSIBLE_CMD) $(_GROUP) -m $(_MODULE) $(_ARGS)
+	$(ANSIBLE_EXEC_CMD) $(_ANSIBLE_ARGS) $(_GROUP) -m $(_MODULE) $(_ARGS)
 
 # Quota tasks
 HELP: Gets a quota for $USER in $ENV

@@ -71,7 +71,7 @@
     owner: root
     group: root
 
-- name: Add cron job for centos-yum-security
+- name: Add cron job for needs-restarting
   cron:
     name: 'needs-restarting'
     cron_file: 'needs-restarting'
