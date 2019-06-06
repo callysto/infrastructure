@@ -320,10 +320,10 @@ $ openstack floating ip create public
 Next, create a new Terraform environment:
 
 ```
-$ make terraform/hub/new/prod  ENV=prod
+$ make terraform/hub/new/prod  ENV=hub-prod
 ```
 
-Next, edit `hub-prod/main.tf` and modify as needed. Notably:
+Next, edit `terraform/hub-prod/main.tf` and modify as needed. Notably:
 
 1. Add the 2 volume UUIDs to `existing_volumes`.
 2. Add the floating IP to `existing_floating_ip`.
@@ -342,8 +342,14 @@ If direnv reports error please follow with:
 $ direnv allow
 ```
 
-To deploy a development environment, run the following:
+To deploy a development environment, first create the new environment from the
+development template:
+```
+$ make terraform/hub/new/dev ENV=hub-dev
+```
 
+Next, edit `terraform/hub-dev/main.tf` and modify as needed. Finally, deploy
+the environment
 ```
 $ make terraform/apply ENV=hub-dev
 $ make ansible/playbook PLAYBOOK=hub ENV=hub-dev GROUP=hub
