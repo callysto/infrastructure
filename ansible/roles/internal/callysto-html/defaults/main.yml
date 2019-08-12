@@ -14,7 +14,7 @@ callysto_html_dir:
 callysto_html_logout_message: "You have been logged out of your Jupyter Session"
 
 callysto_html_terms: |
-  By using this service you are indicating that you agree with the Rapid Access
-  Cloud <a href="http://www.cybera.ca/policies/acceptable-use-policy-cloud-services/">acceptable
-  use policy</a> and <a href="http://www.cybera.ca/wp-content/uploads/2018/05/Rapid-Access-Cloud-Terms-of-Service.pdf">terms
-  of service</a>.
+  By using this service you are indicating that you agree with the Callysto
+  <a href="https://callysto.ca/wp-content/uploads/2019/07/CallystoTermsofService-July2019.pdf">Terms
+  of Service</a> and <a href="https://callysto.ca/wp-content/uploads/2019/07/CallystoPrivacyNotice-July2019.pdf">Privacy
+  Notice</a>.
