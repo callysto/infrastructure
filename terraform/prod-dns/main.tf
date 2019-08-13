@@ -1,4 +1,4 @@
-// This is set by direnv.
+// This is set by the Makefile.
 variable "PROD_CALLYSTO_ZONE_ID" {}
 
 resource "openstack_dns_recordset_v2" "callysto_ca" {

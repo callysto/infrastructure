@@ -41,33 +41,6 @@ the Callysto environment.
 If all of the existing Callysto infrastructure was lost or if you are creating
 your own clone of Callysto, start here.
 
-### Direnv
-
-`direnv` is used to store a set of common environment variables that are used
-across all infrastructure components.
-
-A binary for both Linux and Darwin (Mac) have been bundled in the `/bin` directory.
-To use this bundled copy, add the following to your `~/.bash_profile` or `~/.bashrc`
-file:
-
-```
-eval $(~/work/callysto-infra/bin/Linux/direnv hook bash)
-```
-
-Running `direnv` in CentOS seems to be finicky. Adding the following contents to `~/.bash_profile`
-or `~/.bashrc` is a workaround:
-
-```
-_direnv_hook() {
-  local previous_exit_status=$?;
-  eval "$("/home/ptty2u/work/callysto-infra/bin/Linux/direnv" export bash)";
-  return $previous_exit_status;
-};
-if ! [[ "$PROMPT_COMMAND" =~ _direnv_hook ]]; then
-  PROMPT_COMMAND="_direnv_hook;$PROMPT_COMMAND"
-fi
-```
-
 ### OpenStack
 
 As mentioned in the [README](README.md), Callysto is configured specifically to
@@ -92,6 +65,8 @@ $ cd callysto-infra
 
 > All future commands will assume you are in the `callysto-infra` directory
 > unless otherwise noted.
+
+Review and modify the `Makefile` to suit your environment.
 
 Next, create an ssh keypair:
 
@@ -335,12 +310,6 @@ $ make terraform/apply ENV=hub-prod
 ```
 
 ## Deploying the Development Environment
-
-Make sure the direnv is enabled and variables in .envrc file have all required values
-If direnv reports error please follow with:
-```
-$ direnv allow
-```
 
 To deploy a development environment, first create the new environment from the
 development template:
