@@ -4,6 +4,12 @@
   hosts: hub
   become: true
   tasks:
+    - name: Ensure CALLYSTO_SSL_CERT_DIRECTORY has a value
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "CALLYSTO_SSL_CERT_DIRECTORY is not set. Check the local_vars.yml file."
+
     - name: Ensure zfs_disk_1 and zfs_disk_2 are set
       assert:
         that: >-

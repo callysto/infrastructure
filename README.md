@@ -280,13 +280,6 @@ Dehydrated is stored in the `vendor` directory.
 
 The configuration is stored in `letsencrypt`.
 
-## Direnv Integration for Dev Environment
-
-The direnv is storing set of variables required by Terraform, Ansible and Letsencrypt
-in one .envrc file to speed up deployment (only dev environment at the moment).
-
-A binary for both Linux and Darwin (Mac) have been bundled in the `/bin` directory.
-
 ## Metrics and OS Statistics
 
 The system of gathering statistics from the Callysto environment has been introduced (thanks to Ian Allison's initial work)

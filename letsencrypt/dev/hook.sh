@@ -2,7 +2,7 @@
 
 if [ -z ${OPENRC_PATH+x} ]; then
   echo "OPENRC_PATH var is unset in env or .envrc file"
-  exit 5
+  exit 1
 fi
 
 deploy_challenge() {
