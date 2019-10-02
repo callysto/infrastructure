@@ -55,6 +55,11 @@ ifndef ENV
 	$(error ENV is not defined)
 endif
 
+check-type:
+ifndef TYPE
+	$(error TYPE is not defined)
+endif
+
 check-group:
 ifndef GROUP
 	$(error GROUP is not defined)
@@ -172,24 +177,22 @@ terraform/hub/rebuild: check-env
 	@make terraform/taint ENV=${ENV} TARGET=openstack_blockstorage_volume_v2.zfs.1
 	@make terraform/auto-apply ENV=${ENV}
 
-HELP: Creates a new dev Terraform $ENV
-terraform/hub/new/dev: check-env
-	@cd ${TF_PATH} ; \
-	cp -a hub-dev-template ${ENV} ; \
-	sed -i -e 's/ENV/${ENV}/g' ${ENV}/main.tf ; \
-	mkdir ${ANSIBLE_PATH}/group_vars/${ENV} ; \
-	cp ${ANSIBLE_PATH}/local_vars.yml.example ${ANSIBLE_PATH}/group_vars/${ENV}/local_vars.yml
-	@echo ""
-	@echo "Make sure to edit ${ANSIBLE_PATH}/group_vars/${ENV}/local_vars.yml."
-	@echo ""
+HELP: List the different types of environments
+terraform/types:
+	@grep ^### ${TF_PATH}/templates/*.tf | sed -e 's/#//g' | sed -e "s!${TF_PATH}/templates/!!g" | sed -e 's/\.tf//g' | sort | awk -F: '{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-HELP: Creates a new production Terraform $ENV
-terraform/hub/new/prod: check-env
+HELP: Create a new $TYPE of environment called $ENV
+terraform/new: check-env check-type
 	@cd ${TF_PATH} ; \
-	cp -a hub-prod-template ${ENV} ; \
-	sed -i -e 's/ENV/${ENV}/g' ${ENV}/main.tf ; \
-	mkdir ${ANSIBLE_PATH}/group_vars/${ENV} ; \
-	cp ${ANSIBLE_PATH}/local_vars.yml.example ${ANSIBLE_PATH}/group_vars/${ENV}/local_vars.yml
+	if [[ ! -d ${ENV} ]]; then \
+		mkdir ${ENV} ; \
+		cp templates/${TYPE}.tf ${ENV}/main.tf ; \
+		sed -i -e 's/ENV/${ENV}/g' ${ENV}/main.tf ; \
+	fi
+	@if [[ ! -d ${ANSIBLE_PATH}/group_vars/${ENV} ]]; then \
+		mkdir ${ANSIBLE_PATH}/group_vars/${ENV} ; \
+		cp ${ANSIBLE_PATH}/local_vars.yml.example ${ANSIBLE_PATH}/group_vars/${ENV}/local_vars.yml ; \
+	fi
 	@echo ""
 	@echo "Make sure to edit ${ANSIBLE_PATH}/group_vars/${ENV}/local_vars.yml."
 	@echo ""
@@ -286,9 +289,9 @@ backup:
 
 # Packer tasks
 HELP: Builds the JupyterHub OpenStack image
-packer/build/hub:
+packer/build/centos:
 	@cd $(PACKER_PATH) ; \
-	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.large -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd hub.json
+	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.large -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd centos.json
 
 # Let's Encrypt tasks
 letsencrypt/generate: check-env

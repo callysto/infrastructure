@@ -5,7 +5,7 @@
     "region": "{{user `region`}}",
     "flavor": "{{user `flavor`}}",
     "security_groups": ["packer"],
-    "image_name": "callysto-hub",
+    "image_name": "callysto-centos",
     "ssh_username": "centos",
     "source_image_name": "{{user `image_name`}}",
     "networks": ["{{user `network_id`}}"],
@@ -24,7 +24,7 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "../ansible/plays/packer-hub.yml"
+      "playbook_file": "../ansible/plays/packer-centos.yml"
     }
   ]
 }

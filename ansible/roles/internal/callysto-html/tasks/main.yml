@@ -1,23 +1,4 @@
 ---
-- name: Copy the SSL certificates
-  copy:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-  with_items:
-    - src: '{{ callysto_ssl_cert_dir }}/cert.pem'
-      dest: '/etc/pki/tls/certs/cert.pem'
-    - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
-      dest: '/etc/pki/tls/certs/chain.pem'
-    - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
-      dest: '/etc/pki/tls/private/privkey.pem'
-
-- name: Ensure proper permissions on private key file
-  file:
-    path: '/etc/pki/tls/private/privkey.pem'
-    owner: 'root'
-    group: 'root'
-    mode: '0600'
-
 - name: Install HTML files
   git:
     repo: '{{ callysto_hub_landing_page_repo }}'
@@ -56,6 +37,7 @@
       src: '/var/tmp/callysto-html-index.html'
     - dest: '{{ callysto_html_dir.dest }}/logout/index.html'
       src: '/var/tmp/callysto-html-logout-index.html'
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Update DocumentRoot
   notify:
@@ -64,12 +46,3 @@
     dest: '/etc/httpd/conf/httpd.conf'
     regexp: '^DocumentRoot'
     line: 'DocumentRoot "{{ callysto_html_dir.dest }}"'
-
-- name: Add httpd config for jupyter service
-  template:
-    src: jupyter-http.conf.j2
-    dest: /etc/httpd/conf.d/jupyter.conf
-    mode: 0644
-    owner: root
-    group: root
-  notify: restart apache

@@ -1,14 +1,34 @@
 ---
-## Used by Packer to create a basic JupyterHub OpenStack image
+## Used by Packer to create a CentOS OpenStack image
+## with all updates applied and core utilities installed.
 - name: Initial tasks for Callysto Infrastructure
   hosts: all
   become: true
   tasks:
+    - name: Install yum-plugin-versionlock
+      yum:
+        name: yum-plugin-versionlock
+        state: latest
+        update_cache: yes
+
+    - name: Lock cloud-init due to IPv6 bug
+      shell: yum versionlock cloud-init-*
+
     - name: Update all packages
       yum:
         name: "*"
         state: latest
       ignore_errors: true
+
+    - name: Set net.ipv6.conf.default.accept_ra to 1 for IPv6
+      sysctl:
+        name: net.ipv6.conf.default.accept_ra
+        value: 1
+
+    - name: Set net.ipv6.conf.all.accept_ra.accept_ra to 1 for IPv6
+      sysctl:
+        name: net.ipv6.conf.all.accept_ra
+        value: 1
 
     - name: Install Enterprise Linux kernel
       include_role:
@@ -43,6 +63,8 @@
       tags: ["zfs"]
       include_role:
         name: zfs
+      vars:
+        zfs_pool_name: tank
 
     - name: Configure SELinux
       tags: ["selinux"]

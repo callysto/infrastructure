@@ -4,11 +4,11 @@
   hosts: hub
   become: true
   tasks:
-    - name: Ensure CALLYSTO_SSL_CERT_DIRECTORY has a value
+    - name: Ensure zfs_pool_name is set
       assert:
         that: >-
-          callysto_ssl_cert_dir != ""
-        msg: "CALLYSTO_SSL_CERT_DIRECTORY is not set. Check the local_vars.yml file."
+          zfs_pool_name is defined and zfs_pool_name != ""
+        msg: "Must set zfs_pool_name. This is usually done automatically with Terraform"
 
     - name: Ensure zfs_disk_1 and zfs_disk_2 are set
       assert:
@@ -25,7 +25,9 @@
     - name: Ensure either openstack_ephemeral_docker_disk or docker_zfs_pool is set
       assert:
         that: >-
-          openstack_ephemeral_docker_disk is defined or docker_zfs_pool is defined
+          docker_zfs_pool is defined or
+          (openstack_ephemeral_docker_disk is defined and
+           openstack_ephemeral_docker_disk != "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_")
         msg: "Must set either openstack_ephemeral_docker_disk or docker_zfs_pool"
 
     - name: Ensure either openstack credentials are supplied with syzygyswiftspawner
@@ -78,6 +80,12 @@
         that: >-
           jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != '')
         msg: "Must set ssp_idp_multi_saml_key when using shib authenticator"
+
+    - name: Ensure ssp_domain is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_domain is defined and ssp_domain != '')
+        msg: "Must set ssp_domain when using shib authenticator"
 
     - name: Ensure hub_metrics is set
       assert:
@@ -152,6 +160,10 @@
       include_role:
         name: sshd
 
+    - name: Copy SSL certificates
+      include_role:
+        name: callysto-ssl
+
     # Configuration is stored in
     # group_vars/<group>/httpd.yml
     - name: Manage Apache
@@ -178,6 +190,7 @@
         immediate: yes
       with_items:
         - { interface: '{{ docker_interface }}', zone: 'home' }
+        - { interface: 'eth0', zone: 'public' }
       notify:
         firewalld complete reload
 
@@ -194,14 +207,23 @@
       include_role:
         name: docker-storage
 
-    # Manage Jupyterhub
-    # This role is tightly coupled to the following roles:
-    #   * dockerspawner
-    #   * ssp-idp-multi
-    #   * callysto-html
-    #   * syzygyauthenticator
-    # These roles should not be used independently.
-    # TODO: merge all of these roles into one?
+    - name: Manage Shibboleth
+      tags: ["shib"]
+      include_role:
+        name: shibboleth
+      when: jupyterhub_authenticator == 'shib'
+
+    # Only manage ssp in all-in-one configurations
+    - name: Manage SimpleSAMLphp
+      tags: ["ssp"]
+      include_role:
+        name: ssp-idp-multi
+      when: groups['ssp'][0] == groups['hub'][0]
+
+    - name: Manage Callysto html repo
+      include_role:
+        name: callysto-html
+
     - name: Manage Jupyterhub
       tags: ["jupyter", "jupyterhub", "ssp"]
       include_role:

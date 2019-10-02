@@ -94,25 +94,6 @@ RequestHeader unset REMOTE_USER
   LogLevel warn
   CustomLog /var/log/httpd/jupyter-ssl-access.log combined
 
-  {% if jupyterhub_authenticator == 'shib' %}
-  # SimpleSAMLphp
-  SetEnv SIMPLESAMLPHP_CONFIG_DIR {{ ssp_dir }}/config
-  Alias /simplesaml {{ ssp_dir }}/www
-
-  <Directory {{ ssp_dir }}>
-    <IfModule !mod_authz_core.c>
-      # For Apache 2.2:
-      Order allow,deny
-      Allow from all
-      </IfModule>
-      <IfModule mod_authz_core.c>
-      # For Apache 2.4:
-      Require all granted
-      </IfModule>
-  </Directory>
-  {% endif %}
-
-
 </VirtualHost>
 
 SSLProtocol             all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1

@@ -14,12 +14,6 @@
     update_cache: yes
   become: yes
 
-- name: Install jhub_shibboleth_auth
-  pip:
-    name: jhub_shibboleth_auth
-    executable: pip3.6
-  become: yes
-
 - name: Remove default conf files apache
   file:
     path: "/etc/httpd/conf.d/{{ item }}"

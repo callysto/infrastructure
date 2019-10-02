@@ -261,14 +261,14 @@ $ make terraform/apply ENV=packer
 Next, build the image:
 
 ```
-$ make packer/build/hub
+$ make packer/build/centos
 ```
 
 You only need to repeat this process when there are significant OS upgrades
 or a new ZFS kernel module.
 
 By default, Terraform is configured to automatically search for the generated
-"callysto-hub" image and use this image to build the hub (see below).
+"callysto-centos" image and use this image to build the hub (see below).
 
 ## Deploying the Production Environment
 
@@ -295,7 +295,7 @@ $ openstack floating ip create public
 Next, create a new Terraform environment:
 
 ```
-$ make terraform/hub/new/prod  ENV=hub-prod
+$ make terraform/new TYPE=hub-prod-aio ENV=hub-prod
 ```
 
 Next, edit `terraform/hub-prod/main.tf` and modify as needed. Notably:
@@ -314,7 +314,7 @@ $ make terraform/apply ENV=hub-prod
 To deploy a development environment, first create the new environment from the
 development template:
 ```
-$ make terraform/hub/new/dev ENV=hub-dev
+$ make terraform/new TYPE=hub-dev-aio NAME=hub-dev
 ```
 
 Next, edit `terraform/hub-dev/main.tf` and modify as needed. Finally, deploy
@@ -329,7 +329,7 @@ $ make ansible/playbook PLAYBOOK=hub ENV=hub-dev GROUP=hub
 To deploy a custom environment, run the following:
 
 ```
-$ make terraform/hub/new/dev ENV=<name>
+$ make terraform/new TYPE=<type> ENV=<name>
 ```
 
 This will do the following:

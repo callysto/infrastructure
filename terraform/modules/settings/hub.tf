@@ -1,5 +1,3 @@
-variable "environment" {}
-
 variable "hub_flavor_name" {
   type = "map"
 

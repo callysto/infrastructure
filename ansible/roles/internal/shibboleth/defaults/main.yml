@@ -1,0 +1,2 @@
+# shibboleth sp idle timeout
+shib_session_timeout: 0

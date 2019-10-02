@@ -22,7 +22,7 @@ support_email: "{{ lookup('env','SUPPORT_EMAIL') | default('support@example.com'
 #zfs_disk_2: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
 
 # Uncomment this to use overlay2
-openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ docker_storage[0:20] | default('drive-scsi0-0-0-1') }}
+openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ docker_storage[0:20] | default('drive-scsi0-0-0-1', true) }}
 # Uncomment this to use ZFS
 #docker_zfs_pool: "/tank"
 
@@ -83,18 +83,14 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 #jupyterhub_auth_token: ""
 #jupyterhub_cookie_secret_file: ""
 
-# Set these for GitHub/Google/OAUTH authentication
-#jupyterhub_oauth_github_host: ""
-#jupyterhub_oauth_client_id: ""
-#jupyterhub_oauth_client_secret: ""
-#jupyterhub_oauth_callback_url: ""
-
 # Add the email addresses or hashes of addresses for admin users
 jupyterhub_admin_users:
   - fd1f75f968e4781519f03bfc90a7204be8d27592
 
 # Set to True to disable updating package versions automatically
 disable_package_update: False
+
+ssp_domain: "{{ groups['ssp'][0] }}"
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
 #ssp_develop: True

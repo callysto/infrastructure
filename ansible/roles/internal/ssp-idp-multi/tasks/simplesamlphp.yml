@@ -52,13 +52,20 @@
     - config.php
     - module_cron.php
     - config-metarefresh.php
-  notify:
-    - restart shibd
 
 - name: Copy simplesamlphp idp metadata
   template:
     src: "simplesamlphp/saml20-idp-hosted.php.j2"
     dest: "{{ ssp_dir }}/metadata/saml20-idp-hosted.php"
+
+- name: Add httpd config for ssp
+  template:
+    src: 20_ssp.conf.j2
+    dest: /etc/httpd/conf.d/20_ssp.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart httpd
 
 - name: Setup crontab
   import_tasks: simplesamlphp_cron.yml
