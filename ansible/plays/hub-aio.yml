@@ -1,0 +1,5 @@
+---
+## Deploys a JupyterHub All in One Environment
+
+- name: Run the main hub playbook
+  import_playbook: imports/hub.yml

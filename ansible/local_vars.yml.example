@@ -90,6 +90,8 @@ jupyterhub_admin_users:
 # Set to True to disable updating package versions automatically
 disable_package_update: False
 
+# SimpleSAMLphp settings
+hub_domain: "{{ groups['hub'][0] }}"
 ssp_domain: "{{ groups['ssp'][0] }}"
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)

@@ -107,7 +107,7 @@ Environments are grouped in directories under the `terraform` directory.
 Use the `Makefile` to see what types of environments are available:
 
 ```
-$ make terraform/types
+$ make terraform/environments
 ```
 
 ## Ansible

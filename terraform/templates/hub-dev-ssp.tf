@@ -1,22 +1,11 @@
-### Development JupyterHub with external SSP
+## Development JupyterHub with external SSP
 
 # These are set in env or .envrc file
 variable "DEV_CALLYSTO_DOMAINNAME" {}
 
 variable "DEV_CALLYSTO_ZONE_ID" {}
 
-resource "random_pet" "key_name" {
-  prefix = "key"
-  length = 2
-}
-
-resource "random_pet" "hub_name" {
-  prefix = "hub"
-  length = 2
-}
-
-resource "random_pet" "ssp_name" {
-  prefix = "ssp"
+resource "random_pet" "name" {
   length = 2
 }
 
@@ -26,10 +15,11 @@ locals {
   image_name   = "callysto-centos"
   network_name = "default"
   public_key   = "${file("../../keys/id_rsa.pub")}"
+  key_name     = "key-${random_pet.name.id}"
   zone_id      = "${var.DEV_CALLYSTO_ZONE_ID}"
 
   # Hub Settings
-  hub_name = "${random_pet.hub_name.id}.${var.DEV_CALLYSTO_DOMAINNAME}"
+  hub_name = "hub-${random_pet.name.id}.${var.DEV_CALLYSTO_DOMAINNAME}"
 
   # Create a new floating IP or use an existing one.
   # If set to false and "", then IPv6 will be used.
@@ -42,7 +32,7 @@ locals {
   hub_existing_volumes = []
 
   # SSP Settings
-  ssp_name                 = "${random_pet.ssp_name.id}.${var.DEV_CALLYSTO_DOMAINNAME}"
+  ssp_name                 = "ssp-${random_pet.name.id}.${var.DEV_CALLYSTO_DOMAINNAME}"
   ssp_create_floating_ip   = "false"
   ssp_existing_floating_ip = ""
 }
@@ -53,7 +43,7 @@ data "openstack_images_image_v2" "callysto" {
 }
 
 resource "openstack_compute_keypair_v2" "callysto" {
-  name       = "${random_pet.key_name.id}"
+  name       = "${local.key_name}"
   public_key = "${local.public_key}"
 }
 

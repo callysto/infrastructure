@@ -1,5 +1,6 @@
 ---
-## Manages a JuptyerHub installation
+# Manages a JuptyerHub installation.
+# This shouldn't be run on its own.
 - name: Validate hub configuration
   hosts: hub
   become: true
@@ -80,6 +81,12 @@
         that: >-
           jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != '')
         msg: "Must set ssp_idp_multi_saml_key when using shib authenticator"
+
+    - name: Ensure hub_domain is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (hub_domain is defined and hub_domain != '')
+        msg: "Must set hub_domain when using shib authenticator"
 
     - name: Ensure ssp_domain is set
       assert:
@@ -207,6 +214,15 @@
       include_role:
         name: docker-storage
 
+    - name: Manage Callysto html repo
+      include_role:
+        name: callysto-html
+
+    - name: Manage Jupyterhub
+      tags: ["jupyter", "jupyterhub", "ssp"]
+      include_role:
+        name: jupyterhub
+
     - name: Manage Shibboleth
       tags: ["shib"]
       include_role:
@@ -219,15 +235,6 @@
       include_role:
         name: ssp-idp-multi
       when: groups['ssp'][0] == groups['hub'][0]
-
-    - name: Manage Callysto html repo
-      include_role:
-        name: callysto-html
-
-    - name: Manage Jupyterhub
-      tags: ["jupyter", "jupyterhub", "ssp"]
-      include_role:
-        name: jupyterhub
 
     - name: Manage rrsync script
       tags: ["ssh", "rrsync", "backup"]
