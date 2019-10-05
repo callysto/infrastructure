@@ -32,15 +32,6 @@ callysto_ssl_cert_dir: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_SSL_CERT_DIREC
 # Enable hub metrics
 hub_metrics: true
 
-# For stats server
-# domain: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') | default('subdomain.example.com', true) }}"
-#zfs_pool_name: "opt"
-#zfs_containers:
-#    - home
-#    - prometheus
-#    - grafana
-#    - containerd
-
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
 
@@ -130,6 +121,13 @@ ssp_hash_usernames: True
 # openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"
 ssp_idp_multi_saml_cert:
 ssp_idp_multi_saml_key:
+
+# Stats http basic authentication
+stats_username: stats
+stats_password: stats
+
+# Grafana authentication
+grafana_admin_password: password
 
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner

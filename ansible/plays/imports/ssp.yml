@@ -96,7 +96,7 @@
         selinux_state: permissive
 
     # Enabled services are defined in
-    # group_vars/hub/firewalld.yml
+    # group_vars/ssp/firewalld.yml
     #
     # The jupyterhub role also enables access
     # to `jupyterhub_api_port`.

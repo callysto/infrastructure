@@ -58,13 +58,26 @@
     src: "simplesamlphp/saml20-idp-hosted.php.j2"
     dest: "{{ ssp_dir }}/metadata/saml20-idp-hosted.php"
 
-- name: Add httpd config for ssp
+- name: Add httpd config for ssp with Jupyter all-in-one
   template:
-    src: 20_ssp.conf.j2
+    src: jupyter.conf.j2
     dest: /etc/httpd/conf.d/20_ssp.conf
     mode: 0644
     owner: root
     group: root
+  when:
+    ssp_standalone == False
+  notify: restart httpd
+
+- name: Add httpd config for ssp standalone
+  template:
+    src: standalone.conf.j2
+    dest: /etc/httpd/conf.d/20_ssp.conf
+    mode: 0644
+    owner: root
+    group: root
+  when:
+    ssp_standalone == True
   notify: restart httpd
 
 - name: Setup crontab

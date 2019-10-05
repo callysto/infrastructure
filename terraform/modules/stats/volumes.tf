@@ -22,14 +22,14 @@ locals {
 # Manually specify each attachment in a serial order.
 # This prevents the possibility of volumes attaching out of order.
 resource "openstack_compute_volume_attach_v2" "zfs_1" {
-  instance_id = "${openstack_compute_instance_v2.stats.id}"
+  instance_id = "${openstack_compute_instance_v2.instance.id}"
   volume_id   = "${local.vol_id_1}"
 }
 
 resource "openstack_compute_volume_attach_v2" "zfs_2" {
   depends_on = ["openstack_compute_volume_attach_v2.zfs_1"]
 
-  instance_id = "${openstack_compute_instance_v2.stats.id}"
+  instance_id = "${openstack_compute_instance_v2.instance.id}"
   volume_id   = "${local.vol_id_2}"
 }
 

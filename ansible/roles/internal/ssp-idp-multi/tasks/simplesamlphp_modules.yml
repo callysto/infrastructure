@@ -11,7 +11,7 @@
     creates: "{{ ssp_dir }}/composer.phar"
 
 - name: Run composer authoauth2 installer
-  command: php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:dev-master
+  command: "php composer.phar require cirrusidentity/simplesamlphp-module-authoauth2:{{ ssp_authoauth2_version }}"
   args:
     chdir: "{{ ssp_dir }}"
     creates: "{{ ssp_dir }}/modules/authoauth2/lib/OAuth2ResponseHandler.php"

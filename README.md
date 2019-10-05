@@ -70,8 +70,10 @@ Terraform modules are stored in `./terraform/modules`. The following modules
 are defined:
 
   * `settings`: Returns settings based on a development or production environment.
-  * `clavius`: deploys a centralized team workstation to manage Callysto.
-  * `hub`: deploys a standard Callysto JupyterHub environment.
+  * `clavius`: Collected resources for the central team workstation.
+  * `hub`: Collected resources for JupyterHub.
+  * `ssp`: Collected resources for the SimpleSAMLphp server.
+  * `stats`: Collected resources for the stats server.
 
 ### Makefile
 

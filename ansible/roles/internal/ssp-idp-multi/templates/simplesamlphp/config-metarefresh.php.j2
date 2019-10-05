@@ -24,7 +24,7 @@ $config = array(
       'cron'          => array('daily'),
       'sources'       => array(
          array(
-          'src' => 'https://{{ ssp_domain }}/Shibboleth.sso/Metadata',
+          'src' => 'https://{{ hub_domain }}/Shibboleth.sso/Metadata',
           'template' => array(
               'sign.logout' => TRUE,
               {% if ssp_hash_usernames -%}

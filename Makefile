@@ -179,7 +179,7 @@ terraform/hub/rebuild: check-env
 	@make terraform/auto-apply ENV=${ENV}
 
 HELP: List the different types of environments
-terraform/environments:
+terraform/list-environments:
 	@grep ^## ${TF_PATH}/templates/*.tf | sed -e 's/#//g' | sed -e "s!${TF_PATH}/templates/!!g" | sed -e 's/\.tf//g' | sort | awk -F: '{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 HELP: Create a new $TYPE of environment called $ENV
@@ -213,7 +213,13 @@ ansible/setup:
 HELP: Lists plays
 ansible/list-playbooks:
 	@cd ${ANSIBLE_PATH} ; \
-	grep -H ^## plays/*.yml | sed -e 's/\(plays\/\)\(.*\)\(.yml\)/\2/' | sort | awk 'BEGIN {FS = ":## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	grep -H ^## plays/*.yml | grep -v Environment | sed -e 's/\(plays\/\)\(.*\)\(.yml\)/\2/' | sort | awk 'BEGIN {FS = ":## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+HELP: Lists playbooks to deploy environments
+ansible/list-environments:
+	@cd ${ANSIBLE_PATH} ; \
+	grep -H ^'## Environment:' plays/*.yml | sed -e 's/Environment: //g' | sed -e 's/\(plays\/\)\(.*\)\(.yml\)/\2/' | sort | awk 'BEGIN {FS = ":## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 
 HELP: Lists the tasks in a $PLAYBOOK in $ENV
 ansible/list-tasks: check-playbook

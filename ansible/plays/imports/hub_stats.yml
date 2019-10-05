@@ -1,0 +1,47 @@
+---
+# Manages stats configuration on JupyterHub
+# This shouldn't be run on its own.
+- name: Manage stats components on JupyterHub
+  hosts: hub
+  become: true
+  vars:
+    _cadvisor_port: 9280
+    caddy_port: 9999
+    caddy_port_mappings:
+      node: 9100
+      cadvisor: "{{ _cadvisor_port }}"
+  tasks:
+    - name: Manage Caddy
+      tags: ["stats", "caddy"]
+      include_role:
+        name: caddy
+      vars:
+        caddy_user: "root"
+        caddy_home: "/root"
+        caddy_config: |
+          :{{ caddy_port }}
+          tls /etc/pki/tls/certs/fullchain.pem /etc/pki/tls/private/privkey.pem
+          {% for name, port in caddy_port_mappings.items() %}
+          basicauth /{{ name }} {{ stats_username }} {{ stats_password }}
+          proxy /{{ name }} 127.0.0.1:{{ port }} {
+            without /{{ name }}
+          }
+          {% endfor %}
+
+    - name: Prometheus node exporter
+      tags: ["stats", "node-exporter"]
+      include_role:
+        name: prometheus-node-exporter
+      vars:
+        prometheus_node_exporter_config_flags:
+           'web.listen-address': '127.0.0.1:9100'
+           'log.level': 'info'
+
+    - name: Manage cadvisor
+      tags: ["stats", "cadvisor"]
+      include_role:
+        name: cadvisor
+      vars:
+        cadvisor_port: "{{ _cadvisor_port }}"
+        cadvisor_version: v0.34.0
+        cadvisor_checksum: 060c6361dd6d4478ff0572e8496522d8189cf956eea2656b6247ad683abcc9d3

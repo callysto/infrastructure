@@ -6,12 +6,40 @@
   src: git+https://github.com/geerlingguy/ansible-role-apache.git
   version: 2.1.1
 
+- name: caddy
+  src: https://github.com/antoiner77/caddy-ansible
+  version: v2.1.0
+
+- name: cadvisor
+  src: https://github.com/ome/ansible-role-cadvisor/
+  version: 0.3.1
+
 - name: docker
   src: https://github.com/geerlingguy/ansible-role-docker
   version: 2.1.0
 
 - name: firewalld
   src: https://github.com/marcelnijenhof/ansible-role-firewalld.git
+
+- name: grafana
+  src: https://github.com/cloudalchemy/ansible-grafana
+  version: 0.14.2
+
+- name: nginx
+  src: https://github.com/nginxinc/ansible-role-nginx
+  version: 0.11.0
+
+- name: prometheus
+  src: https://github.com/cloudalchemy/ansible-prometheus
+  version: 2.10.0
+
+- name: prometheus-node-exporter
+  src: https://github.com/UnderGreen/ansible-prometheus-node-exporter.git
+  version: v1.4.0
+
+- name: prometheus-exporters-common
+  src: https://github.com/UnderGreen/ansible-prometheus-exporters-common.git
+  version: v1.2.0
 
 - name: sshd
   src: git+https://github.com/willshersystems/ansible-sshd.git
@@ -24,15 +52,3 @@
 - name: ssh_config
   src: https://github.com/gaqzi/ansible-ssh-config
   path: library
-
-- name: nginx
-  src: https://github.com/nginxinc/ansible-role-nginx
-  version: 0.11.0
-
-- name: UnderGreen.prometheus-exporters-common
-  src: https://github.com/UnderGreen/ansible-prometheus-exporters-common.git
-  version: v1.2.0
-
-- name: prometheus-node-exporter
-  src: https://github.com/UnderGreen/ansible-prometheus-node-exporter.git
-  version: v1.4.0

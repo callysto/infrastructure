@@ -1,2 +1,5 @@
 # shibboleth sp idle timeout
 shib_session_timeout: 0
+
+# TODO: This is tightly coupled to simplesamlphp
+ssp_domain: "{{ inventory_hostname }}"

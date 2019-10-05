@@ -1,0 +1,7 @@
+firewalld_allow_services:
+  - { service: http }
+  - { service: https }
+  - { service: ssh }
+
+firewalld_allow_ports:
+  - { port: 9999/tcp }

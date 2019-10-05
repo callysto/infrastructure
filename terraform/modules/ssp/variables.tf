@@ -6,18 +6,10 @@ variable "key_name" {}
 
 variable "network_name" {}
 
+variable "zone_id" {}
+
 variable "name" {
   default = ""
-}
-
-variable "vol_zfs_size" {
-  default = 10
-}
-
-variable "existing_volumes" {
-  type = "list"
-
-  default = []
 }
 
 variable "create_floating_ip" {
@@ -27,8 +19,6 @@ variable "create_floating_ip" {
 variable "existing_floating_ip" {
   default = ""
 }
-
-variable "zone_id" {}
 
 locals {
   cloudconfig = <<EOF
