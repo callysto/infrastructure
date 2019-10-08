@@ -1,0 +1,190 @@
+---
+# Manages stats configuration
+# This shouldn't be run on its own.
+- name: Validate stats configuration
+  hosts: stats
+  become: true
+  tasks:
+    - name: Ensure zfs_disk_1 and zfs_disk_2 are set
+      assert:
+        that: >-
+          zfs_disk_1 is defined and zfs_disk_1 != "" and zfs_disk_2 is defined and zfs_disk_2 != ""
+        msg: "Must set zfs_disk_1 and zfs_disk_2. This is usually done automatically with Terraform"
+
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+    - name: Ensure zfs_pool_name is set
+      assert:
+        that: >-
+          zfs_pool_name is defined and zfs_pool_name != ""
+        msg: "Must set either zfs_pool_name"
+
+- name: Ensure sudo is configured correctly
+  hosts: stats
+  become: true
+  tasks:
+    # Settings are defined in
+    # group_vars/<group>/sudo.yml
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+      vars:
+          ansible_ssh_pipelining: no
+
+- name: Manage the stats server
+  hosts: stats
+  become: true
+  vars:
+    caddy_port: 9999
+    caddy_port_mappings:
+      alertmanager: 9093
+      node: 9100
+    zfs_containers:
+      - prometheus
+      - grafana
+  tasks:
+    - name: Ensure hostname is set
+      tags: ["hostname"]
+      include_role:
+        name: hostname
+
+    # Add relevant keys to `ssh_public_keys`
+    # in either host_vars, group_vars, or local_vars.
+    - name: Manage SSH public keys
+      tags: ["ssh"]
+      include_role:
+        name: ssh-public-keys
+
+    # This also installs EPEL
+    - name: Ensure base packages are installed
+      tags: ["base-packages"]
+      include_role:
+        name: base-packages
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      include_role:
+        name: selinux
+      vars:
+        selinux_policy: targeted
+        selinux_state: permissive
+
+    # This will create and manage a zpool based on
+    # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
+    - name: Manage ZFS
+      tags: ["zfs"]
+      include_role:
+        name: zfs
+
+    # Enabled services are defined in
+    # group_vars/stats/firewalld.yml
+    - name: Ensure firewalld service is running
+      tags: ["firewalld"]
+      include_role:
+        name: firewalld
+
+    # Configuration is stored in
+    # group_vars/<group>/ssh.yml.
+    - name: Ensure sshd is installed and running
+      tags: ["sshd"]
+      include_role:
+        name: sshd
+
+    - name: Copy SSL certificates
+      tags: ["ssl"]
+      include_role:
+        name: callysto-ssl
+
+    - name: Manage Caddy
+      tags: ["stats", "caddy"]
+      include_role:
+        name: caddy
+      vars:
+        caddy_user: "root"
+        caddy_home: "/root"
+        caddy_config: |
+          :{{ caddy_port }}
+          tls /etc/pki/tls/certs/fullchain.pem /etc/pki/tls/private/privkey.pem
+          proxy /prometheus 127.0.0.1:9090
+          basicauth /prometheus {{ stats_username }} {{ stats_password }}
+          proxy /grafana 127.0.0.1:3000 {
+            without /grafana
+          }
+          {% for name, port in caddy_port_mappings.items() %}
+          basicauth /{{ name }} {{ stats_username }} {{ stats_password }}
+          proxy /{{ name }} 127.0.0.1:{{ port }} {
+            without /{{ name }}
+          }
+          {% endfor %}
+
+    - name: Manage prometheus
+      tags: ["stats", "prometheus"]
+      include_role:
+        name: prometheus
+      vars:
+        prometheus_web_external_url: 'https://{{ ansible_nodename }}/prometheus/'
+        prometheus_db_dir: "/{{ zfs_pool_name }}/prometheus"
+        prometheus_targets:
+          nodes:
+            - targets:
+                "{{ groups['all'] | map('extract', hostvars, ['inventory_hostname']) | map('regex_replace', '$', ':{{ caddy_port }}') | list }}"
+              labels:
+                env: "hub"
+          hubs:
+            - targets:
+                "{{ groups['hub'] | map('extract', hostvars, ['inventory_hostname']) | map('regex_replace', '$', ':{{ caddy_port }}') | list }}"
+              labels:
+                env: "hub"
+        prometheus_scrape_configs:
+          - job_name: "nodes"
+            scheme: "https"
+            metrics_path: "/node/metrics"
+            basic_auth:
+              username: "{{ stats_username }}"
+              password: "{{ stats_password }}"
+            file_sd_configs:
+              - files:
+                - "/etc/prometheus/file_sd/nodes.yml"
+          - job_name: "hubs"
+            scheme: "https"
+            metrics_path: "/cadvisor/metrics"
+            basic_auth:
+              username: "{{ stats_username }}"
+              password: "{{ stats_password }}"
+            file_sd_configs:
+              - files:
+                - "/etc/prometheus/file_sd/hubs.yml"
+
+    - name: Prometheus node exporter
+      tags: ["stats", "prometheus"]
+      include_role:
+        name: prometheus-node-exporter
+      vars:
+        prometheus_node_exporter_config_flags:
+           'web.listen-address': '127.0.0.1:9100'
+           'log.level': 'info'
+
+    - name: Manage grafana
+      tags: ["stats", "grafana"]
+      include_role:
+        name: grafana
+      vars:
+        grafana_address: 127.0.0.1
+        grafana_url: "https://{{ ansible_nodename}}:{{ caddy_port }}/grafana"
+        grafana_data_dir: "/{{ zfs_pool_name }}/grafana"
+        grafana_security:
+          admin_user: admin
+          admin_password: "{{ grafana_admin_password }}"
+        grafana_datasources:
+          - name: prometheus
+            type: prometheus
+            access: proxy
+            url: "https://{{ ansible_nodename }}:{{ caddy_port }}/prometheus"
+            basicAuth: True
+            basicAuthUser: "{{ stats_username }}"
+            basicAuthPassword: "{{ stats_password }}"

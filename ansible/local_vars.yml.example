@@ -22,7 +22,7 @@ support_email: "{{ lookup('env','SUPPORT_EMAIL') | default('support@example.com'
 #zfs_disk_2: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_d854b345-1600-478a-9
 
 # Uncomment this to use overlay2
-openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ docker_storage[0:20] | default('drive-scsi0-0-0-1') }}
+openstack_ephemeral_docker_disk: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ docker_storage[0:20] | default('drive-scsi0-0-0-1', true) }}
 # Uncomment this to use ZFS
 #docker_zfs_pool: "/tank"
 
@@ -31,15 +31,6 @@ callysto_ssl_cert_dir: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_SSL_CERT_DIREC
 
 # Enable hub metrics
 hub_metrics: true
-
-# For stats server
-# domain: "{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') | default('subdomain.example.com', true) }}"
-#zfs_pool_name: "opt"
-#zfs_containers:
-#    - home
-#    - prometheus
-#    - grafana
-#    - containerd
 
 # Required for the callyst-html task
 callysto_html_longname: Callysto Dev
@@ -83,18 +74,16 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 #jupyterhub_auth_token: ""
 #jupyterhub_cookie_secret_file: ""
 
-# Set these for GitHub/Google/OAUTH authentication
-#jupyterhub_oauth_github_host: ""
-#jupyterhub_oauth_client_id: ""
-#jupyterhub_oauth_client_secret: ""
-#jupyterhub_oauth_callback_url: ""
-
 # Add the email addresses or hashes of addresses for admin users
 jupyterhub_admin_users:
   - fd1f75f968e4781519f03bfc90a7204be8d27592
 
 # Set to True to disable updating package versions automatically
 disable_package_update: False
+
+# SimpleSAMLphp settings
+hub_domain: "{{ groups['hub'][0] }}"
+ssp_domain: "{{ groups['ssp'][0] }}"
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
 #ssp_develop: True
@@ -132,6 +121,13 @@ ssp_hash_usernames: True
 # openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"
 ssp_idp_multi_saml_cert:
 ssp_idp_multi_saml_key:
+
+# Stats http basic authentication
+stats_username: stats
+stats_password: stats
+
+# Grafana authentication
+grafana_admin_password: password
 
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner

@@ -1,3 +1,0 @@
-prometheus_exporters_common_conf_dir: "/etc/prometheus/exporters"
-prometheus_exporters_common_sd_conf_dir: '{{ prometheus_exporters_common_conf_dir }}'
-prometheus_exporters_common_local_sd_conf_dir: './../roles/internal/stats/files/stats_sd_conf'

@@ -42,10 +42,10 @@ using the same version.
 The master `Makefile` provides an easy way to interact with Packer to create
 images.
 
-For example, to create the base hub image:
+For example, to create the base centos image:
 
 ```
-  $ make packer/build/hub
+  $ make packer/build/centos
 ```
 
 > Note: review the `Makefile` and Packer build files to ensure their settings
@@ -70,8 +70,10 @@ Terraform modules are stored in `./terraform/modules`. The following modules
 are defined:
 
   * `settings`: Returns settings based on a development or production environment.
-  * `clavius`: deploys a centralized team workstation to manage Callysto.
-  * `hub`: deploys a standard Callysto JupyterHub environment.
+  * `clavius`: Collected resources for the central team workstation.
+  * `hub`: Collected resources for JupyterHub.
+  * `ssp`: Collected resources for the SimpleSAMLphp server.
+  * `stats`: Collected resources for the stats server.
 
 ### Makefile
 
@@ -104,11 +106,10 @@ $ ../../bin/<arch>/terraform <action>
 An "environment" is defined as any collection of related infrastructure.
 Environments are grouped in directories under the `terraform` directory.
 
-Use the `Makefile` to deploy an environment:
+Use the `Makefile` to see what types of environments are available:
 
 ```
-$ make terraform/plan ENV=hub-dev
-$ make terraform/apply ENV=hub-dev
+$ make terraform/environments
 ```
 
 ## Ansible

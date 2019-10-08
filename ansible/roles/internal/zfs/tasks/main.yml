@@ -37,7 +37,7 @@
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
-- name: Check zpool {{ zfs_pool_name }} exsits
+- name: Check zpool {{ zfs_pool_name }} exists
   zpool_facts: pool={{ zfs_pool_name }}
   register: zpool_exist
   ignore_errors: yes

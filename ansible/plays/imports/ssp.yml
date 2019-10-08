@@ -1,0 +1,175 @@
+---
+## Manages a SimpleSAMLphp installation
+- name: Validate ssp configuration
+  hosts: ssp
+  become: true
+  tasks:
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+    - name: Ensure ssp_multi_salt is set
+      assert:
+        that: >-
+          ssp_idp_multi_salt is defined and ssp_idp_multi_salt != ''
+        msg: "Must set ssp_idp_multi_salt"
+
+    - name: Ensure ssp_idp_multi_admin_password is set
+      assert:
+        that: >-
+          ssp_idp_multi_admin_password is defined and ssp_idp_multi_admin_password != ''
+        msg: "Must set ssp_idp_multi_admin_password"
+
+    - name: Ensure ssp_refresh_key is set
+      assert:
+        that: >-
+          ssp_refresh_key is defined and ssp_refresh_key != ''
+        msg: "Must set ssp_refresh_key"
+
+    - name: Ensure ssp_idp_multi_saml_cert is set
+      assert:
+        that: >-
+          ssp_idp_multi_saml_cert is defined and ssp_idp_multi_saml_cert != ''
+        msg: "Must set ssp_idp_multi_saml_cert"
+
+    - name: Ensure ssp_idp_multi_saml_key is set
+      assert:
+        that: >-
+          ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != ''
+        msg: "Must set ssp_idp_multi_saml_key"
+
+    - name: Ensure hub_domain is set
+      assert:
+        that: >-
+          hub_domain is defined and hub_domain != ''
+        msg: "Must set hub_domain"
+
+    - name: Ensure hub_metrics is set
+      assert:
+        that: >-
+          hub_metrics is defined
+        msg: "Must set hub_metrics to true or false"
+
+- name: Ensure sudo is configured correctly
+  hosts: ssp
+  become: true
+  tasks:
+    # Settings are defined in
+    # group_vars/<group>/sudo.yml
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+      vars:
+          ansible_ssh_pipelining: no
+
+- name: Install and configure ssp
+  hosts: ssp
+  become: true
+  tasks:
+    - name: Ensure hostname is set
+      tags: ["hostname"]
+      include_role:
+        name: hostname
+
+    # Add relevant keys to `ssh_public_keys`
+    # in either host_vars, group_vars, or local_vars.
+    - name: Manage SSH public keys
+      tags: ["ssh"]
+      include_role:
+        name: ssh-public-keys
+
+    # This also installs EPEL
+    - name: Ensure base packages are installed
+      tags: ["base-packages"]
+      include_role:
+        name: base-packages
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      include_role:
+        name: selinux
+      vars:
+        selinux_policy: targeted
+        selinux_state: permissive
+
+    # Enabled services are defined in
+    # group_vars/ssp/firewalld.yml
+    #
+    # The jupyterhub role also enables access
+    # to `jupyterhub_api_port`.
+    - name: Ensure firewalld service is running
+      tags: ["firewalld"]
+      include_role:
+        name: firewalld
+
+    # Configuration is stored in
+    # group_vars/<group>/ssh.yml.
+    - name: Ensure sshd is installed and running
+      tags: ["sshd"]
+      include_role:
+        name: sshd
+
+    # Configuration is stored in
+    # group_vars/<group>/httpd.yml
+    - name: Manage Apache
+      tags: ["httpd"]
+      include_role:
+        name: apache
+
+    - name: Manage Python3
+      tags: ["python", "python3"]
+      include_role:
+        name: ius-python3
+
+    - name: Add interfaces their respective zones
+      firewalld:
+        interface: '{{ item.interface }}'
+        zone: '{{ item.zone }}'
+        state: enabled
+        permanent: true
+        immediate: yes
+      with_items:
+        - { interface: 'eth0', zone: 'public' }
+      notify:
+        firewalld complete reload
+
+    - name: Copy SSL certificates
+      include_role:
+        name: callysto-ssl
+
+    - name: Manage SimpleSAMLphp
+      tags: ["ssp"]
+      include_role:
+        name: ssp-idp-multi
+      vars:
+        ssp_standalone: True
+
+    #- name: Prometheus node-exporter
+    #  tags: ["stats","prometheus"]
+    #  include_role:
+    #    name: prometheus-node-exporter
+    #  vars:
+    #    prometheus_exporters_common_root_dir: /prometheus/exporters
+    #    prometheus_node_exporter_config_flags:
+    #       'web.listen-address': '127.0.0.1:9100'
+    #       'log.level': 'info'
+    #  when: hub_metrics
+
+    #- name: Add file_sd_config from node to stats server
+    #  tags: ["stats","prometheus"]
+    #  include_role:
+    #    name: stats
+    #  when: hub_metrics
+
+    #- name: cAdvisor container
+    #  tags: ["stats","prometheus"]
+    #  include_role:
+    #    name: prometheus-cadvisor
+    #  vars:
+    #    prometheus_exporters_common_conf_dir: "/etc/prometheus/exporters"
+    #    prometheus_exporters_common_sd_conf_dir: '{{ prometheus_exporters_common_conf_dir }}'
+    #    prometheus_exporters_common_local_sd_conf_dir: './../roles/internal/stats/files/stats_sd_conf'
+    #  when: hub_metrics

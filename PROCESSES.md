@@ -23,6 +23,7 @@ the Callysto environment.
 * [Managing SSH Keys](#managing-ssh-keys)
 * [Modifying the JupyterHub Error Page](#modifying-the-jupyterhub-error-page)
 * [SimpleSAMLphp Theme](#simplesamlphp-theme)
+* [DNS Management](#dns-management)
 
 > User Management
 
@@ -261,14 +262,39 @@ $ make terraform/apply ENV=packer
 Next, build the image:
 
 ```
-$ make packer/build/hub
+$ make packer/build/centos
 ```
 
 You only need to repeat this process when there are significant OS upgrades
 or a new ZFS kernel module.
 
 By default, Terraform is configured to automatically search for the generated
-"callysto-hub" image and use this image to build the hub (see below).
+"callysto-centos" image and use this image to build the hub (see below).
+
+## Callysto Environments
+
+When the Callysto project started, it consisted of a single type of
+environment: a single JupyterHub virtual machine.
+
+Since the project has progressed, new components have been added to the
+infrastructure in order to add different features. It's possible to deploy
+Callysto using one of several different combinations of components. We call
+a combination an "environment".
+
+To see the different types of environments available, run the following:
+
+```
+make terraform/list-environments
+```
+
+To see the corresponding Ansible playbook, run the following:
+
+```
+make ansible/list-environments
+```
+
+For example, the Terraform environment `dev-hub-aio` will have an Ansible
+playbook called `hub-aio`.
 
 ## Deploying the Production Environment
 
@@ -295,7 +321,7 @@ $ openstack floating ip create public
 Next, create a new Terraform environment:
 
 ```
-$ make terraform/hub/new/prod  ENV=hub-prod
+$ make terraform/new TYPE=hub-prod-aio ENV=hub-prod
 ```
 
 Next, edit `terraform/hub-prod/main.tf` and modify as needed. Notably:
@@ -309,19 +335,19 @@ Finally, deploy the hub:
 $ make terraform/apply ENV=hub-prod
 ```
 
-## Deploying the Development Environment
+## Deploying a Development Environment
 
 To deploy a development environment, first create the new environment from the
 development template:
 ```
-$ make terraform/hub/new/dev ENV=hub-dev
+$ make terraform/new TYPE=dev-hub-aio NAME=hub-dev
 ```
 
 Next, edit `terraform/hub-dev/main.tf` and modify as needed. Finally, deploy
 the environment
 ```
 $ make terraform/apply ENV=hub-dev
-$ make ansible/playbook PLAYBOOK=hub ENV=hub-dev GROUP=hub
+$ make ansible/playbook PLAYBOOK=hub-aio ENV=hub-dev GROUP=hub
 ```
 
 ## Deploying a Custom Environment
@@ -329,26 +355,13 @@ $ make ansible/playbook PLAYBOOK=hub ENV=hub-dev GROUP=hub
 To deploy a custom environment, run the following:
 
 ```
-$ make terraform/hub/new/dev ENV=<name>
+$ make terraform/new TYPE=<type> ENV=<name>
 ```
 
 This will do the following:
 
 1. Create a `terraform/hub-<name>` directory with customized `main.tf` file.
 2. Create a `ansible/group_vars/hub-<name>` directory with a copy of `local_vars.yml`.
-
-## Deploying Metrics Server
-
-To deploy metrics/stats server, make sure the ENVIRONMENT variable is set to *DEV* or *PROD* in the local_vars.yml and TF/stats/main.tf
-Additionally, to enable zfs storage for stats set zfs_containers and zfs_pool_name in local_vars.yml
-
-Then run the following:
-```
-$ make terraform/apply ENV=stats
-$ make ansible/playbook PLAYBOOK=stats ENV=stats GROUP=stats
-```
-
-To access metrics please go to https://stats.<domain_name>/grafana/ in a browser and log in with default Grafana password to set a new one. Please store the password in password manager like 1password.
 
 ## Building Docker Images
 
@@ -473,6 +486,45 @@ To set a custom theme, modify the following settings in `local_vars.yml`:
 * `ssp_theme_repo`
 * `ssp_theme_version`
 * `ssp_theme_dir`
+
+## DNS Management
+
+Callysto leverages Designate, the OpenStack DNS project, for API-based DNS
+management. Ideally, you will want to register two domain names: one for
+production and one for development.
+
+Once they have been registered with a registrar (for example, Namecheap),
+add them to OpenStack by using either the `openstack` command, `designate`
+command, or the OpenStack web dashboard. For example:
+
+```
+openstack zone create --email <contact email> --description Production --ttl 60 mydomain.com
+```
+
+Once both zones have been registered, make note of their UUIDs and add them
+to the `Makefile` under the following areas:
+
+```
+export DEV_CALLYSTO_DOMAINNAME := <dev domain>
+export DEV_CALLYSTO_ZONE_ID := <zone uuid>
+
+export PROD_CALLYSTO_DOMAINNAME := <dev domain>
+export PROD_CALLYSTO_ZONE_ID := <zone uuid>
+```
+
+Once these are in place, DNS records will automatically be managed for
+development environments.
+
+For production environments, you will need to manage the records separately
+from the actual resources. This is to help protect the records from
+accidentally being deleted.
+
+Modify the `terraform/prod-dns/main.tf` file with any changes you need to make
+and then run:
+
+```
+make terraform/apply ENV=prod-dns
+```
 
 # User Management
 

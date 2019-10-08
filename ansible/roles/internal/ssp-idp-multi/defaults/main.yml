@@ -1,9 +1,12 @@
 ssp_develop: False
+#ssp_ver: 1.17.5
 ssp_ver: 1.16.2
+#ssp_sha256: 1099b9ce5d7cee29abde2be39bb0044fd943d75016a5791638629e08c8adfff5
 ssp_sha256: 5be1b62b48cc322d65405b1897cfafdb5910c27177c220d248cee4c49f1cc195
 ssp_url: https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_ver  }}/simplesamlphp-{{ ssp_ver  }}.tar.gz
 
-ssp_domain: "{{ inventory_hostname }}"
+ssp_authoauth2_version: 'v2.0.0'
+
 ssp_path: /var
 ssp_prefix: simplesamlphp-
 ssp_dir: "{{ ssp_path  }}/{{ ssp_prefix  }}{{ ssp_ver  }}"
@@ -20,9 +23,6 @@ ssp_theme_install: True
 # False by default until install is done
 ssp_installed_now: False
 
-# shibboleth sp idle timeout
-shib_session_timeout: 0
-
 # ssp theme
 ssp_theme_name: "default"
 ssp_theme_repo: ""
@@ -31,3 +31,9 @@ ssp_theme_dir: ""
 
 # hash the usernames
 ssp_hash_usernames: True
+
+# TODO:This is tightly coupled to jupyterhub
+hub_domain: "{{ inventory_hostname }}"
+
+# Semi-hack to know when ssp is installed standalone and not with jupyterhub all-in-one
+ssp_standalone: False

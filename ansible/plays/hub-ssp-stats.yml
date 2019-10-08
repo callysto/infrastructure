@@ -1,0 +1,17 @@
+---
+## Environment: Deploys a JupyterHub Environment with separate SimpleSAMLphp
+
+- name: Run the main stats playbook
+  import_playbook: imports/stats.yml
+
+- name: Run the main SSP playbook
+  import_playbook: imports/ssp.yml
+
+- name: Install stats components on SSP
+  import_playbook: imports/ssp_stats.yml
+
+- name: Run the main hub playbook
+  import_playbook: imports/hub.yml
+
+- name: Install stats components on the hub
+  import_playbook: imports/hub_stats.yml

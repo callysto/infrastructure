@@ -1,10 +1,10 @@
-resource "openstack_compute_instance_v2" "stats" {
+resource "openstack_compute_instance_v2" "instance" {
   name = "${var.name}"
 
   image_id        = "${var.image_id}"
   flavor_name     = "${var.flavor_name}"
   key_pair        = "${var.key_name}"
-  security_groups = ["${openstack_networking_secgroup_v2.stats.name}"]
+  security_groups = ["${openstack_networking_secgroup_v2.sg.name}"]
   user_data       = "${local.cloudconfig}"
 
   network {
@@ -17,9 +17,9 @@ resource "openstack_compute_instance_v2" "stats" {
 }
 
 output "instance_uuid" {
-  value = "${openstack_compute_instance_v2.stats.id}"
+  value = "${openstack_compute_instance_v2.instance.id}"
 }
 
 output "access_ip_v6" {
-  value = "${openstack_compute_instance_v2.stats.access_ip_v6}"
+  value = "${openstack_compute_instance_v2.instance.access_ip_v6}"
 }

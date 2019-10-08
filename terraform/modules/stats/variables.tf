@@ -20,6 +20,16 @@ variable "existing_volumes" {
   default = []
 }
 
+variable "create_floating_ip" {
+  default = "false"
+}
+
+variable "existing_floating_ip" {
+  default = ""
+}
+
+variable "zone_id" {}
+
 locals {
   cloudconfig = <<EOF
     #cloud-config
