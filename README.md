@@ -290,3 +290,29 @@ The system of gathering statistics from the Callysto environment has been introd
 All above systems are behind Nginx and/or Apache2 as proxy for SSL/TLS communication
 
 To view default graphs please follow to dashboards at *https://stats.<domain_name>*/grafana/
+
+## edX Infrastructure
+
+The edX deployment is based off of the
+[hawthorne.2 release](https://github.com/edx/configuration/tree/open-release/hawthorn.2).
+The `ansible/plays/imports/edx.yml` is built off of the
+[edx_sandbox.yml](https://github.com/edx/configuration/blob/open-release/hawthorn.2/playbooks/edx_sandbox.yml)
+playbook.
+
+Any fixes that we've needed to make are in the
+`ansible/roles/internal/callysto-edx` Ansible role.
+
+Important notes:
+
+* Two files, iblx-themes.tar.gz and ibl_python_pkgs.tar.gz, need to be copied
+  from Cybera's private git repository to `ansible/roles/internal/callysto-edx/files`.
+
+* This is only compatible with Ubuntu 16.04.
+
+* The [edX bundle of playbooks and roles](https://github.com/edx/configuration/blob/open-release/hawthorn.2/playbooks/)
+  gets cloned to our `ansible/roles/edx` directory.
+
+* The swapfile role is not applied in our deployment.
+
+* The `edx_sandbox.yml` playbook has been renamed to `openedx_native.yml` in
+  later releases.

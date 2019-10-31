@@ -9,11 +9,13 @@
 **/.hostfiles
 **/openrc.sh
 **/clouds.yaml
-keys/id_rsa*
-ansible/roles/external
 ansible/group_vars/*/local_vars.yml
 ansible/inventory
+ansible/roles/edx/configuration
+ansible/roles/external
+ansible/roles/internal/callysto-edx/files/iblx-themes.tar.gz
+ansible/roles/internal/callysto-edx/files/ibl_python_pkgs.tar.gz
+keys/id_rsa*
 letsencrypt/*/accounts
 letsencrypt/*/certs
 letsencrypt/*/chains
-.envrc

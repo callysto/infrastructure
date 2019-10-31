@@ -129,6 +129,19 @@ stats_password: stats
 # Grafana authentication
 grafana_admin_password: password
 
+# edX
+edx_users:
+  - email: 'admin@localhost.com'
+    username: callysto
+    hashed_password: 'pbkdf2_sha256$36000$fUFUlz2aR7lJ$DyY/M3zFdJC5Ky4ZZNeoEkokYPnKAQI1B94DR92Gjdo='
+    is_staff: true
+    is_superuser: true
+
+# email authentication for edx.
+# This needs to be a gmail username and password.
+edx_email_username: user@gmail.com
+edx_email_password: password
+
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner
 #openstack_auth_url: "https://example.com:5000/v3"

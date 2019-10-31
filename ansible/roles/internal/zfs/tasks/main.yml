@@ -4,49 +4,22 @@
     zfs_pool_name: ""
   when: zfs_pool_name is not defined and docker_zfs_pool is not defined
 
-- name: Install zfs-release
-  yum:
-    name: '{{ zfs_release_rpm }}'
-    state: present
-  register: zfs_repo
-  notify:
-    - Remove existing zfs packages
-  when: zfs_pool_name != ""
+- import_tasks: install-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  static: no
 
-- name: Flush ZFS Handlers
-  meta: flush_handlers
-
-- name: Clean yum if zfs repo pkg installed
-  command: yum clean all
-  when: zfs_repo.changed and zfs_pool_name != ""
-
-- name: Install zfs kernel module
-  yum:
-    name: zfs
-    state: present
-    update_cache: yes
-  notify:
-    - Modprobe zfs
-  when: zfs_pool_name != ""
-
-- name: Ensure the ZFS kernel module is loaded
-  modprobe:
-    name: zfs
-  when: zfs_pool_name != ""
+- import_tasks: install-Debian.yml
+  when: ansible_os_family == 'Debian'
+  static: no
 
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
 - name: Check zpool {{ zfs_pool_name }} exists
-  zpool_facts: pool={{ zfs_pool_name }}
+  command: "zpool list {{ zfs_pool_name }}"
   register: zpool_exist
+  changed_when: false
   ignore_errors: yes
-
-- name: Remove {{ zfs_pool_name }} mount point
-  file:
-    state: absent
-    path: '/{{ zfs_pool_name }}'
-  when: zpool_exist.failed ==  true and zfs_pool_name != ""
 
 - name: Create {{ zfs_pool_name }} zpool
   notify:
@@ -54,7 +27,7 @@
   command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
   args:
     creates: "/{{ zfs_pool_name }}"
-  when: zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""
+  when: zpool_exist.failed ==  true and zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""
 
 - name: Create ZFS containers
   command: "/sbin/zfs create {{ zfs_pool_name }}/{{ item }}"

@@ -1,0 +1,5 @@
+---
+## Environment: Deploys an Open edX All in One environment.
+
+- name: Run the internal edx playbook
+  import_playbook: imports/edx.yml

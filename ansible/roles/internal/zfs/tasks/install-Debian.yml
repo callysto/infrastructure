@@ -1,0 +1,9 @@
+---
+- name: Install zfs
+  apt:
+    name: '{{ zfs_dpkg }}'
+    state: present
+  when: zfs_pool_name != ""
+
+- name: Flush ZFS Handlers
+  meta: flush_handlers

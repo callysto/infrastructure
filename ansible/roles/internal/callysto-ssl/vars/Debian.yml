@@ -1,0 +1,2 @@
+callysto_ssl_remote_cert_directory: '/etc/ssl/certs'
+callysto_ssl_remote_key_directory: '/etc/ssl/private'
