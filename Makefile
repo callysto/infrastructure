@@ -220,7 +220,6 @@ ansible/list-environments:
 	@cd ${ANSIBLE_PATH} ; \
 	grep -H ^'## Environment:' plays/*.yml | sed -e 's/Environment: //g' | sed -e 's/\(plays\/\)\(.*\)\(.yml\)/\2/' | sort | awk 'BEGIN {FS = ":## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-
 HELP: Lists the tasks in a $PLAYBOOK in $ENV
 ansible/list-tasks: check-playbook
 	@cd ${ANSIBLE_PATH} ; \
@@ -295,10 +294,20 @@ backup:
 	${PLAYBOOK_CMD} --limit localhost plays/backup.yml
 
 # Packer tasks
-HELP: Builds the JupyterHub OpenStack image
+HELP: Builds the CentOS image for Callysto
 packer/build/centos:
 	@cd $(PACKER_PATH) ; \
 	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd centos.json
+
+HELP: Builds the Ubuntu 18.04 image for callysto
+packer/build/ubuntu1804:
+	@cd $(PACKER_PATH) ; \
+	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Ubuntu 18.04" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd ubuntu1804.json
+
+HELP: Builds the Ubuntu 16.04 image for callysto
+packer/build/ubuntu1604:
+	@cd $(PACKER_PATH) ; \
+	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Ubuntu 16.04" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd ubuntu1604.json
 
 # Let's Encrypt tasks
 letsencrypt/generate: check-env
@@ -319,3 +328,11 @@ ssh/shell: check-env check-host
 	@_host=$(shell make ansible/get-ipv4 ENV=${ENV} HOST=${HOST}) ; \
 	_user=$(shell make ansible/get-ssh-user ENV=${ENV} HOST=${HOST}) ; \
 	${SSH_CMD} $$_user@$$_host
+
+# edX tasks
+# Because edX has its own set of ansible roles/modules and playbooks
+HELP: edX Runs $PLAYBOOK on $GROUP for reals in $ENV
+edx/ansible/playbook: check-env check-playbook check-group-optional
+	export ANSIBLE_CONFIG=${ANSIBLE_PATH}/ansible-edx.cfg && \
+	cd ${ANSIBLE_PATH} ; \
+	${PLAYBOOK_CMD} -vvv --limit ${_GROUP} ${_PLAYBOOK}

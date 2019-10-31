@@ -97,3 +97,8 @@
     - name: Ensure docker python module is installed
       pip:
         name: docker
+
+    - name: Install a newer version of Jinja2 for Ansible
+      pip:
+        name: jinja2
+        version: 2.8

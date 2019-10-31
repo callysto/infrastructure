@@ -1,21 +1,24 @@
 ---
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
 - name: Copy the SSL certificates
   copy:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
   with_items:
     - src: '{{ callysto_ssl_cert_dir }}/cert.pem'
-      dest: '/etc/pki/tls/certs/cert.pem'
+      dest: '{{ callysto_ssl_remote_cert_directory }}/cert.pem'
     - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
-      dest: '/etc/pki/tls/certs/chain.pem'
+      dest: '{{ callysto_ssl_remote_cert_directory }}/chain.pem'
     - src: '{{ callysto_ssl_cert_dir }}/fullchain.pem'
-      dest: '/etc/pki/tls/certs/fullchain.pem'
+      dest: '{{ callysto_ssl_remote_cert_directory }}/fullchain.pem'
     - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
-      dest: '/etc/pki/tls/private/privkey.pem'
+      dest: '{{ callysto_ssl_remote_key_directory }}/privkey.pem'
 
 - name: Ensure proper permissions on private key file
   file:
-    path: '/etc/pki/tls/private/privkey.pem'
+    path: '{{ callysto_ssl_remote_key_directory }}/privkey.pem'
     owner: 'root'
     group: 'root'
     mode: '0600'

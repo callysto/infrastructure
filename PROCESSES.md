@@ -35,6 +35,11 @@ the Callysto environment.
 * [Quota Management](#quota-management)
 * [Logout Redirect](#logout-redirect)
 
+> edX Management
+
+* [Preparing edX](#preparing-edx)
+* [Generating a Password Hash](#generating-a-password-hash)
+
 # Infrastructure Management
 
 ## Starting from Scratch
@@ -631,3 +636,56 @@ $ make quota/set ENV=<env> USER=<user> REFQUOTA=<10G>
 When a user logs out, they will be redirected to `/simplesaml/logout.php`. To
 set this to a custom URL, set the `jupyterhub_shib_return_url` setting in
 `local_vars.yml`.
+
+# edX Management
+
+## Preparing edX
+
+Open edX requires Ubuntu 16.04, which you can build by running:
+
+```
+$ make packer/build/ubuntu1604
+```
+
+Next, you will need to clone edX's bundle of playbooks and roles by running:
+
+```
+cd ansible/roles/edx
+git clone https://github.com/edx/configuration/
+cd configuration
+git checkout hawthorn.2
+```
+
+Next, copy the `passwords.yml` file and add it to either
+`ansible/group_vars/prod` or `ansible/group_vars/dev`. Then replace `!!null`
+with appropriate passwords.
+
+Finally, verify `ansible/ansible-edx.cfg` exists. This file is used as an
+alternative Ansible configuration file that makes the `ansible/roles/edx`
+directory have priority over the other roles.
+
+## Deploying an edX Environment
+
+After preparation is done, you can deploy an edX environment by running:
+
+```
+make terraform/new TYPE=edx-aio ENV=<name>
+make edx/ansible/playbook PLAYBOOK=edx-aio ENV=<name>
+```
+
+We use `edx/ansible/playbook` instead of `ansible/playbook` in order to have
+a special `ansible-edx.cfg` file used, which enables the edX-specific roles to
+be included in the Ansible run.
+
+## Generating a Password Hash
+
+To create the password hash used in the `edx_users` variable, first ssh to an
+edx server. Then run:
+
+```
+source /edx/app/edxapp/venvs/edxapp/bin/activate
+/edx/bin/manage.edxapp shell
+
+from django.contrib.auth.hashers import make_password
+make_password('my-password')
+```

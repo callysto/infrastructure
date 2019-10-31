@@ -1,5 +1,5 @@
 ---
-# Tasks for CentOS package installation
+# Tasks for Debian package installation
 - name: Install base packages
   apt:
     name: '{{ item.name }}'

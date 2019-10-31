@@ -1,0 +1,371 @@
+---
+# Manages an Open edX installation.
+# This shouldn't be run on its own.
+#
+# NOTE: import_role is intentionally used in order for the
+# tightly coupled edx roles to share variables.
+
+- name: Validate edx configuration
+  hosts: edx
+  become: true
+  tasks:
+    - name: Ensure zfs_pool_name is set
+      assert:
+        that: >-
+          zfs_pool_name is defined and zfs_pool_name != ""
+        msg: "Must set zfs_pool_name. This is usually done automatically with Terraform"
+
+    - name: Ensure zfs_disk_1 and zfs_disk_2 are set
+      assert:
+        that: >-
+          zfs_disk_1 is defined and zfs_disk_1 != "" and zfs_disk_2 is defined and zfs_disk_2 != ""
+        msg: "Must set zfs_disk_1 and zfs_disk_2. This is usually done automatically with Terraform"
+
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+    - name: Ensure either openstack_ephemeral_docker_disk or docker_zfs_pool is set
+      assert:
+        that: >-
+          docker_zfs_pool is defined or
+          (openstack_ephemeral_docker_disk is defined and
+           openstack_ephemeral_docker_disk != "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_")
+        msg: "Must set either openstack_ephemeral_docker_disk or docker_zfs_pool"
+
+- name: Ensure sudo is configured correctly
+  hosts: edx
+  become: true
+  tasks:
+    # Settings are defined in
+    # group_vars/<group>/sudo.yml
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+      vars:
+          ansible_ssh_pipelining: no
+
+- name: Install and configure open edx
+  hosts: edx
+  become: true
+  vars:
+    # Upstream default
+    migrate_db: "yes"
+    DISCOVERY_URL_ROOT: 'http://localhost:{{ DISCOVERY_NGINX_PORT }}'
+    ecommerce_create_demo_data: true
+    credentials_create_demo_data: true
+    SANDBOX_ENABLE_DISCOVERY: true
+    SANDBOX_ENABLE_ECOMMERCE: true
+    #SANDBOX_ENABLE_ANALYTICS_API: true
+    #SANDBOX_ENABLE_INSIGHTS: true
+    SANDBOX_ENABLE_RABBITMQ: true
+    JOURNALS_ENABLED: false
+
+    # nginx
+    NGINX_SET_X_FORWARDED_HEADERS: True
+    NGINX_SSL_CERTIFICATE: fullchain.pem
+    NGINX_SSL_KEY: privkey.pem
+    NGINX_ENABLE_SSL: True
+    NGINX_REDIRECT_TO_HTTPS: True
+    EDXAPP_LMS_SSL_NGINX_PORT: '[::]:443'
+    EDXAPP_CMS_SSL_NGINX_PORT: '[::]:443'
+    EDXAPP_LMS_NGINX_PORT: '[::]:80'
+    EDXAPP_CMS_NGINX_PORT: '[::]:80'
+    nginx_sites:
+      - certs
+      - cms
+      - lms
+      - forum
+      #- xqueue
+    nginx_default_sites:
+      - lms
+
+    # edxapp/cms/lms settings
+    EDXAPP_CMS_BASE: "{{ cms_name }}"
+    EDXAPP_LMS_BASE: "{{ lms_name }}"
+    EDXAPP_PREVIEW_LMS_BASE: "{{ preview_name }}"
+    EDXAPP_COMPREHENSIVE_THEME_DIRS:
+      - "/edx/app/edxapp/edx-platform/themes"
+    EDXAPP_COURSE_ABOUT_VISIBILITY_PERMISSION: 'see_about_page'
+    EDXAPP_COURSE_CATALOG_VISIBILITY_PERMISSION: 'see_in_catalog'
+    EDXAPP_DEFAULT_SITE_THEME: 'iblx'
+    EDXAPP_ENABLE_COMPREHENSIVE_THEMING: True
+    EDXAPP_PLATFORM_NAME: 'Callysto Canada'
+    EDXAPP_PLATFORM_DESCRIPTION: 'Callysto Canada'
+    EDXAPP_EXTRA_REQUIREMENTS:
+      - name: "git+https://github.com/ibleducation/jupyter-viewer-xblock.git"
+      - name: "git+https://github.com/ibleducation/jupyter-edx-grader-xblock.git"
+      - name: "django-debug-toolbar"
+      - name: "django-debug-toolbar-mongo"
+    EDXAPP_EMAIL_HOST_USER: "{{ edx_email_username }}"
+    EDXAPP_EMAIL_HOST_PASSWORD: "{{ edx_email_password }}"
+    EDXAPP_EMAIL_HOST: smtp.gmail.com
+    EDXAPP_EMAIL_PORT: 587
+    EDXAPP_EMAIL_USE_TLS: True
+    EDXAPP_TECH_SUPPORT_EMAIL: "{{ support_email }}"
+    EDXAPP_CONTACT_EMAIL: "{{ support_email }}"
+    EDXAPP_BUGS_EMAIL: "{{ support_email }}"
+    EDXAPP_DEFAULT_FROM_EMAIL: "{{ support_email }}"
+    EDXAPP_DEFAULT_FEEDBACK_EMAIL: "{{ support_email }}"
+    EDXAPP_DEFAULT_SERVER_EMAIL: "{{ support_email }}"
+    EDXAPP_BULK_EMAIL_DEFAULT_FROM_EMAIL: "{{ support_email }}"
+    EDXAPP_BULK_EMAIL_DEFAULT_FROM_EMAIL: "{{ support_email }}"
+    EDXAPP_UNIVERSITY_EMAIL: "{{ support_email }}"
+    EDXAPP_PRESS_EMAIL: "{{ support_email }}"
+
+    # Callysto Fixes
+    sandbox_base_requirements: /tmp/edx-platform-base.txt
+    automated_sudoers_template: "99-automated.j2"
+    supervisor_pip_pkgs:
+      - boto==2.48.0
+      - python-simple-hipchat
+    ANALYTICS_API_DATABASES: {}
+
+    # Version pinning
+    #ANALYTICS_API_VERSION: '9ed9aaf96a6ca92e23a60f2a1cf62edf4497a2b2'
+    certs_version: '9e09b90cb9652acb8744f65f76d784de35976e13'
+    configuration_version: 'hawthorn.2'
+    demo_version: 'afa4ff644b65f3456b290e012227ede66d5baa47'
+    DISCOVERY_VERSION: 'a3925d8be471dbdbbf16edbaaffe1af900923265'
+    ECOMMERCE_VERSION: '1fe5c3f6bc96099ff22cdca3a99553dae5845c7d'
+    edx_platform_version: '58d2ac8c92c4cffe3d8db180b45bdcfba7040a7f'
+    ECOMMERCE_WORKER_VERSION: '8bd14f826881d7033844facfe723e08bc59c2cc7'
+    forum_version: '1ad615bca163cd5ba9268dcd50c05d32b106c1d1'
+    INSIGHTS_VERSION: 'ca07e290b773d4e9fbc5499dd124ad1d09f9c022'
+    NOTIFIER_VERSION: 'a98562ae9d0f42daf153e443b34c55b7710c7aa0'
+    #XQUEUE_VERSION: '0bcf998d3f2300ea05380958aba648fc56947149'
+
+  tasks:
+    - name: Run the edx common role
+      include_role:
+        name: common
+
+    - name: Ensure hostname is set
+      tags: ["init", "hostname"]
+      include_role:
+        name: hostname
+
+    # Add relevant keys to `ssh_public_keys`
+    # in either host_vars, group_vars, or local_vars.
+    - name: Manage SSH public keys
+      tags: ["init", "ssh"]
+      include_role:
+        name: ssh-public-keys
+
+    # This also installs EPEL
+    - name: Ensure base packages are installed
+      tags: ["init", "base-packages"]
+      include_role:
+        name: base-packages
+
+    # This will create and manage a zpool based on
+    # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
+    - name: Manage ZFS
+      tags: ["init", "zfs"]
+      include_role:
+        name: zfs
+
+    # Configuration is stored in
+    # group_vars/<group>/ssh.yml.
+    - name: Ensure sshd is installed and running
+      tags: ["init", "sshd"]
+      include_role:
+        name: sshd
+
+    - name: Copy SSL certificates
+      tags: ["init", "ssl"]
+      include_role:
+        name: callysto-ssl
+
+    - name: Add ppa:ubuntu-toolchain-r/test
+      tags: ["init", "base-packages"]
+      apt_repository:
+        repo: ppa:ubuntu-toolchain-r/test
+
+    - name: Install python-software-properties
+      tags: ["init", "base-packages"]
+      apt:
+        name: python-software-properties
+
+    - name: Install base edx packages
+      tags: ["init", "base-packages"]
+      apt:
+        name:
+          - build-essential
+          - software-properties-common
+          - curl
+          - git-core
+          - libxml2-dev
+          - libxslt1-dev
+          - python-pip
+          - libmysqlclient-dev
+          - python-apt
+          - python-dev
+          - libxmlsec1-dev
+          - libfreetype6-dev
+          - swig
+          - gcc
+          - g++
+
+    - name: Install base edx pip packages
+      tags: ["init", "base-packages", "pip"]
+      pip:
+        name:
+          - pip==9.0.3
+          - setuptools==39.0.1
+          - virtualenvwrapper==4.8.2
+          - virtualenv==15.2.0
+
+    - name: Manage Docker
+      include_role:
+        name: docker-tools
+
+    - name: Run some initial tasks for edx
+      tags: ["init"]
+      include_role:
+        name: callysto-edx
+        tasks_from: edx_initial_tasks.yml
+
+    - name: Manage nginx
+      tags: ["infra", "nginx"]
+      import_role:
+        name: nginx
+
+    - name: Manage MySQL
+      tags: ["infra", "mysql"]
+      import_role:
+        name: mysql
+
+    - name: Manage edxlocal
+      tags: ["edx"]
+      import_role:
+        name: edxlocal
+      when: EDXAPP_MYSQL_HOST == 'localhost'
+
+    - name: Manage memcached
+      tags: ["infra", "memcached"]
+      import_role:
+        name: memcache
+      when: "'localhost' in ' '.join(EDXAPP_MEMCACHE)"
+
+    - name: Manage MongoDB
+      tags: ["infra", "mongodb"]
+      import_role:
+        name: mongo_3_2
+      when: "'localhost' in EDXAPP_MONGO_HOSTS"
+
+    - name: Manage RabbitMQ
+      tags: ["infra", "rabbitmq"]
+      import_role:
+        name: rabbitmq
+      vars:
+        rabbitmq_ip: 127.0.0.1
+      when: SANDBOX_ENABLE_RABBITMQ
+
+    # This also installs oraclejdk
+    - name: Manage ElasticSearch
+      tags: ["infra", "elasticsearch"]
+      import_role:
+        name: elasticsearch
+      when: "'localhost' in EDXAPP_ELASTIC_SEARCH_CONFIG|map(attribute='host')"
+
+    - name: Manage edxapp
+      tags: ["edx", "edxapp"]
+      import_role:
+        name: edxapp
+      vars:
+        celery_worker: True
+
+    - name: Manage edxapp again
+      tags: ["edx", "edxapp"]
+      import_role:
+        name: edxapp
+      vars:
+        celery_worker: False
+
+    - name: Run some customizations and fixes for edxapp
+      tags: ["edx", "edxapp"]
+      import_role:
+        name: callysto-edx
+        tasks_from: edxapp.yml
+
+    - name: Manage ecommerce
+      tags: ["edx", "ecommerce"]
+      import_role:
+        name: ecommerce
+      when: SANDBOX_ENABLE_ECOMMERCE
+
+    - name: Manage ecomworker
+      tags: ["edx", "ecommerce", "ecomworker"]
+      import_role:
+        name: ecomworker
+      vars:
+        ECOMMERCE_WORKER_BROKER_HOST: 127.0.0.1
+      when: SANDBOX_ENABLE_ECOMMERCE
+
+    #- name: Manage analytics API
+    #  tags: ["edx", "analytics"]
+    #  import_role:
+    #    name: analytics_api
+    #  when: SANDBOX_ENABLE_ANALYTICS_API
+
+    #- name: Manage insights
+    #  tags: ["edx", "insights"]
+    #  import_role:
+    #    name: insights
+    #  when: SANDBOX_ENABLE_INSIGHTS
+
+    - name: Manage demo
+      tags: ["edx", "demo"]
+      import_role:
+        name: demo
+
+    - name: Manage oauth client
+      tags: ["edx", "edxapp", "auth"]
+      import_role:
+        name: oauth_client_setup
+
+    - name: Manage forum
+      tags: ["edx", "forum"]
+      import_role:
+        name: forum
+
+    - name: Manage discovery
+      tags: ["edx", "discovery"]
+      import_role:
+        name: discovery
+      when: SANDBOX_ENABLE_DISCOVERY
+
+    - name: Manage journals
+      tags: ["edx", "journals"]
+      import_role:
+        name: journals
+      when: JOURNALS_ENABLED
+
+    - name: Manage notifier
+      tags: ["edx", "notifier"]
+      import_role:
+        name: notifier
+      vars:
+        NOTIFIER_DIGEST_TASK_INTERVAL: 5
+
+    #- name: Manage xqueue
+    #  tags: ["edx", "xqueue"]
+    #  import_role:
+    #    name: xqueue
+    #  vars:
+    #    update_users: True
+
+    - name: Manage certs
+      tags: ["ssl"]
+      import_role:
+        name: certs
+
+    - name: Manage Postfix
+      tags: ["infra", "postfix"]
+      import_role:
+        name: postfix_queue
+      when: POSTFIX_QUEUE_EXTERNAL_SMTP_HOST != ''
