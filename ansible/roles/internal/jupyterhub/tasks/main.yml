@@ -18,7 +18,7 @@
 - name: Manage syzygyauthenticator
   include_role:
     name: syzygyauthenticator
-  when: jupyterhub_authenticator in ['shib', 'pam', 'dummy', 'dummpw']
+  when: jupyterhub_authenticator in ['shib', 'pam', 'dummy', 'dummypw']
 
 - name: Install jhub_shibboleth_auth
   pip:

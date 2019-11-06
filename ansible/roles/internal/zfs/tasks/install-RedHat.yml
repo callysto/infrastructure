@@ -23,3 +23,11 @@
   notify:
     - Modprobe zfs
   when: zfs_pool_name != ""
+
+- name: Load the module at boot
+  copy:
+    src: zfs.conf
+    dest: /etc/modules-load.d/zfs.conf
+    owner: root
+    group: root
+    mode: 0640

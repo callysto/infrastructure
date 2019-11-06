@@ -234,7 +234,7 @@
       tags: ["ssp"]
       include_role:
         name: ssp-idp-multi
-      when: groups['ssp'][0] == groups['hub'][0]
+      when: groups['ssp'][0] == groups['hub'][0] and jupyterhub_authenticator == 'shib'
 
     - name: Manage rrsync script
       tags: ["ssh", "rrsync", "backup"]
