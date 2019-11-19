@@ -4,7 +4,8 @@ TF_PATH := ${CURDIR}/terraform
 ANSIBLE_PATH := ${CURDIR}/ansible
 PACKER_PATH := ${CURDIR}/packer
 DEHYDRATED_PATH := ${CURDIR}/vendor/dehydrated/dehydrated
-export PATH := ${CURDIR}/bin:${CURDIR}/bin/${UNAME}:${PATH}
+export TUTOR_PATH := ${CURDIR}/tutor
+export PATH := ${CURDIR}/bin:${CURDIR}/bin/${UNAME}:${PATH}:${HOME}/.local/bin
 
 SHELL := /bin/bash
 
@@ -260,6 +261,11 @@ ansible/get-ssh-user: check-env check-host
 	@cd ${ANSIBLE_PATH} ; \
 	${ANSIBLE_CMD} ${HOST} -m debug -a "msg={{ ansible_user }}" | grep msg | sed -e 's/[\", ]//g' | cut -d: -f2
 
+HELP: Returns a variable of $HOST in $ENV
+ansible/get-var: check-env check-host
+	@cd ${ANSIBLE_PATH} ; \
+	${ANSIBLE_CMD} ${HOST} -m debug -a "msg={{ ${VAR} }}" | grep msg | sed -e 's/[\", ]//g' | cut -d: -f2
+
 HELP: Pings the hosts in $GROUP in $ENV
 ansible/ping: check-env check-group-optional
 	@cd ${ANSIBLE_PATH} ; \
@@ -329,10 +335,17 @@ ssh/shell: check-env check-host
 	_user=$(shell make ansible/get-ssh-user ENV=${ENV} HOST=${HOST}) ; \
 	${SSH_CMD} $$_user@$$_host
 
-# edX tasks
-# Because edX has its own set of ansible roles/modules and playbooks
-HELP: edX Runs $PLAYBOOK on $GROUP for reals in $ENV
-edx/ansible/playbook: check-env check-playbook check-group-optional
-	export ANSIBLE_CONFIG=${ANSIBLE_PATH}/ansible-edx.cfg && \
-	cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} -vvv --limit ${_GROUP} ${_PLAYBOOK}
+# Tutor tasks
+HELP: Install and configure Tutor
+tutor/install:
+	@pip3.6 install --user tutor-openedx
+	cd ~/work ; \
+	git clone https://github.com/callysto/tutor-callysto ; \
+	pip3.6 install --user ./tutor-callysto
+
+HELP: Build an edx image for $ENV
+tutor/build: check-env
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor plugins enable tutor_callysto
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config save --set DOCKER_IMAGE_OPENEDX=callysto/openedx:${ENV}
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor images build openedx
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor images push openedx

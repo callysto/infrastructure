@@ -19,3 +19,4 @@ keys/id_rsa*
 letsencrypt/*/accounts
 letsencrypt/*/certs
 letsencrypt/*/chains
+tutor/**

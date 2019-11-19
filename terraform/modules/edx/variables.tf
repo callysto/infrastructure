@@ -12,8 +12,6 @@ variable "cms_name" {}
 
 variable "lms_name" {}
 
-variable "preview_name" {}
-
 variable "vol_zfs_size" {
   default = 10
 }

@@ -24,6 +24,7 @@ the Callysto environment.
 * [Modifying the JupyterHub Error Page](#modifying-the-jupyterhub-error-page)
 * [SimpleSAMLphp Theme](#simplesamlphp-theme)
 * [DNS Management](#dns-management)
+* [Replacing a ZFS Pool](#replacing-a-zfs-pool)
 
 > User Management
 
@@ -37,8 +38,13 @@ the Callysto environment.
 
 > edX Management
 
-* [Preparing edX](#preparing-edx)
-* [Generating a Password Hash](#generating-a-password-hash)
+* [Installing Tutor](#installing-tutor)
+* [Building a Custom edX Image](#building-a-custom-edx-image)
+* [Deploying an edX Environment](#deploying-an-edx-environment)
+* [Updating edX After Deployment](#updating-edx-after-deployment)
+* [Tutor Plugins](#tutor-plugins)
+* [Deleting a Course](#deleting-a-course)
+* [Creating edX Users](#creating-edx-users)
 
 # Infrastructure Management
 
@@ -531,6 +537,100 @@ and then run:
 make terraform/apply ENV=prod-dns
 ```
 
+## Replacing a ZFS Pool
+
+All user data on the hub is stored on a mirrored ZFS Pool within the hub.
+There might come a time when either the pool runs out of space or
+becomes corrupt and needs to be replaced.
+
+First, use Terraform directly to create two new OpenStack volumes:
+
+```
+cd ~/work/callysto
+source ../rc/openrc
+openstack volume create --type encrypted --size 300 hub.callysto.ca-new-home-1
+openstack volume create --type encrypted --size 300 hub.callysto.ca-new-home-2
+```
+
+`hub.callysto.ca-new-home-1` is a suggested name. It should be unique and
+describe its purpose well.
+
+Next, attach _one_ of the volumes to the hub:
+
+```
+openstack server add volume hub.callysto.ca <volume id>
+```
+
+Once the volume is attached, create a new pool on the hub itself. Run
+the following after connecting to the hub via SSH:
+
+```
+zpool create -f tank2 /dev/disk/by-id/<scsi-id>
+```
+
+Where `scsi-id` is the following:
+
+```
+scsi-0QEMU_QEMU_HARDDISK_<first 20 characters of volume id>
+```
+
+For example:
+
+```
+scsi-0QEMU_QEMU_HARDDISK_992a01ff-8d31-4a16-a
+```
+
+After this command is run, a new pool called `tank2` will exist.
+
+Next, create a snapshot on the old pool:
+
+```
+zfs snapshot -r tank@migrate
+```
+
+> NOTE: if the pool is out of space, you will need to delete some files in
+> order to make the snapshot.
+
+One the snapshot is created, you can copy the data from the old pool to
+the new pool:
+
+```
+zfs send -R tank@migrate | zfs receive -F tank2
+```
+
+This process will take roughly 2-3 hours.
+
+Once it has completed, stop the JupyterHub service and export the old pool:
+
+```
+service jupyterhub stop
+zpool export tank
+```
+
+Then detach the volumes from the instance by running the following commands
+on Clavius:
+
+```
+openstack server remove volume hub.callysto.ca <volume id>
+```
+
+Then back on the hub, export the new pool and re-import it with
+the name `tank` and start JupyterHub:
+
+```
+zpool export tank2
+zpool import tank2 tank
+service jupyterhub start
+```
+
+Once you've verified the hub is working, you may delete the original volumes:
+
+
+```
+openstack volume delete <old-vol-1>
+openstack volume delete <old-vol-2>
+```
+
 # User Management
 
 ## Creating an Announcement or Alert
@@ -639,53 +739,193 @@ set this to a custom URL, set the `jupyterhub_shib_return_url` setting in
 
 # edX Management
 
-## Preparing edX
+Management of edX is handled by [Tutor](https://docs.tutor.overhang.io).
 
-Open edX requires Ubuntu 16.04, which you can build by running:
+There are two main concepts to understand when it comes to managing edX:
+
+1. Building a custom edX image.
+2. Deploying an edX environment.
+
+Tutor generates files for both of these actions under the same directory, so
+some files will be used on Clavius and others will be used on the deployed
+server.
+
+## Installing Tutor
+
+To install Tutor and the Callysto Tutor plugin, run:
 
 ```
-$ make packer/build/ubuntu1604
+make tutor/install
 ```
 
-Next, you will need to clone edX's bundle of playbooks and roles by running:
+## Building the Production edX Image
+
+Our edX environment uses a customized theme, which requires us to build a
+custom edX Docker image. The build files, based on Tutor, are stored in
+a private git repository located at https://git.cybera.ca/Callysto/edx-tutor-image.
+
+To begin, clone the directory:
 
 ```
-cd ansible/roles/edx
-git clone https://github.com/edx/configuration/
-cd configuration
-git checkout hawthorn.2
+cd ~/work/callysto-infra/tutor
+git clone https://git.cybera.ca/Callysto/edx-tutor-image edx-prod
+cd edx-prod
 ```
 
-Next, copy the `passwords.yml` file and add it to either
-`ansible/group_vars/prod` or `ansible/group_vars/dev`. Then replace `!!null`
-with appropriate passwords.
+Next, make any changes you need to customize the build. Details about how to
+do this can be found at:
 
-Finally, verify `ansible/ansible-edx.cfg` exists. This file is used as an
-alternative Ansible configuration file that makes the `ansible/roles/edx`
-directory have priority over the other roles.
+* https://docs.tutor.overhang.io/local.html
+* https://docs.tutor.overhang.io/dev.html
+
+> NOTE: If `tutor config save` is run, it might overwrite some of the
+> customizations done to the build files. Make sure to run `git status`
+> and verify if any changes need reverted.
+
+You can also look at the git repository history to see the previous changes
+that have been made:
+
+```
+git log
+```
+
+Once your modifications are made, you can build an image:
+
+```
+cd ~/work/callysto-infra
+make tutor/build ENV=edx-prod
+```
+
+The resulting image will then be available on Docker Hub at:
+
+```
+callysto/openedx:edx-prod
+```
+
+
+## Building a Custom edX Image
+
+If you'd like to build an image that is different from the production image,
+maybe to test a new feature, just follow the same steps as above, but
+replace `edx-prod` with a name of your choice. For example: `edx-jttest`.
+
+The resulting image will then be available on Docker Hub at:
+
+```
+callysto/openedx:edx-jttest
+```
 
 ## Deploying an edX Environment
 
-After preparation is done, you can deploy an edX environment by running:
+First, build the infrastructure using Terraform:
 
 ```
-make terraform/new TYPE=edx-aio ENV=<name>
-make edx/ansible/playbook PLAYBOOK=edx-aio ENV=<name>
+cd ~/work/callysto-infra
+make terraform/new TYPE=dev-edx-aio ENV=<env>
 ```
 
-We use `edx/ansible/playbook` instead of `ansible/playbook` in order to have
-a special `ansible-edx.cfg` file used, which enables the edX-specific roles to
-be included in the Ansible run.
+Where `env` is a name of your choice. `dev`, `test`, `your-name` are all good
+choices.
 
-## Generating a Password Hash
+Next, modify any settings in
+`~/work/callysto-infra/ansible/group_vars/<env>/local_vars.yml`. The edX
+settings are all prefixed with `edx_`.
 
-To create the password hash used in the `edx_users` variable, first ssh to an
-edx server. Then run:
+Next, deploy the infrastructure:
 
 ```
-source /edx/app/edxapp/venvs/edxapp/bin/activate
-/edx/bin/manage.edxapp shell
-
-from django.contrib.auth.hashers import make_password
-make_password('my-password')
+make terraform/apply ENV=<env>
 ```
+
+After that, run the edX Ansible playbook:
+
+```
+make ansible/playbook ENV=<env> PLAYBOOK=edx-aio
+```
+
+At this point, the virtual machine will be running, have Tutor installed,
+and have a customized Tutor `config.yml` file located at
+`/tank/tutor/config.yml`. This config file will have the hostname of the
+virtual machine set as well as any configuration items you had in the
+`local_vars.yml` file.
+
+You can now SSH to the host and begin using Tutor to launch edX.
+
+If this is the first time you're starting the environment, you
+will need to log into the virtual machine via SSH and then run:
+
+```
+tutor local start --detach
+tutor local init
+tutor local https create
+```
+
+If this is a dev environment, you can now access edX by replacing the word
+"edx" of the dev domain name with "courses" and "cms". For example, if your
+dev domain name was "edx.engaged-peacock.callysto.farm", you can visit:
+
+* https://courses.engaged-peacock.callysto.farm
+* https://cms.engaged-peacock.callysto.farm
+
+## Updating edX After Deployment
+
+If you have made changes to the edX image and need to update it in an existing
+environment, then do the following:
+
+First, create the new image following the process defined above.
+
+Next, stop and start edX with Tutor:
+
+```
+tutor local pullimages
+tutor local stop
+tutor local start --detach
+```
+
+If Tutor gives an error about not finding a container, then you can stop it
+using Docker directly:
+
+```
+docker ps -a -q | xargs docker stop
+docker ps -a -q | xargs docker rm
+tutor local start
+```
+
+## Tutor Plugins
+
+In order to modify how Tutor behaves, we need to interact with it through a
+plugin. There is a Callysto plugin availble at
+https://github.com/callysto/tutor-callysto which is downloaded and installed
+upon running `make tutor/install`.
+
+See the Tutor documentation (and example plugins) about how to use the Tutor
+plugin API:
+
+* https://docs.tutor.overhang.io/plugins.html
+
+When you've made changes to the `tutor-callysto` plugin, run:
+
+```
+cd ~/work/
+pip3.6 --user --upgrade ./
+```
+
+## Deleting a Course
+
+If you need to delete a course, run the following on the edX server:
+
+```
+tutor local run cms -- ./manage.py cms delete_course <course-id>
+```
+
+Where `course-id` is something like `course-v1:Cybera+CYB101+2019`.
+
+## Creating edX users
+
+To create users, do:
+
+```
+tutor local createuser --staff --superuser yourusername user@email.com
+```
+
+

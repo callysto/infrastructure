@@ -33,7 +33,7 @@ resource "openstack_dns_recordset_v2" "lms_ipv6" {
 
 resource "openstack_dns_recordset_v2" "preview_ipv6" {
   zone_id = "${var.zone_id}"
-  name    = "${var.preview_name}."
+  name    = "preview.${var.lms_name}."
   ttl     = 60
   type    = "AAAA"
 
@@ -86,7 +86,7 @@ resource "openstack_dns_recordset_v2" "new_lms_fip" {
 resource "openstack_dns_recordset_v2" "new_preview_fip" {
   count   = "${var.create_floating_ip == "true" ? 1 : 0}"
   zone_id = "${var.zone_id}"
-  name    = "${var.preview_name}."
+  name    = "preview.${var.lms_name}."
   ttl     = 60
   type    = "A"
 
@@ -132,7 +132,7 @@ resource "openstack_dns_recordset_v2" "existing_lms_fip" {
 resource "openstack_dns_recordset_v2" "existing_preview_fip" {
   count   = "${var.existing_floating_ip != "" ? 1 : 0}"
   zone_id = "${var.zone_id}"
-  name    = "${var.preview_name}."
+  name    = "preview.${var.lms_name}."
   ttl     = 60
   type    = "A"
 

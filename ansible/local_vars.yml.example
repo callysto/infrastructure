@@ -130,6 +130,15 @@ stats_password: stats
 grafana_admin_password: password
 
 # edX
+edx_docker_image: "callysto/openedx"
+edx_docker_image_tag: "edx-prod"
+edx_mysql_root_password: password
+edx_mysql_edx_password: password
+edx_secret_key: a_long_string_of_characters
+edx_android_oauth2_secret: another_long_string_of_characters
+edx_id: yet_another_string_of_characters
+edx_tutor_root: /tank/tutor
+
 edx_users:
   - email: 'admin@localhost.com'
     username: callysto

@@ -293,26 +293,6 @@ To view default graphs please follow to dashboards at *https://stats.<domain_nam
 
 ## edX Infrastructure
 
-The edX deployment is based off of the
-[hawthorne.2 release](https://github.com/edx/configuration/tree/open-release/hawthorn.2).
-The `ansible/plays/imports/edx.yml` is built off of the
-[edx_sandbox.yml](https://github.com/edx/configuration/blob/open-release/hawthorn.2/playbooks/edx_sandbox.yml)
-playbook.
+The edX deployment leverages [Tutor](https://docs.tutor.overhang.io), version 3.7.4.
 
-Any fixes that we've needed to make are in the
-`ansible/roles/internal/callysto-edx` Ansible role.
-
-Important notes:
-
-* Two files, iblx-themes.tar.gz and ibl_python_pkgs.tar.gz, need to be copied
-  from Cybera's private git repository to `ansible/roles/internal/callysto-edx/files`.
-
-* This is only compatible with Ubuntu 16.04.
-
-* The [edX bundle of playbooks and roles](https://github.com/edx/configuration/blob/open-release/hawthorn.2/playbooks/)
-  gets cloned to our `ansible/roles/edx` directory.
-
-* The swapfile role is not applied in our deployment.
-
-* The `edx_sandbox.yml` playbook has been renamed to `openedx_native.yml` in
-  later releases.
+Please see the PROCESSES.md document for further details about how to use Tutor.
