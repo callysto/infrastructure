@@ -1,0 +1,44 @@
+---
+- name: Set the Tutor root dir globally
+  copy:
+    dest: /etc/profile.d/tutor_root.sh
+    content: "export TUTOR_ROOT={{ edx_tutor_root }}"
+
+- name: Install Tutor
+  pip:
+    name: tutor-openedx
+    executable: pip3.6
+
+- name: Install Tutor Callysto Plugin
+  pip:
+    name: git+https://github.com/callysto/tutor-callysto
+    executable: pip3.6
+
+- name: Generate a Tutor config.yml file
+  template:
+    src: tutor_config.yml.j2
+    dest: /tank/tutor/config.yml
+    mode: "0640"
+  notify: Apply the Tutor settings
+
+- name: Flush Tutor Handlers
+  meta: flush_handlers
+
+- name: Enable the Tutor Callysto Plugin
+  command: tutor plugins enable tutor_callysto
+  environment:
+    TUTOR_ROOT: "{{ edx_tutor_root }}"
+    PATH: "/bin:/usr/bin:/usr/local/bin"
+
+- name: Check if the edx docker image has been downloaded
+  shell: |
+    docker image ls {{ edx_docker_image }} | grep {{ edx_docker_image_tag }}
+  register: edx_image_downloaded
+  ignore_errors: true
+
+- name: Pull Docker images
+  command: tutor local pullimages
+  when: edx_image_downloaded.failed
+  environment:
+    TUTOR_ROOT: "{{ edx_tutor_root }}"
+    PATH: "/bin:/usr/bin:/usr/local/bin"
