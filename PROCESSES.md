@@ -382,7 +382,7 @@ and manage these images, do the following on Clavius:
 First, clone the `docker-stacks` repo:
 
 ```
-$ pushd ~/work
+$ cd ~/work
 $ git clone https://github.com/callysto/docker-stacks
 $ cd docker-stacks
 $ git checkout ianabc
@@ -411,6 +411,13 @@ Once the images have been built, you can push them to DockerHub by doing:
 ```
 $ source ~/work/rc/dockerhub
 $ make callysto/push
+```
+
+Once that has finished, you can update the Docker image on your deployed hubs.
+To do this, log into a hub via SSH and then run:
+
+```
+docker image pull callysto/pims-r
 ```
 
 ## Installing hubtraf
