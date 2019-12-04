@@ -868,11 +868,11 @@ tutor local https create
 ```
 
 If this is a dev environment, you can now access edX by replacing the word
-"edx" of the dev domain name with "courses" and "cms". For example, if your
+"edx" of the dev domain name with "courses" and "studio". For example, if your
 dev domain name was "edx.engaged-peacock.callysto.farm", you can visit:
 
 * https://courses.engaged-peacock.callysto.farm
-* https://cms.engaged-peacock.callysto.farm
+* https://studio.engaged-peacock.callysto.farm
 
 ## Updating edX After Deployment
 
