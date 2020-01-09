@@ -40,11 +40,14 @@ the Callysto environment.
 
 * [Installing Tutor](#installing-tutor)
 * [Building a Custom edX Image](#building-a-custom-edx-image)
+* [Updating the Callysto edX Theme](#updating-the-callysto-edx-theme)
 * [Deploying an edX Environment](#deploying-an-edx-environment)
 * [Updating edX After Deployment](#updating-edx-after-deployment)
 * [Tutor Plugins](#tutor-plugins)
 * [Deleting a Course](#deleting-a-course)
 * [Creating edX Users](#creating-edx-users)
+* [Accessing a Django Shell](#accessing-a-django-shell)
+* [Changing a User's Password](#changing-a-users-password)
 
 # Infrastructure Management
 
@@ -822,6 +825,32 @@ The resulting image will then be available on Docker Hub at:
 callysto/openedx:edx-jttest
 ```
 
+## Updating the Callysto edX Theme
+
+As mentioned above, the Callysto edX theme is bundled in
+https://git.cybera.ca/Callysto/edx-tutor-image, which should be located at
+`~/work/callysto-infra/tutor/edx-prod` on Clavius.
+
+Original development of the Callysto theme was done by an outside party,
+so we only have access to the final result. Unfortunately this final result
+is something of a compiled set of CSS and JavaScript files and updating them
+can be difficult.
+
+The best course of action is to find a specific string you are trying to
+update and then locate the files with that string. For example, to update the
+Terms of Service:
+
+```
+cd ~/work/callysto-infra/tutor/edx-prod
+grep -lR "Terms of Serv" *
+```
+
+Which results in a single `.js` file and multiple cached files.
+
+Open the `.js` file in an editor, search for the string you want to update, and
+make the changes. Then rebuild the image as described in another section of
+this document and pull the new image in the deployed environments.
+
 ## Deploying an edX Environment
 
 First, build the infrastructure using Terraform:
@@ -935,4 +964,23 @@ To create users, do:
 tutor local createuser --staff --superuser yourusername user@email.com
 ```
 
+## Accessing a Django Shell
 
+To get access to a Django shell for any kind of Django-based management, run:
+
+```
+tutor local run lms ./manage.py lms shell
+```
+
+## Changing a User's Password
+
+If you need to change a user's password through Django, run:
+
+```
+tutor local run lms ./manage.py lms shell
+
+>>> from django.contrib.auth.models import User
+>>> u = User.objects.get(username='sysadmin')
+>>> u.set_password('new-password')
+>>> u.save()
+```

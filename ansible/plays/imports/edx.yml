@@ -110,4 +110,3 @@
     - name: Manage Tutor
       include_role:
         name: callysto-edx
-        tasks_from: tutor.yml
