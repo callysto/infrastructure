@@ -5,17 +5,12 @@ variable "PROD_CALLYSTO_DOMAINNAME" {}
 
 variable "PROD_CALLYSTO_ZONE_ID" {}
 
-resource "random_pet" "name" {
-  length = 2
-}
-
 # These represent settings to tune the hub you're creating
 locals {
   # Global Settings
   image_name   = "callysto-centos"
   network_name = "default"
-  public_key   = "${file("../../keys/id_rsa.pub")}"
-  key_name     = "key-${random_pet.name.id}"
+  key_name     = "clavius"
   zone_id      = "${var.PROD_CALLYSTO_ZONE_ID}"
 
   # Hub Settings
@@ -37,11 +32,6 @@ data "openstack_images_image_v2" "callysto" {
   most_recent = true
 }
 
-resource "openstack_compute_keypair_v2" "callysto" {
-  name       = "${local.key_name}"
-  public_key = "${local.public_key}"
-}
-
 module "settings" {
   source      = "../modules/settings"
   environment = "prod"
@@ -53,7 +43,7 @@ module "hub" {
   zone_id              = "${local.zone_id}"
   image_id             = "${data.openstack_images_image_v2.callysto.id}"
   flavor_name          = "${module.settings.hub_flavor_name}"
-  key_name             = "${openstack_compute_keypair_v2.callysto.name}"
+  key_name             = "${local.key_name}"
   network_name         = "${local.network_name}"
   vol_zfs_size         = "${module.settings.hub_vol_zfs_size}"
   existing_volumes     = "${local.hub_existing_volumes}"
