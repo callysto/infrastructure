@@ -343,9 +343,33 @@ tutor/install:
 	git clone https://github.com/callysto/tutor-callysto ; \
 	pip3.6 install --user ./tutor-callysto
 
+HELP: Upgrade Tutor
+tutor/upgrade:
+	@pip3.6 install --user --upgrade tutor-openedx
+	cd ~/work/tutor-callysto ; \
+	git pull ; \
+	pip3.6 install --user ./tutor-callysto
+
+HELP: Upgrade a Tutor environment
+tutor/upgrade/environment: check-env
+	cd ${TUTOR_PATH} ; \
+	mv ${ENV}.orig/.git ${ENV}/ ; \
+	mv ${ENV}.orig/env/build/openedx/requirements/* ${ENV}/env/build/openedx/requirements/ ; \
+	mv ${ENV}.orig/env/build/openedx/themes/* ${ENV}/env/build/openedx/themes ; \
+
+HELP: Pull down the base Tutor openedx image
+tutor/image/pull/upstream: check-env
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config save --unset DOCKER_IMAGE_OPENEDX
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor images pull openedx
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config save --set DOCKER_IMAGE_OPENEDX=callysto/openedx:${ENV}
+
 HELP: Build an edx image for $ENV
-tutor/build: check-env
+tutor/image/build: check-env
 	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor plugins enable tutor_callysto
 	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config save --set DOCKER_IMAGE_OPENEDX=callysto/openedx:${ENV}
 	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor images build openedx
 	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor images push openedx
+
+HELP: Render the custom Tutor theme for $ENV
+tutor/theme/render: check-env
+	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config render --extra-config ../tutor-indigo/config.yml ../tutor-indigo/theme ${TUTOR_PATH}/${ENV}/env/build/openedx/themes/indigo

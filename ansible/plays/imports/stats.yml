@@ -188,3 +188,33 @@
             basicAuth: True
             basicAuthUser: "{{ stats_username }}"
             basicAuthPassword: "{{ stats_password }}"
+
+    # For some reason, Ansible isn't correctly triggering this in the Grafana role.
+    - name: Create/Update dashboards file (provisioning)
+      tags: ["stats", "grafana"]
+      become: true
+      copy:
+        dest: "/etc/grafana/provisioning/dashboards/ansible.yml"
+        content: |
+          apiVersion: 1
+          providers:
+           - name: 'default'
+             orgId: 1
+             folder: ''
+             type: file
+             options:
+               path: "/{{ zfs_pool_name }}/grafana/dashboards"
+        backup: false
+        owner: root
+        group: grafana
+        mode: 0640
+      notify: restart grafana
+
+    - name: Manage Grafana dashboard for JupyterHub
+      tags: ["stats", "grafana"]
+      copy:
+        src: "../../roles/internal/jupyterhub/files/grafana-dashboard-hub.json"
+        dest: "/{{ zfs_pool_name }}/grafana/dashboards/hub.json"
+        owner: grafana
+        group: grafana
+        mode: "0640"

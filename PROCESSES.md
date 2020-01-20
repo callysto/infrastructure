@@ -39,15 +39,17 @@ the Callysto environment.
 > edX Management
 
 * [Installing Tutor](#installing-tutor)
+* [Creating a new Tutor environment](#creating-a-new-tutor-environoment)
 * [Building a Custom edX Image](#building-a-custom-edx-image)
+* [Upgrading Tutor](#upgrading-tutor)
 * [Updating the Callysto edX Theme](#updating-the-callysto-edx-theme)
 * [Deploying an edX Environment](#deploying-an-edx-environment)
 * [Updating edX After Deployment](#updating-edx-after-deployment)
 * [Tutor Plugins](#tutor-plugins)
 * [Deleting a Course](#deleting-a-course)
 * [Creating edX Users](#creating-edx-users)
-* [Accessing a Django Shell](#accessing-a-django-shell)
 * [Changing a User's Password](#changing-a-users-password)
+* [Accessing a Django Shell](#accessing-a-django-shell)
 
 # Infrastructure Management
 
@@ -768,13 +770,18 @@ To install Tutor and the Callysto Tutor plugin, run:
 make tutor/install
 ```
 
-## Building the Production edX Image
+## Creating a New Tutor Environment
 
-Our edX environment uses a customized theme, which requires us to build a
-custom edX Docker image. The build files, based on Tutor, are stored in
-a private git repository located at https://git.cybera.ca/Callysto/edx-tutor-image.
+Creating a Tutor environment is required if you want to build a custom
+Tutor image. This is almost always required since our production edX
+environment uses extra plugins and a customized theme.
 
-To begin, clone the directory:
+Unlike creating a new Terraform environment, there isn't a `make`
+command that creates a tutor environment. Instead, you clone it
+from Cybera's internal Git service.
+
+For example, to create an environment called `edx-prod`,  run
+the following:
 
 ```
 cd ~/work/callysto-infra/tutor
@@ -782,8 +789,33 @@ git clone https://git.cybera.ca/Callysto/edx-tutor-image edx-prod
 cd edx-prod
 ```
 
-Next, make any changes you need to customize the build. Details about how to
-do this can be found at:
+> `edx-prod` should already exist on Clavius.
+
+To create another environment, perhaps to test changes, you can do
+something like the following:
+
+```
+cd ~/work/callysto-infra/tutor
+git clone https://git.cybera.ca/Callysto/edx-tutor-image edx-NAME
+cd edx-NAME
+```
+
+where `NAME` is a name of your choice (`dev`, `jttest`, etc).
+
+The cloned repository contains a large number of files and directories
+and most of these actually go unused. We're really only concerned with
+the following:
+
+* `config.yml`
+* `env/build/openedx/Dockerfile`
+* `env/build/openedx/requirements/`
+* `env/build/openedx/themes`
+
+## Building the Production edX Image
+
+After you have an edx environment cloned on Clavius, you can being making
+any changes you need to customize the Open edX Docker image. Details about
+how to do this can be found at:
 
 * https://docs.tutor.overhang.io/local.html
 * https://docs.tutor.overhang.io/dev.html
@@ -799,11 +831,21 @@ that have been made:
 git log
 ```
 
-Once your modifications are made, you can build an image:
+Once your modifications are made, you can build an image.
+
+It's generally best to rebuild an image from scratch rather than have the
+build use existing cached layers from previous Docker builds. To do this,
+run the following:
+
+```
+docker image ls callysto/openedx -q | xargs docker image rm -f
+```
+
+Once the cached image layers are removed, run:
 
 ```
 cd ~/work/callysto-infra
-make tutor/build ENV=edx-prod
+make tutor/image/build ENV=edx-prod
 ```
 
 The resulting image will then be available on Docker Hub at:
@@ -812,44 +854,98 @@ The resulting image will then be available on Docker Hub at:
 callysto/openedx:edx-prod
 ```
 
-
-## Building a Custom edX Image
-
-If you'd like to build an image that is different from the production image,
-maybe to test a new feature, just follow the same steps as above, but
-replace `edx-prod` with a name of your choice. For example: `edx-jttest`.
-
-The resulting image will then be available on Docker Hub at:
-
-```
-callysto/openedx:edx-jttest
-```
+The above examples used `edx-prod` as the environment, but remember that you
+can create your own edx environments in Clavius and name them whatever you
+would like. See the section on "Creating a New Tutor Environment" for more
+information.
 
 ## Updating the Callysto edX Theme
 
-As mentioned above, the Callysto edX theme is bundled in
-https://git.cybera.ca/Callysto/edx-tutor-image, which should be located at
-`~/work/callysto-infra/tutor/edx-prod` on Clavius.
-
-Original development of the Callysto theme was done by an outside party,
-so we only have access to the final result. Unfortunately this final result
-is something of a compiled set of CSS and JavaScript files and updating them
-can be difficult.
-
-The best course of action is to find a specific string you are trying to
-update and then locate the files with that string. For example, to update the
-Terms of Service:
+The Callysto edX Theme is based on Tutor's
+[Indigo theme](https://github.com/overhangio/indigo). The build files for
+this theme should be located at:
 
 ```
-cd ~/work/callysto-infra/tutor/edx-prod
-grep -lR "Terms of Serv" *
+~/work/tutor-indogo
 ```
 
-Which results in a single `.js` file and multiple cached files.
+If that directory doesn't exist, run the following:
 
-Open the `.js` file in an editor, search for the string you want to update, and
-make the changes. Then rebuild the image as described in another section of
-this document and pull the new image in the deployed environments.
+```
+cd ~/work
+git clone https://github.com/callysto/tutor-indigo
+cd tutor-indigo
+git checkout -b callysto
+```
+
+Inside this directory is a `config.yml` file. You can edit this file to
+apply some customizations to the theme.
+
+You can also edit some of the other files if you need to make additional
+changes to the theme. For example, replace
+`./theme/lms/static/images/logo.png` with a custom logo.
+
+Once you've made your changes, first make sure to commit them to git:
+
+```
+git add .
+git commit -m "Summary of changes"
+git push -u origin callysto
+```
+
+Then "render" the theme:
+
+```
+cd ~/work/callysto-infra
+make tutor/theme/render ENV=hub-prod
+```
+
+Once the theme is rendered, you will need to rebuild the Tutor Open edX
+Docker image. See the section titled "Building the Production edX Image"
+for more information.
+
+## Upgrading Tutor
+
+New versions of Tutor contain bug fixes and updates for all aspects of the
+edX environment. In order to take advantage of all of these updates, each
+Tutor environment we've created needs to be refreshed.
+
+### On Clavius
+
+Tutor environments are stored in `~/work/callysto-infra/tutor`. To refresh
+a Tutor environment, do the following:
+
+1. Upgrade Tutor itself
+
+This command will upgrade the Python Tutor package:
+
+```
+cd ~/work/callysto-infra
+make tutor/upgrade
+```
+
+2. Upgrade the environment:
+
+This command will create a new Tutor environment and move all local
+changes to the new environment.
+
+```
+make tutor/upgrade/environment ENV=edx-prod
+```
+
+3. Build the new image:
+
+See the "Building the Production edX Image" section for how to do this.
+
+4. Modify the `config.yml` file for Ansible:
+
+Do this by reviewing `~/.local/lib/python3.6/site-packages/tutor/templates`
+and `~/work/callysto-infra/anisble/roles/internal/callysto-edx/templates/tutor_config.yml.j2`
+and modifying the Ansible template accordingly.
+
+Doing a `diff` on both files will result in a lot of changes reported, but
+most values won't need to be changed. Look for hard-coded version strings
+that have been updated as well as any new settings that should be added.
 
 ## Deploying an edX Environment
 
@@ -891,9 +987,11 @@ If this is the first time you're starting the environment, you
 will need to log into the virtual machine via SSH and then run:
 
 ```
+tutor config save
 tutor local start --detach
 tutor local init
 tutor local https create
+tutor local start --detach
 ```
 
 If this is a dev environment, you can now access edX by replacing the word
@@ -924,7 +1022,7 @@ using Docker directly:
 ```
 docker ps -a -q | xargs docker stop
 docker ps -a -q | xargs docker rm
-tutor local start
+tutor local start --detach
 ```
 
 ## Tutor Plugins
@@ -964,14 +1062,6 @@ To create users, do:
 tutor local createuser --staff --superuser yourusername user@email.com
 ```
 
-## Accessing a Django Shell
-
-To get access to a Django shell for any kind of Django-based management, run:
-
-```
-tutor local run lms ./manage.py lms shell
-```
-
 ## Changing a User's Password
 
 If you need to change a user's password through Django, run:
@@ -984,3 +1074,13 @@ tutor local run lms ./manage.py lms shell
 >>> u.set_password('new-password')
 >>> u.save()
 ```
+
+## Accessing a Django Shell
+
+To get access to a Django shell for any kind of Django-based management, run:
+
+```
+tutor local run lms ./manage.py lms shell
+```
+
+

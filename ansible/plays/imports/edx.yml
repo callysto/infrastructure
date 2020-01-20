@@ -53,6 +53,7 @@
   become: true
   vars:
     docker_install_compose: true
+    docker_compose_version: "1.25.1"
     zfs_containers:
       - tutor
   tasks:
