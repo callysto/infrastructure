@@ -38,7 +38,7 @@
 
 - name: Install Jupyterhub
   pip:
-    name: jupyterhub
+    name: 'jupyterhub=={{ jupyterhub_version }}'
     executable: pip3.6
 
 - name: Install node packages

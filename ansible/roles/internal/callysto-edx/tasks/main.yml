@@ -6,7 +6,7 @@
 
 - name: Install Tutor
   pip:
-    name: tutor-openedx
+    name: "tutor-openedx=={{ edx_tutor_version }}"
     executable: pip3.6
 
 - name: Install Tutor Callysto Plugin
