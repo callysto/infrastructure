@@ -156,8 +156,8 @@ ssh_public_keys:
 Finally, run Ansible:
 
 ```
-$ make ansible/playbook PLAYBOOK=init ENV=clavius GROUP=clavius
-$ make ansible/playbook PLAYBOOK=clavius ENV=clavius GROUP=clavius
+$ make ansible/playbook PLAYBOOK=init ENV=clavius
+$ make ansible/playbook PLAYBOOK=clavius ENV=clavius
 ```
 
 Once this is complete, log in to `clavius.callysto.farm` (or whatever the name
@@ -254,7 +254,7 @@ one of two ways:
 2. Deploy only the certificates by doing:
 
 ```
-make ansible/playbook ENV=hub-prod GROUP=hub PLAYBOOK=deploy-certs
+make ansible/playbook ENV=hub-prod PLAYBOOK=deploy-certs
 ```
 
 The above is useful for production environments where you _only_ want to deploy
@@ -363,7 +363,7 @@ Next, edit `terraform/hub-dev/main.tf` and modify as needed. Finally, deploy
 the environment
 ```
 $ make terraform/apply ENV=hub-dev
-$ make ansible/playbook PLAYBOOK=hub-aio ENV=hub-dev GROUP=hub
+$ make ansible/playbook PLAYBOOK=hub-aio ENV=hub-dev
 ```
 
 ## Deploying a Custom Environment
@@ -651,7 +651,7 @@ openstack volume delete <old-vol-2>
 2. Run:
 
 ```
-$ make ansible/playbook ENV=<env> GROUP=hub PLAYBOOK=hub
+$ make ansible/playbook ENV=<env> PLAYBOOK=hub
 ```
 
 This will set an announcement or alert in the following locations:
