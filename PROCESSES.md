@@ -632,6 +632,18 @@ the name `tank` and start JupyterHub:
 ```
 zpool export tank2
 zpool import tank2 tank
+```
+
+Attach the _other_ volume and recreate the zfs mirror.
+```
+zpool attach tank /dev/disk/by-id/<scsi-id-1> /dev/disk/by-id/<scsi-id-2>
+```
+Where `/dev/disk/by-id/scsi-id-1` is the device used to create the pool above
+and `/dev/disk/by-id/scsi-id-2` is the new (blank) device. This process will 
+take a few hours to complete but the pool should be usable while it runs.
+
+Finally, start the process again.
+```
 service jupyterhub start
 ```
 
@@ -642,6 +654,13 @@ Once you've verified the hub is working, you may delete the original volumes:
 openstack volume delete <old-vol-1>
 openstack volume delete <old-vol-2>
 ```
+
+and delete the migration snapshot
+
+```
+zfs destroy -r tank@migrate
+```
+
 
 # User Management
 
