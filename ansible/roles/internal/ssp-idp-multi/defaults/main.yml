@@ -2,12 +2,13 @@ ssp_develop: False
 
 # Version 1.16.2
 ssp_ver: 1.16.2
-ssp_sha256: 1099b9ce5d7cee29abde2be39bb0044fd943d75016a5791638629e08c8adfff5
+ssp_sha256: 5be1b62b48cc322d65405b1897cfafdb5910c27177c220d248cee4c49f1cc195
 
 # Version 1.17.5
 # Need to fix theme issues before we enable this
 #ssp_ver: 1.17.5
-#ssp_sha256: 5be1b62b48cc322d65405b1897cfafdb5910c27177c220d248cee4c49f1cc195
+#ssp_sha256: 1099b9ce5d7cee29abde2be39bb0044fd943d75016a5791638629e08c8adfff5
+
 ssp_url: https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_ver  }}/simplesamlphp-{{ ssp_ver  }}.tar.gz
 
 ssp_authoauth2_version: 'v2.0.0'
