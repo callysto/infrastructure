@@ -62,22 +62,6 @@ RequestHeader unset REMOTE_USER
   </Location>
   {% endif %}
 
-{% if hub_metrics == true %}
-  <Location /metrics/cadvisor/metrics>
-    ProxyPass http://127.0.0.1:8080/metrics
-    ProxyPassReverse http://127.0.0.1:8080/metrics
-    ProxyPreserveHost on
-  </Location>
-  {% endif %}
-
-{% if hub_metrics == true %}
-  <Location /metrics/node/metrics>
-    ProxyPass http://127.0.0.1:9100/metrics
-    ProxyPassReverse http://127.0.0.1:9100/metrics
-    ProxyPreserveHost on
-  </Location>
-  {% endif %}
-
   <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
   {% if jupyterhub_authenticator == 'shib' %}
     AuthType shibboleth

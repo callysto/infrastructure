@@ -24,7 +24,20 @@ locals {
 
   # Set this to use existing volumes. Make sure to only specify 2.
   #existing_volumes = ["uuid1", "uuid2"]
-  hub_existing_volumes = ["992a01ff-8d31-4a16-ada4-2a278b8847fb", "5ea86a3d-a26e-4aca-b7e3-0f2a424aaea1"]
+  hub_existing_volumes = [
+    "ad112939-111b-4929-8bd4-b9e5662d0945",
+    "b92bdad9-d9ea-4921-9a5f-2d556400a179",
+  ]
+
+  # Stats Settings
+  stats_name                 = "stats.${var.PROD_CALLYSTO_DOMAINNAME}"
+  stats_create_floating_ip   = "false"
+  stats_existing_floating_ip = "199.116.235.41"
+
+  stats_existing_volumes = [
+    "21833a44-bc33-4489-b7f6-f7d2573c9fab",
+    "0f208656-892d-4651-9304-2dc9e528ea21",
+  ]
 }
 
 data "openstack_images_image_v2" "callysto" {
@@ -51,12 +64,30 @@ module "hub" {
   existing_floating_ip = "${local.hub_existing_floating_ip}"
 }
 
+module "stats" {
+  source               = "../modules/stats"
+  name                 = "${local.stats_name}"
+  zone_id              = "${local.zone_id}"
+  image_id             = "${data.openstack_images_image_v2.callysto.id}"
+  flavor_name          = "${module.settings.stats_flavor_name}"
+  key_name             = "${local.key_name}"
+  network_name         = "${local.network_name}"
+  vol_zfs_size         = "${module.settings.stats_vol_zfs_size}"
+  existing_volumes     = "${local.stats_existing_volumes}"
+  create_floating_ip   = "${local.stats_create_floating_ip}"
+  existing_floating_ip = "${local.stats_existing_floating_ip}"
+}
+
 resource "ansible_group" "hub" {
   inventory_group_name = "hub"
 }
 
 resource "ansible_group" "ssp" {
   inventory_group_name = "ssp"
+}
+
+resource "ansible_group" "stats" {
+  inventory_group_name = "stats"
 }
 
 resource "ansible_group" "environment" {
@@ -89,10 +120,39 @@ resource "ansible_host" "hub" {
   }
 }
 
+resource "ansible_host" "stats" {
+  inventory_hostname = "${local.stats_name}"
+
+  groups = [
+    "all",
+    "${ansible_group.stats.inventory_group_name}",
+    "${ansible_group.environment.inventory_group_name}",
+    "${ansible_group.local_vars.inventory_group_name}",
+  ]
+
+  vars {
+    ansible_user            = "ptty2u"
+    ansible_host            = "${module.stats.ip}"
+    ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    zfs_disk_1              = "${module.stats.vol_id_1}"
+    zfs_disk_2              = "${module.stats.vol_id_2}"
+    zfs_pool_name           = "tank"
+    docker_storage          = ""
+  }
+}
+
 output "hub_ip" {
   value = "${module.hub.ip}"
 }
 
 output "hub_dns_name" {
   value = "${module.hub.dns_name}"
+}
+
+output "stats_ip" {
+  value = "${module.stats.ip}"
+}
+
+output "stats_dns_name" {
+  value = "${module.stats.dns_name}"
 }
