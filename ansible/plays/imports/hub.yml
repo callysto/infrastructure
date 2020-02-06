@@ -246,7 +246,6 @@
       include_role:
         name: prometheus-node-exporter
       vars:
-        prometheus_exporters_common_root_dir: /prometheus/exporters
         prometheus_node_exporter_config_flags:
            'web.listen-address': '127.0.0.1:9100'
            'log.level': 'info'

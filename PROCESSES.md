@@ -5,28 +5,29 @@ the Callysto environment.
 
 # Table of Contents
 
-> Infrastructure Management
+> General Infrastructure Management
 
 * [Starting from Scratch](#starting-from-scratch)
 * [Backing up Important Files](#backing-up-important-files)
 * [Generating Let's Encrypt Certificates](#generating-lets-encrypt-certificates)
-* [Deploying Certificates](#deploying-certificates)
-* [Building the Hub Image](#building-the-hub-image)
+* [Callysto Environments](#callysto-environments)
+* [Building the OpenStack Image](#building-the-openstack-image)
 * [Deploying the Production Environment](#deploying-the-production-environment)
-* [Deploying the Development Environment](#deploying-the-development-environment)
-* [Deploying a CI Environment](#deploying-a-ci-environment)
-* [Deploying a Custom Environment](#deploying-a-custom-environment)
-* [Deploying Metrics Server](#deploying-metrics-server)
-* [Building Docker Images](#building-docker-images)
-* [Installing hubtraf](#installing-hubtraf)
+* [Deploying a Development Environment](#deploying-a-development-environment)
 * [Adding a Base System Package](#adding-a-base-system-package)
 * [Managing SSH Keys](#managing-ssh-keys)
+
+> JupyterHub Management
+
+* [Deploying Certificates](#deploying-certificates)
+* [Building Docker Images](#building-docker-images)
+* [Installing hubtraf](#installing-hubtraf)
 * [Modifying the JupyterHub Error Page](#modifying-the-jupyterhub-error-page)
 * [SimpleSAMLphp Theme](#simplesamlphp-theme)
 * [DNS Management](#dns-management)
 * [Replacing a ZFS Pool](#replacing-a-zfs-pool)
 
-> User Management
+> JupyterHub User Management
 
 * [Creating an Announcement or Alert](#creating-an-announcement-or-alert)
 * [Setting a Getting Started Notebook](#setting-a-getting-started-notebook)
@@ -51,7 +52,13 @@ the Callysto environment.
 * [Changing a User's Password](#changing-a-users-password)
 * [Accessing a Django Shell](#accessing-a-django-shell)
 
-# Infrastructure Management
+> Stats Management
+
+* [Deploying a Stats Server](#deploying-a-stats-server)
+* [Accessing Statistics](#accessing-statistics)
+* [Updating Statistics](#updating-statistics)
+
+# General Infrastructure Management
 
 ## Starting from Scratch
 
@@ -245,25 +252,7 @@ example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_farm`.
 `callysto_ssl_cert_dir` is used by the `callysto-html` ansible role to copy the
 certificates found in this directory to `/etc/pki/tls/` on the remote servers.
 
-## Deploying Certificates
-
-After the Let's Encrypt-based certificates have been generated, you can deploy them
-one of two ways:
-
-1. Run the full `hub.yml` playbook.
-2. Deploy only the certificates by doing:
-
-```
-make ansible/playbook ENV=hub-prod PLAYBOOK=deploy-certs
-```
-
-The above is useful for production environments where you _only_ want to deploy
-the certificates.
-
-Note that Apache will not be automatically restarted. You must do this manually.
-This is to provide the ability to wait until a window to restart Apache.
-
-## Building the Hub Image
+## Building the OpenStack Image
 
 To help reduce the amount of time it takes to deploy a hub, you can create an
 image with the essential components pre-installed. This is done using Packer.
@@ -309,8 +298,8 @@ To see the corresponding Ansible playbook, run the following:
 make ansible/list-environments
 ```
 
-For example, the Terraform environment `dev-hub-aio` will have an Ansible
-playbook called `hub-aio`.
+For example, the Terraform environment `dev-hub-aio-stats` will have an Ansible
+playbook called `hub-aio-stats`.
 
 ## Deploying the Production Environment
 
@@ -321,63 +310,154 @@ While Terraform does a great job at handling the full lifecycle of compute
 resources, we want to take certain measures to ensure data doesn't get
 accidentally deleted.
 
-First, create two 250gb volumes:
+First, create two 250gb volumes for the hub:
 
 ```
 $ openstack volume create --size 250 hub.callysto.ca-home-1
 $ openstack volume create --size 250 hub.callysto.ca-home-2
 ```
 
-Next, allocate a Floating IP:
+Create two 150gb volumes for the stats server:
+
+```
+$ openstack volume create --size 150 stats.callysto.ca-1
+$ openstack volume create --size 150 stats.callysto.ca-1
+```
+
+Allocate a Floating IP for the hub:
 
 ```
 $ openstack floating ip create public
 ```
 
-Next, create a new Terraform environment:
+Allocate a Floating IP for the stats server:
 
 ```
-$ make terraform/new TYPE=hub-prod-aio ENV=hub-prod
+$ openstack floating ip create public
+```
+
+Create a new Terraform environment:
+
+```
+$ make terraform/new TYPE=hub-prod-aio-stats ENV=hub-prod
 ```
 
 Next, edit `terraform/hub-prod/main.tf` and modify as needed. Notably:
 
-1. Add the 2 volume UUIDs to `existing_volumes`.
-2. Add the floating IP to `existing_floating_ip`.
+1. Add the 2 hub volume UUIDs to `hub_existing_volumes`.
+1. Add the 2 stats volume UUIDs to `stats_existing_volumes`.
+3. Add the hub floating IP to `hub_existing_floating_ip`.
+4. Add the stats floating IP to `stats_existing_floating_ip`.
 
-Finally, deploy the hub:
+Next, either restore `ansible/group_vars/hub-prod/local_vars.yml` from a
+backup or begin from scratch. If you're beginning from scratch, the file
+should have enough comments in it to explain what needs to be set.
+
+Next, deploy the hub and stats infrastructure:
 
 ```
 $ make terraform/apply ENV=hub-prod
 ```
 
+Then provision the environments with Ansible:
+
+```
+$ make ansible/playbook PLAYBOOK=hub-aio-stats ENV=hub-prod
+```
+
 ## Deploying a Development Environment
 
-To deploy a development environment, first create the new environment from the
-development template:
-```
-$ make terraform/new TYPE=dev-hub-aio NAME=hub-dev
-```
-
-Next, edit `terraform/hub-dev/main.tf` and modify as needed. Finally, deploy
-the environment
-```
-$ make terraform/apply ENV=hub-dev
-$ make ansible/playbook PLAYBOOK=hub-aio ENV=hub-dev
-```
-
-## Deploying a Custom Environment
-
-To deploy a custom environment, run the following:
+To deploy a development environment, first determine what kind of environment
+you want to deploy. You can do this by listing the types of environment
+templates that are available:
 
 ```
-$ make terraform/new TYPE=<type> ENV=<name>
+make terraform/list-environments
 ```
 
-This will do the following:
+Once you've decided which environment you want, the following command will
+create the various files used to control the environment:
 
-1. Create a `terraform/hub-<name>` directory with customized `main.tf` file.
-2. Create a `ansible/group_vars/hub-<name>` directory with a copy of `local_vars.yml`.
+```
+make terraform/new TYPE=<environment> ENV=hub-name
+```
+
+Where `hub-name` can be anything like `hub-dev` or `hub-foo`.
+
+Once that has finished, you'll need to edit a few files:
+
+* `terraform/hub-name/main.tf`
+* `ansible/group_vars/hub-name/local_vars.yml`
+
+Make any changes needed to tune and customize your environment.
+
+Next, create the infrastructure using Terraform:
+
+```
+make terraform/apply ENV=hub-name
+```
+
+Finally, provision the environment with Ansible. To determine which
+Ansible playbook to use, run the following command:
+
+```
+make ansible/list-environments
+```
+
+Each Ansible environment playbook matches the corresponding Terraform
+environment.
+
+```
+make ansible/playbook ENV=hub-name PLAYBOOK=<environment>
+```
+
+## Adding a Base System Package
+
+A Base Package is something you want to see on _all_ servers: `vi`, `tmux`, etc.
+These should be generic packages that are applicable to a wide range of processes.
+
+To add a base package, edit the `ansible/roles/internal/base-packages/vars/RedHat.yml`
+file.
+
+## Managing SSH Keys
+
+You can define SSH keys in the `local_vars.yml` file under the `ssh_public_keys`
+variable. If you want to define keys which should be deployed to _everything_,
+define them in the `group_vars/all/local_vars.yml` file.
+
+For per-environment keys, define them in `group_vars/<group name>/local_vars.yml`.
+
+The format of the `ssh_public_keys` dict is:
+
+```
+ssh_public_keys:
+  username:
+    user: <local user>
+    state: present/absent
+    public_key: 'ssh-rsa ...'
+```
+
+Ansible will merge all `ssh_public_key` definitions across all variable files.
+
+# JupyterHub Management
+
+## Deploying Certificates
+
+After the Let's Encrypt-based certificates have been generated, you can deploy them
+one of two ways:
+
+1. Run the full `hub.yml` playbook.
+2. Deploy only the certificates by doing:
+
+```
+make ansible/playbook ENV=hub-prod PLAYBOOK=deploy-certs
+```
+
+The above is useful for production environments where you _only_ want to deploy
+the certificates.
+
+Note that Apache will not be automatically restarted. You must do this manually.
+This is to provide the ability to wait until a window to restart Apache.
 
 ## Building Docker Images
 
@@ -451,34 +531,6 @@ $ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --u
 Tweak the parameters as required.
 
 > Note: jupyterhub _must_ be configured with the "dummy" authenticator for `hubtraf` to work.
-
-## Installing a Base System Package
-
-A Base Package is something you want to see on _all_ servers: `vi`, `tmux`, etc.
-These should be generic packages that are applicable to a wide range of processes.
-
-To add a base package, edit the `ansible/roles/internal/base-packages/vars/RedHat.yml`
-file.
-
-## Managing SSH Keys
-
-You can define SSH keys in the `local_vars.yml` file under the `ssh_public_keys`
-variable. If you want to define keys which should be deployed to _everything_,
-define them in the `group_vars/all/local_vars.yml` file.
-
-For per-environment keys, define them in `group_vars/<group name>/local_vars.yml`.
-
-The format of the `ssh_public_keys` dict is:
-
-```
-ssh_public_keys:
-  username:
-    user: <local user>
-    state: present/absent
-    public_key: 'ssh-rsa ...'
-```
-
-Ansible will merge all `ssh_public_key` definitions across all variable files.
 
 ## Modifying the JupyterHub Error Page
 
@@ -639,7 +691,7 @@ Attach the _other_ volume and recreate the zfs mirror.
 zpool attach tank /dev/disk/by-id/<scsi-id-1> /dev/disk/by-id/<scsi-id-2>
 ```
 Where `/dev/disk/by-id/scsi-id-1` is the device used to create the pool above
-and `/dev/disk/by-id/scsi-id-2` is the new (blank) device. This process will 
+and `/dev/disk/by-id/scsi-id-2` is the new (blank) device. This process will
 take a few hours to complete but the pool should be usable while it runs.
 
 Finally, start the process again.
@@ -662,7 +714,7 @@ zfs destroy -r tank@migrate
 ```
 
 
-# User Management
+# JupyterHub User Management
 
 ## Creating an Announcement or Alert
 
@@ -1102,4 +1154,60 @@ To get access to a Django shell for any kind of Django-based management, run:
 tutor local run lms ./manage.py lms shell
 ```
 
+# Stats Management
 
+"Stats" (or statistics) and "Metrics" may be used interchangeably.
+
+## Deploying a Stats Server
+
+A "Stats Server" is bundled as part of any Terraform environment with the
+word "stats" in it:
+
+```
+make terraform/list-environments
+```
+
+It's the same for Ansible: there will be a corresponding playbook to the
+Terraform environment with the word "stats" in it:
+
+```
+make ansible/list-environments
+```
+
+So to deploy a Stats server, create a new environment based on one of
+those results. For example:
+
+```
+make terraform/new TYPE=dev-hub-aio-stats NAME=hub-myname
+make terraform/apply ENV=hub-myname
+make ansible/playbook PLAYBOOK=hub-aio-stats ENV=hub-myname
+```
+
+## Accessing Statistics
+
+Stats are viewed using [Grafana](https://grafana.com/).
+
+Once you have a stats environment up and running, you can access Grafana
+by visiting either:
+
+Production: https://stats.callysto.ca:9999/grafana
+Dev: https://stats-<name>.callysto.farm:9999/grafana
+
+You can find the login information either in 1Password or in the environment's
+`local_vars.yml` Ansible file.
+
+Once logged in, you'll see that there is a single Dashboard available called
+Callysto Global.
+
+## Updating Statistics
+
+If you want to update the Callysto Global dashboard, first make any changes
+within Grafana and then click the "save" button.
+
+Upon clicking save, you'll get an error message about being unable to save
+since the Callysto Global dashboard is a "managed" dashboard. The message will
+also include the JSON required to reproduce the dashboard, including your
+changes. Copy this JSON code and give it to a Callysto admin.
+
+If you are a Callysto admin, take the JSON code and paste it in the file
+`~/work/callysto-infra/ansible/roles/internal/jupyterhub/files/grafana-dashboard-hub.json`.

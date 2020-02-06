@@ -365,7 +365,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Lifetime user counts (2w)",
+      "title": "Lifetime user counts",
       "tooltip": {
         "shared": false,
         "sort": 1,
@@ -538,9 +538,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "node_memory_MemAvailable_bytes{instance=~\"hub.+\"}",
-          "legendFormat": "{{instance}} Available",
+          "expr": "node_memory_MemTotal_bytes{instance=~\"hub.+\"} - node_memory_MemAvailable_bytes{instance=~\"hub.+\"}",
+          "legendFormat": "{{instance}} Used",
           "refId": "A"
+        },
+        {
+          "expr": "sum(container_memory_usage_bytes{instance=~\"hub.+\", name=~\"jupyter-.+\"}) by(instance)",
+          "legendFormat": "{{instance}} Container Used",
+          "refId": "C"
         },
         {
           "expr": "node_memory_MemTotal_bytes{instance=~\"hub.+\"}",
@@ -590,14 +595,14 @@
       }
     }
   ],
-  "schemaVersion": 21,
+  "schemaVersion": 22,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -628,5 +633,5 @@
   "timezone": "",
   "title": "Callysto Global",
   "uid": "M7PC-woik",
-  "version": 1
+  "version": 2
 }
