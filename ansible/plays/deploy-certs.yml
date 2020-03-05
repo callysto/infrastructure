@@ -21,6 +21,8 @@
           dest: '/etc/pki/tls/certs/cert.pem'
         - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
           dest: '/etc/pki/tls/certs/chain.pem'
+        - src: '{{ callysto_ssl_cert_dir }}/fullchain.pem'
+          dest: '/etc/pki/tls/certs/fullchain.pem'
         - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
           dest: '/etc/pki/tls/private/privkey.pem'
       register: certs
