@@ -1,5 +1,5 @@
 - name: Validate SSL configuration
-  hosts: hub
+  hosts: hub,stats,ssp
   become: true
   tasks:
     - name: Ensure callysto_ssl_cert_dir is set
@@ -9,7 +9,7 @@
         msg: "Must set callysto_ssl_cert_dir"
 
 - name: Deploy SSL certificates
-  hosts: hub
+  hosts: hub,stats,ssp
   become: true
   tasks:
     - name: Deploy SSL certificates
@@ -21,5 +21,20 @@
           dest: '/etc/pki/tls/certs/cert.pem'
         - src: '{{ callysto_ssl_cert_dir }}/chain.pem'
           dest: '/etc/pki/tls/certs/chain.pem'
+        - src: '{{ callysto_ssl_cert_dir }}/fullchain.pem'
+          dest: '/etc/pki/tls/certs/fullchain.pem'
         - src: '{{ callysto_ssl_cert_dir }}/privkey.pem'
           dest: '/etc/pki/tls/private/privkey.pem'
+      register: certs
+
+    - name: Restart Caddy
+      systemd:
+        name: caddy
+        state: restarted
+      when: certs.changed
+
+    - name: Restart Apache but not on the hubs
+      systemd:
+        name: httpd
+        state: restarted
+      when: certs.changed and 'hub' not in group_names
