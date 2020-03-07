@@ -105,9 +105,17 @@
         name: ius-python3
 
     - name: Manage Docker
+      tags: ["docker"]
       include_role:
         name: docker
 
     - name: Manage Tutor
+      tags: ["docker", "tutor", "openedx"]
       include_role:
         name: callysto-edx
+
+    - name: Manage openstack tools and openrc file
+      tags: ["openstack"]
+      include_role:
+        name: openstack-tools
+      when: edx_enable_backups is defined and edx_enable_backups == true

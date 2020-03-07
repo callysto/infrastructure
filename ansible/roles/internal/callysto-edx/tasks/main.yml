@@ -42,3 +42,7 @@
   environment:
     TUTOR_ROOT: "{{ edx_tutor_root }}"
     PATH: "/bin:/usr/bin:/usr/local/bin"
+
+- name: Configure Backups
+  import_tasks: backups.yml
+  when: edx_enable_backups is defined and edx_enable_backups == True
