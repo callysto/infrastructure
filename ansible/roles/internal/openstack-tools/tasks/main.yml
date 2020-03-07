@@ -25,19 +25,48 @@
   become: yes
   when: ansible_os_family == "Debian"
 
-- name: Ensure versioned pip packages exist
+- name: Ensure versioned pip packages exist on CentOS
+  pip:
+    name: "{{ item.name }}"
+    state: present
+    version: "{{ item.version }}"
+    executable: pip3.6
+  with_items:
+    - "{{ openstack_tools_pip_pkg_vers }}"
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure versioned pip packages exist on Debian/Ubuntu
   pip:
     name: "{{ item.name }}"
     state: present
     version: "{{ item.version }}"
   with_items:
-    - "{{ os_tools_pip_pkg_vers }}"
+    - "{{ openstack_tools_pip_pkg_vers }}"
   become: yes
+  when: ansible_os_family == "Debian"
 
-- name: Ensure pip packages exist
+- name: Ensure pip packages exist on CentOS
+  pip:
+    name: "{{ item }}"
+    state: present
+    executable: pip3.6
+  with_items:
+    - "{{ openstack_tools_pip_pkgs }}"
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure pip packages exist on Debian/Ubuntu
   pip:
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ os_tools_pip_pkgs }}"
+    - "{{ openstack_tools_pip_pkgs }}"
   become: yes
+  when: ansible_os_family == "Debian"
+
+- name: Manage an openrc file
+  template:
+    src: openrc.j2
+    dest: "{{ openstack_openrc_path }}"
+    mode: 0640
