@@ -82,12 +82,6 @@
           jupyterhub_authenticator != 'shib' or (ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != '')
         msg: "Must set ssp_idp_multi_saml_key when using shib authenticator"
 
-    - name: Ensure hub_domain is set
-      assert:
-        that: >-
-          jupyterhub_authenticator != 'shib' or (hub_domain is defined and hub_domain != '')
-        msg: "Must set hub_domain when using shib authenticator"
-
     - name: Ensure ssp_domain is set
       assert:
         that: >-

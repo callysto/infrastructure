@@ -1,6 +1,6 @@
 ## Development JupyterHub with external SimpleSAMLphp and Stats server
 
-# These are set in env or .envrc file
+# These are set by the Makefile
 variable "DEV_CALLYSTO_DOMAINNAME" {}
 
 variable "DEV_CALLYSTO_ZONE_ID" {}
@@ -121,6 +121,10 @@ resource "ansible_group" "environment" {
   inventory_group_name = "dev"
 }
 
+resource "ansible_group" "shibboleth_hosts" {
+  inventory_group_name = "shibboleth_hosts"
+}
+
 resource "ansible_group" "local_vars" {
   inventory_group_name = "ENV"
 }
@@ -132,6 +136,7 @@ resource "ansible_host" "hub" {
     "all",
     "${ansible_group.hub.inventory_group_name}",
     "${ansible_group.environment.inventory_group_name}",
+    "${ansible_group.shibboleth_hosts.inventory_group_name}",
     "${ansible_group.local_vars.inventory_group_name}",
   ]
 
