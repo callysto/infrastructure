@@ -1,6 +1,6 @@
-## Development All in One Development Jupyter Hub
+## Development All in One edX Environment
 
-# These are set in env or .envrc file
+# These are set by the Makefile
 variable "DEV_CALLYSTO_DOMAINNAME" {}
 
 variable "DEV_CALLYSTO_ZONE_ID" {}
