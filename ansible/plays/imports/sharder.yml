@@ -1,0 +1,161 @@
+---
+# Manages a Sharder installation.
+# This shouldn't be run on its own.
+- name: Validate sharder configuration
+  hosts: sharder
+  become: true
+  tasks:
+    - name: Ensure zfs_pool_name is set
+      assert:
+        that: >-
+          zfs_pool_name is defined and zfs_pool_name != ""
+        msg: "Must set zfs_pool_name. This is usually done automatically with Terraform"
+
+    - name: Ensure zfs_disk_1 and zfs_disk_2 are set
+      assert:
+        that: >-
+          zfs_disk_1 is defined and zfs_disk_1 != "" and zfs_disk_2 is defined and zfs_disk_2 != ""
+        msg: "Must set zfs_disk_1 and zfs_disk_2. This is usually done automatically with Terraform"
+
+    - name: Ensure callysto_ssl_cert_dir is set
+      assert:
+        that: >-
+          callysto_ssl_cert_dir != ""
+        msg: "Must set callysto_ssl_cert_dir"
+
+    - name: Ensure either openstack_ephemeral_docker_disk or docker_zfs_pool is set
+      assert:
+        that: >-
+          docker_zfs_pool is defined or
+          (openstack_ephemeral_docker_disk is defined and
+           openstack_ephemeral_docker_disk != "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_")
+        msg: "Must set either openstack_ephemeral_docker_disk or docker_zfs_pool"
+
+    - name: Ensure ssp_domain is set
+      assert:
+        that: >-
+          jupyterhub_authenticator != 'shib' or (ssp_domain is defined and ssp_domain != '')
+        msg: "Must set ssp_domain when using shib authenticator"
+
+    - name: Ensure hub_metrics is set
+      assert:
+        that: >-
+          hub_metrics is defined
+        msg: "Must set hub_metrics to true or false"
+
+- name: Ensure sudo is configured correctly
+  hosts: sharder
+  become: true
+  tasks:
+    # Settings are defined in
+    # group_vars/<group>/sudo.yml
+    - name: Configure sudo
+      tags: ["sudo", "always"]
+      include_role:
+        name: sudo
+      vars:
+          ansible_ssh_pipelining: no
+
+- name: Install and configure the sharder
+  hosts: sharder
+  become: true
+  tasks:
+    - name: Ensure hostname is set
+      tags: ["hostname"]
+      include_role:
+        name: hostname
+
+    # Add relevant keys to `ssh_public_keys`
+    # in either host_vars, group_vars, or local_vars.
+    - name: Manage SSH public keys
+      tags: ["ssh"]
+      include_role:
+        name: ssh-public-keys
+
+    # This also installs EPEL
+    - name: Ensure base packages are installed
+      tags: ["base-packages"]
+      include_role:
+        name: base-packages
+
+    # This will create and manage a zpool based on
+    # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
+    - name: Manage ZFS
+      tags: ["zfs"]
+      include_role:
+        name: zfs
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      include_role:
+        name: selinux
+      vars:
+        selinux_policy: targeted
+        selinux_state: permissive
+
+    # Enabled services are defined in
+    # group_vars/hub/firewalld.yml
+    - name: Ensure firewalld service is running
+      tags: ["firewalld"]
+      include_role:
+        name: firewalld
+
+    # Configuration is stored in
+    # group_vars/<group>/ssh.yml.
+    - name: Ensure sshd is installed and running
+      tags: ["sshd"]
+      include_role:
+        name: sshd
+
+    - name: Copy SSL certificates
+      include_role:
+        name: callysto-ssl
+
+    # Configuration is stored in
+    # group_vars/<group>/httpd.yml
+    - name: Manage Apache
+      tags: ["httpd"]
+      include_role:
+        name: apache
+
+    - name: Manage Python3
+      tags: ["python", "python3"]
+      include_role:
+        name: ius-python3
+
+    #- name: Add interfaces their respective zones
+    #  firewalld:
+    #    interface: '{{ item.interface }}'
+    #    zone: '{{ item.zone }}'
+    #    state: enabled
+    #    permanent: true
+    #    immediate: yes
+    #  with_items:
+    #    - { interface: 'eth0', zone: 'public' }
+    #  notify:
+    #    firewalld complete reload
+
+    - name: Manage Shibboleth
+      tags: ["shib"]
+      include_role:
+        name: shibboleth
+      when: jupyterhub_authenticator == 'shib'
+
+    - name: Manage Callysto html repo
+      include_role:
+        name: callysto-html
+
+    - name: Manage Sharder
+      tags: ["sharder"]
+      include_role:
+        name: sharder
+
+    #- name: Prometheus node-exporter
+    #  tags: ["stats","prometheus"]
+    #  include_role:
+    #    name: prometheus-node-exporter
+    #  vars:
+    #    prometheus_node_exporter_config_flags:
+    #       'web.listen-address': '127.0.0.1:9100'
+    #       'log.level': 'info'
+    #  when: hub_metrics

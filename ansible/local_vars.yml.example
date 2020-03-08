@@ -81,6 +81,13 @@ jupyterhub_admin_users:
 # Set jupyterhub version
 jupyterhub_version: 1.0
 
+# JupyterHub Sharder configurationo
+sharder_config:
+  db_type: sqlite
+  db_file: /srv/sharder/sharder.db
+  hubs: "{{ groups['hub'] }}"
+  sharder_listen: 127.0.0.1
+
 # Set to True to disable updating package versions automatically
 disable_package_update: False
 

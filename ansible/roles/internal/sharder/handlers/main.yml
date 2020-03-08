@@ -1,0 +1,12 @@
+---
+- name: Restart Sharder
+  systemd:
+    name: sharder
+    state: restarted
+    daemon_reload: yes
+
+- name: Restart Apache
+  systemd:
+    name: httpd
+    state: restarted
+    daemon_reload: yes

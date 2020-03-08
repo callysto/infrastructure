@@ -1,0 +1,45 @@
+---
+- name: Install the sharder app from github
+  git:
+    repo: https://github.com/jtopjian/sharder
+    dest: /srv/sharder
+    version: jt
+
+- name: Install Sharder package dependencies
+  yum:
+    name:
+      - curl
+      - libcurl-devel
+      - python3-devel
+      - openssl-devel
+
+- name: Install Sharder Python dependencies
+  pip:
+    executable: pip3.6
+    requirements: /srv/sharder/sharder/requirements.txt
+
+- name: Deploy Sharder config file
+  copy:
+    dest: /srv/sharder/sharder.yml
+    content: "{{ sharder_config | to_nice_yaml() }}"
+
+- name: Sharder Service definition
+  copy:
+    src: sharder.service
+    dest: /etc/systemd/system/sharder.service
+  notify:
+    - Restart Sharder
+
+- name: Ensure Sharder is running
+  systemd:
+    name: sharder
+    state: started
+
+- name: Add httpd config for sharder service
+  template:
+    src: sharder-http.conf.j2
+    dest: /etc/httpd/conf.d/sharder.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart Apache
