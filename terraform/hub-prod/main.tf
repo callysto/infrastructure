@@ -38,6 +38,18 @@ locals {
     "21833a44-bc33-4489-b7f6-f7d2573c9fab",
     "0f208656-892d-4651-9304-2dc9e528ea21",
   ]
+
+  # edX Settings
+  edx_name                 = "edx.${var.PROD_CALLYSTO_DOMAINNAME}"
+  cms_name                 = "studio.${var.PROD_CALLYSTO_DOMAINNAME}"
+  lms_name                 = "courses.${var.PROD_CALLYSTO_DOMAINNAME}"
+  edx_create_floating_ip   = "false"
+  edx_existing_floating_ip = "199.116.235.105"
+
+  edx_existing_volumes = [
+    "2f73e302-da47-4097-b4ed-4bfe9e1ff928",
+    "1590e460-bd65-4584-a25b-ac2efeb330f4",
+  ]
 }
 
 data "openstack_images_image_v2" "callysto" {
@@ -78,6 +90,22 @@ module "stats" {
   existing_floating_ip = "${local.stats_existing_floating_ip}"
 }
 
+module "edx" {
+  source               = "../modules/edx"
+  name                 = "${local.edx_name}"
+  cms_name             = "${local.cms_name}"
+  lms_name             = "${local.lms_name}"
+  zone_id              = "${local.zone_id}"
+  image_id             = "${data.openstack_images_image_v2.callysto.id}"
+  flavor_name          = "${module.settings.edx_flavor_name}"
+  key_name             = "${local.key_name}"
+  network_name         = "${local.network_name}"
+  vol_zfs_size         = "${module.settings.edx_vol_zfs_size}"
+  existing_volumes     = "${local.edx_existing_volumes}"
+  create_floating_ip   = "${local.edx_create_floating_ip}"
+  existing_floating_ip = "${local.edx_existing_floating_ip}"
+}
+
 resource "ansible_group" "hub" {
   inventory_group_name = "hub"
 }
@@ -90,8 +118,16 @@ resource "ansible_group" "stats" {
   inventory_group_name = "stats"
 }
 
+resource "ansible_group" "edx" {
+  inventory_group_name = "edx"
+}
+
 resource "ansible_group" "environment" {
   inventory_group_name = "prod"
+}
+
+resource "ansible_group" "shibboleth_hosts" {
+  inventory_group_name = "shibboleth_hosts"
 }
 
 resource "ansible_group" "local_vars" {
@@ -106,6 +142,7 @@ resource "ansible_host" "hub" {
     "${ansible_group.hub.inventory_group_name}",
     "${ansible_group.ssp.inventory_group_name}",
     "${ansible_group.environment.inventory_group_name}",
+    "${ansible_group.shibboleth_hosts.inventory_group_name}",
     "${ansible_group.local_vars.inventory_group_name}",
   ]
 
@@ -141,6 +178,30 @@ resource "ansible_host" "stats" {
   }
 }
 
+resource "ansible_host" "edx" {
+  inventory_hostname = "${local.edx_name}"
+
+  groups = [
+    "all",
+    "${ansible_group.edx.inventory_group_name}",
+    "${ansible_group.environment.inventory_group_name}",
+    "${ansible_group.local_vars.inventory_group_name}",
+  ]
+
+  vars {
+    ansible_user            = "ptty2u"
+    ansible_host            = "${module.edx.ip}"
+    ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    zfs_disk_1              = "${module.edx.vol_id_1}"
+    zfs_disk_2              = "${module.edx.vol_id_2}"
+    edx_name                = "${module.edx.dns_name}"
+    cms_name                = "${local.cms_name}"
+    lms_name                = "${local.lms_name}"
+    zfs_pool_name           = "tank"
+    docker_storage          = ""
+  }
+}
+
 output "hub_ip" {
   value = "${module.hub.ip}"
 }
@@ -155,4 +216,12 @@ output "stats_ip" {
 
 output "stats_dns_name" {
   value = "${module.stats.dns_name}"
+}
+
+output "edx_ip" {
+  value = "${module.edx.ip}"
+}
+
+output "edx_dns_name" {
+  value = "${module.edx.dns_name}"
 }
