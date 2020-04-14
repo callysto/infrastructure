@@ -1,0 +1,32 @@
+---
+- name: Generate a backup script
+  template:
+    src: backup.sh.j2
+    dest: /usr/local/bin/backup.sh
+    mode: "0750"
+
+- name: Set the path for cron jobs
+  cron:
+    name: PATH
+    job: /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+    env: yes
+
+- name: Set the tutor root for cron jobs
+  cron:
+    name: TUTOR_ROOT
+    job: /tank/tutor
+    env: yes
+
+- name: Make docker-compose to work correctly in cron
+  cron:
+    name: COMPOSE_INTERACTIVE_NO_CLI
+    job: 1
+    env: yes
+
+- name: Ensure the backup.sh script runs everyday at 4am
+  cron:
+    name: "backup job"
+    minute: "00"
+    hour: "4"
+    job: /usr/local/bin/backup.sh 2>&1 >> /var/log/backup.log
+    user: root

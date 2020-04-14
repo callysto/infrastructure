@@ -81,11 +81,17 @@ jupyterhub_admin_users:
 # Set jupyterhub version
 jupyterhub_version: 1.0
 
+# JupyterHub Sharder configurationo
+sharder_config:
+  db_type: sqlite
+  db_file: /srv/sharder/sharder.db
+  hubs: "{{ groups['hub'] }}"
+  sharder_listen: 127.0.0.1
+
 # Set to True to disable updating package versions automatically
 disable_package_update: False
 
 # SimpleSAMLphp settings
-hub_domain: "{{ groups['hub'][0] }}"
 ssp_domain: "{{ groups['ssp'][0] }}"
 
 # uncomment this to run simplesamlphp in develop mode (uses hard-coded test users)
@@ -142,14 +148,17 @@ edx_android_oauth2_secret: another_long_string_of_characters
 edx_id: yet_another_string_of_characters
 edx_tutor_root: /tank/tutor
 edx_tutor_version: "3.11.2"
+edx_enable_backups: false
 
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner
+# or for anything backing up data to swift
+#openstack_openrc_path: /root/openrc
 #openstack_auth_url: "https://example.com:5000/v3"
 #openstack_username: "username"
 #openstack_password: "password"
 #openstack_project_name: "project"
-#openstack_project_domain_name: "Default"
+#openstack_project_domain_id: "default"
 #openstack_user_domain_name: "Default"
 #openstack_region_name: "RegionOne"
 

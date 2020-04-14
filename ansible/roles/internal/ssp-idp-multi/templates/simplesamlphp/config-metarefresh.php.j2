@@ -20,11 +20,13 @@ $config = array(
                 ),
 	{% endif %}
 {% endfor %}
+
     'callysto' => array(
       'cron'          => array('daily'),
       'sources'       => array(
-         array(
-          'src' => 'https://{{ hub_domain }}/Shibboleth.sso/Metadata',
+        {% for host in groups['shibboleth_hosts'] %}
+        array(
+          'src' => 'https://{{ host }}/Shibboleth.sso/Metadata',
           'template' => array(
               'sign.logout' => TRUE,
               {% if ssp_hash_usernames -%}
@@ -35,6 +37,7 @@ $config = array(
               'tags'  => array('sp','callysto'),
           ),
         ),
+        {% endfor %}
         ),
         'expireAfter'           => 60*60*24*4, // Maximum 4 days cache time
         'outputDir'     => 'metadata/',

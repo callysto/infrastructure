@@ -6,7 +6,7 @@
     clockSkew="180">
 
 
-    <ApplicationDefaults entityID="https://{{ hub_domain }}/shibboleth"
+    <ApplicationDefaults entityID="https://{{ inventory_hostname }}/shibboleth"
                          {% if ssp_hash_usernames -%}
                          REMOTE_USER="persistent-id targeted-id" signing="true" encryption="true"
                          {% else -%}

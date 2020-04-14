@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Create a variable with the date as the value
+backup_date=$(date +%Y%m%dT%H%M%S)
+
+# Ensure any old backups are removed
+rm -rf /tank/tutor/data/mysql/mysqlback/
+rm -rf /tank/tutor/data/mongodb/mongoback/
+rm -rf /tmp/backup-${backup_date}
+
+# Make sure the backup directories exists
+backup_dir="/tank/tutor/data/backups"
+mkdir -p $backup_dir
+mkdir -p /tank/tutor/data/mongodb/backup/
+mkdir -p /tank/tutor/data/mysql/backup/
+mkdir /tmp/backup-${backup_date}
+
+# Backup mongodb
+tutor local exec -T mongodb -- mongodump --out /data/db/backup/mongo-dump-${backup_date}
+
+# Backup MySQL
+tutor local exec -T mysql -- bash -c "mysqldump -uroot -p{{ edx_mysql_root_password }} --all-databases --opt > /var/lib/mysql/backup/mysql-data-${backup_date}.sql"
+
+# Copy mongodb and mysql to the temp directory
+cp -rp /tank/tutor/data/mongodb/backup/* /tmp/backup-${backup_date}
+cp -rp /tank/tutor/data/mysql/backup/* /tmp/backup-${backup_date}
+
+# Tar the backup
+tar -czf ${backup_dir}/openedx-data-${backup_date}.tar.gz -C / tmp/backup-${backup_date}
+
+# Clean up backup directories
+rm -rf /tank/tutor/data/mysql/backup/
+rm -rf /tank/tutor/data/mongodb/backup/
+rm -rf /tmp/backup-${backup_date}
+
+# Delete backups older than 7 days
+find $backup_dir -ctime +7 -type f -delete
+
+# Authenticate to OpenStack
+source {{ openstack_openrc_path }}
+
+# Upload to Swift
+hostname=$(hostname)
+swift post openedx_backups
+swift upload openedx_backups ${backup_dir}/openedx-data-${backup_date}.tar.gz --object-name $hostname/openedx-data-${backup_date}.tar.gz

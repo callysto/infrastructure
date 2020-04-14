@@ -1,7 +1,9 @@
-os_tools_pip_pkg_vers:
-  - { name: python-openstackclient, version: "{{ openstackclient_version }}"}
+openstack_client_version: latest
 
-os_tools_pip_pkgs:
+openstack_tools_pip_pkg_vers:
+  - { name: python-openstackclient, version: "{{ openstack_client_version }}"}
+
+openstack_tools_pip_pkgs:
   - python-novaclient
   - python-keystoneclient
   - python-swiftclient
@@ -13,3 +15,12 @@ os_tools_pip_pkgs:
   - python-heatclient
   - python-designateclient
   - python-magnumclient
+
+openstack_openrc_path: /root/openrc
+openstack_auth_url: "https://example.com:5000/v3"
+openstack_username: "username"
+openstack_password: "password"
+openstack_project_name: "project"
+openstack_project_domain_id: "default"
+openstack_user_domain_name: "Default"
+openstack_region_name: "RegionOne"

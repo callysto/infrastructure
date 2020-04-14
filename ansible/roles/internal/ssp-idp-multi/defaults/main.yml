@@ -38,8 +38,5 @@ ssp_theme_dir: ""
 # hash the usernames
 ssp_hash_usernames: True
 
-# TODO:This is tightly coupled to jupyterhub
-hub_domain: "{{ inventory_hostname }}"
-
 # Semi-hack to know when ssp is installed standalone and not with jupyterhub all-in-one
 ssp_standalone: False

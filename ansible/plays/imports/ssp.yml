@@ -40,12 +40,6 @@
           ssp_idp_multi_saml_key is defined and ssp_idp_multi_saml_key != ''
         msg: "Must set ssp_idp_multi_saml_key"
 
-    - name: Ensure hub_domain is set
-      assert:
-        that: >-
-          hub_domain is defined and hub_domain != ''
-        msg: "Must set hub_domain"
-
     - name: Ensure hub_metrics is set
       assert:
         that: >-
