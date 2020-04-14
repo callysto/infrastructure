@@ -47,7 +47,6 @@ the Callysto environment.
 * [Deploying an edX Environment](#deploying-an-edx-environment)
 * [Updating edX After Deployment](#updating-edx-after-deployment)
 * [Tutor Plugins](#tutor-plugins)
-* [Configuring Backups](#configuring-backups)
 * [Deleting a Course](#deleting-a-course)
 * [Creating edX Users](#creating-edx-users)
 * [Changing a User's Password](#changing-a-users-password)
@@ -1114,40 +1113,6 @@ When you've made changes to the `tutor-callysto` plugin, run:
 ```
 cd ~/work/
 pip3.6 --user --upgrade ./
-```
-
-## Configuring Backups
-
-We have the edX servers configured to perform nightly database
-backups. These backups consist of:
-
-* A full dump of the MySQL database
-* A full dump of the MongoDB database
-
-It is important to note that these backups do not include course data.
-If any changes are made to the courses, they must be exported and
-backed up on their own.
-
-To configure the database backups, do the following:
-
-Search for the group of `openstack_` variables in the `local_vars.yml`
-file. Uncomment them and set the values appropriately.
-
-Next, search for `edx_enable_backups` in `local_vars.yml` and set
-it to `true`.
-
-Finally, re-run the edx playbook:
-
-```
-make ansible/playbook ENV=<env> PLAYBOOK=edx-aio
-```
-
-Once this is all complete, nightly backups of MySQL and MongoDB will
-be created and uploaded to Swift. The name of the backups will be
-something along the lines of:
-
-```
-edx.promoted-sawfly.callysto.farm/openedx-data-20200307T062535.tar.gz
 ```
 
 ## Deleting a Course
