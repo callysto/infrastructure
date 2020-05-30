@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Authenticate to OpenStack
+source /root/openrc
+
+# Change to the /tank directory
+cd /tank
+
+# Use this only for testing and not in production!
+old_users=$(sqlite3 /srv/jupyterhub/jupyterhub.sqlite "select name from users where last_activity < date('now')")
+
+# Obtain a list of users who have not logged in for a year or more
+# Uncomment this for production
+#old_users=$(sqlite3 /srv/jupyterhub/jupyterhub.sqlite "select name from users where last_activity < date('now', '-1 year')")
+
+# For each old user...
+for i in $old_users; do
+  # Check and see if their account has already been archived
+  swift stat archived_users $i 2>&1 /dev/null
+
+  # If the return code is 0, then the user has already been archived.
+  # For now, we'll skip re-archiving their account.
+  if [[ $? == 0 ]]; then
+    echo "User $i has already been archived"
+    continue
+  fi
+
+  # Tar their home directory and upload it to swift
+  tar czf ${i}.tar.gz /tank/home/${i}
+  swift upload archived_users ${i}.tar.gz
+
+  # If there was an error, report it and move on
+  if [[ $? == 1 ]]; then
+    echo "Error archiving $i"
+    continue
+  fi
+
+  # Delete their home directory
+  # zfs destroy tank/home/$i
+done

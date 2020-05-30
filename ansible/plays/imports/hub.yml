@@ -244,3 +244,8 @@
            'web.listen-address': '127.0.0.1:9100'
            'log.level': 'info'
       when: hub_metrics
+
+    - name: Manage openstack tools and openrc file
+      tags: ["openstack"]
+      include_role:
+        name: openstack-tools

@@ -1,0 +1,17 @@
+---
+- name: Install openedx backup script
+  copy:
+    src: openedx-backup-snapshot.sh
+    dest: /usr/bin/openedx-backup-snapshot.sh
+    mode: 0750
+    owner: root
+    group: root
+
+- name: Add cron job for openedx backup
+  cron:
+    name: 'openedx-backup-snapshot'
+    cron_file: 'openedx-backup-snapshot'
+    job: '/usr/bin/openedx-backup-snapshot.sh'
+    user: root
+    minute: "15"
+    hour: "12"
