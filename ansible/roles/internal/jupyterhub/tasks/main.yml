@@ -137,3 +137,17 @@
     name: jupyterhub
     state: started
     enabled: yes
+
+#- name: Generate a cleanup_old_accounts.sh script
+#  template:
+#    src: cleanup_old_accounts.sh.j2
+#    dest: /usr/local/bin/cleanup_old_accounts.sh
+#    mode: 0750
+
+- name: Jupyterhub archive the data of inactive users to swift
+  copy:
+    src: cleanup-inactive-accounts.sh
+    dest: /usr/bin/cleanup-inactive-accounts.sh
+    mode: 0750
+    owner: root
+    group: root

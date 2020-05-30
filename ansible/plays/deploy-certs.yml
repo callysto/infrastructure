@@ -33,8 +33,8 @@
         state: restarted
       when: certs.changed
 
-    - name: Restart Apache but not on the hubs
+    - name: Restart Apache but not on the hubs or stats servers
       systemd:
         name: httpd
         state: restarted
-      when: certs.changed and 'hub' not in group_names
+      when: certs.changed and 'hub' not in group_names and 'stats' not in group_names

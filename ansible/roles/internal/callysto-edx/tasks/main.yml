@@ -42,3 +42,7 @@
   environment:
     TUTOR_ROOT: "{{ edx_tutor_root }}"
     PATH: "/bin:/usr/bin:/usr/local/bin"
+
+- name: Openedx back up zfs snapshot to swift
+  import_tasks: backup.yml
+  when: edx_enable_backups == true

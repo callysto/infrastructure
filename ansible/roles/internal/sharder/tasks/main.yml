@@ -1,9 +1,8 @@
 ---
 - name: Install the sharder app from github
   git:
-    repo: https://github.com/jtopjian/sharder
+    repo: https://github.com/callysto/sharder
     dest: /srv/sharder
-    version: jt
 
 - name: Install Sharder package dependencies
   yum:

@@ -30,6 +30,9 @@ export TF_VAR_PROD_CALLYSTO_ZONE_ID := ${PROD_CALLYSTO_ZONE_ID}
 export PROD_CALLYSTO_SSL_CERT_DIRECTORY := $(CURDIR)/letsencrypt/prod/certs/${PROD_CALLYSTO_SSL_DIR_NAME}
 export CALLYSTO_LCRYPT_BASE := /home/ptty2u/work/callysto-infra/letsencrypt
 
+# edX static hostname
+export DEV_EDX_HOSTNAME := dev-edx
+export TF_VAR_DEV_EDX_HOSTNAME := ${DEV_EDX_HOSTNAME}
 
 # SSH information
 KEY_DIR := ${CURDIR}/keys
