@@ -123,6 +123,14 @@
     src: "hub-507.html.j2"
     dest: "{{ jupyterhub_hub_template_dir }}/507.html"
 
+- name: Copy hub logo
+  copy:
+    src: "logo.png"
+    dest: "{{ jupyterhub_hub_template_dir }}/logo.png"
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Add httpd config for jupyter service
   template:
     src: jupyter-http.conf.j2

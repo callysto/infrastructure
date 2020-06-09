@@ -81,6 +81,7 @@ c.RemoteUserAuthenticator.shibReturnURL = '{{ jupyterhub_shib_return_url }}'
 {% endif %}
 
 c.JupyterHub.template_paths = ["{{ jupyterhub_hub_template_dir }}"]
+c.JupyterHub.logo_file = '{{ jupyterhub_hub_template_dir }}/logo.png'
 
 {% if jupyterhub_alert != "" %}
 c.JupyterHub.template_vars = {'announcement': '<div class="alert alert-danger">{{ jupyterhub_alert }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'}
