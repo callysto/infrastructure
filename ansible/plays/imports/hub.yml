@@ -1,5 +1,5 @@
 ---
-# Manages a JuptyerHub installation.
+# Manages a JupyterHub installation.
 # This shouldn't be run on its own.
 - name: Validate hub configuration
   hosts: hub

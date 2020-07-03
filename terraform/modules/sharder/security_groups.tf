@@ -62,6 +62,26 @@ resource "openstack_networking_secgroup_rule_v2" "https_world_v6" {
   security_group_id = "${openstack_networking_secgroup_v2.sg.id}"
 }
 
+resource "openstack_networking_secgroup_rule_v2" "stats_world_v4" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 9999
+  port_range_max    = 9999
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = "${openstack_networking_secgroup_v2.sg.id}"
+}
+
+resource "openstack_networking_secgroup_rule_v2" "stats_world_v6" {
+  direction         = "ingress"
+  ethertype         = "IPv6"
+  protocol          = "tcp"
+  port_range_min    = 9999
+  port_range_max    = 9999
+  remote_ip_prefix  = "::/0"
+  security_group_id = "${openstack_networking_secgroup_v2.sg.id}"
+}
+
 resource "openstack_networking_secgroup_rule_v2" "icmp_v4" {
   direction         = "ingress"
   ethertype         = "IPv4"

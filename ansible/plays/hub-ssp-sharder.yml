@@ -4,8 +4,32 @@
 - name: Run the main SSP playbook
   import_playbook: imports/ssp.yml
 
+- name: Run the main Sharder playbook
+  import_playbook: imports/sharder.yml
+
 - name: Run the main hub playbook
   import_playbook: imports/hub.yml
 
-- name: Run the main sharder playbook
-  import_playbook: imports/sharder.yml
+# Run the SSP update again
+- name: Run the ssp-idp-multi/tasks/simplesaml_cron.yml force SSP update
+  hosts: ssp
+  become: true
+  tasks:
+    - name: Force SSP update
+      get_url:
+        url: "https://{{ ssp_domain }}/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key }}&tag={{ item }}"
+        dest: "/dev/null"
+        validate_certs: no
+        timeout: 30
+        force: yes
+      with_items:
+        - hourly
+        - daily
+      #become_user: "{{ ssp_www_user }}"
+      #become: yes
+      tags:
+        - update_ssp
+      register: ssp_url_output
+
+    - debug:
+        var: ssp_url_output

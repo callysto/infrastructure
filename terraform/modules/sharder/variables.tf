@@ -10,16 +10,6 @@ variable "name" {
   default = ""
 }
 
-variable "vol_zfs_size" {
-  default = 10
-}
-
-variable "existing_volumes" {
-  type = "list"
-
-  default = []
-}
-
 variable "create_floating_ip" {
   default = "false"
 }

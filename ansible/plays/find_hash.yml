@@ -1,7 +1,7 @@
 ---
 ## Calculates the hash of a JupyterHub user
 - name: Get User Hash
-  hosts: hub
+  hosts: ssp
   become: true
   tasks:
     - name: Get user hash

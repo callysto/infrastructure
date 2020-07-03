@@ -27,7 +27,7 @@ RequestHeader unset REMOTE_USER
 
   Header always set Strict-Transport-Security "max-age=15768000"
 
-  {% if jupyterhub_authenticator == 'shib' %}
+  {% if sharder_use_shibboleth == True %}
   LoadModule mod_shib /usr/lib64/shibboleth/mod_shib_24.so
   ProxyPass /Shibboleth.sso !
 
@@ -47,7 +47,7 @@ RequestHeader unset REMOTE_USER
   </Directory>
 
   <Location /jupyter/hub>
-  {% if jupyterhub_authenticator == 'shib' %}
+  {% if sharder_use_shibboleth == True %}
     AuthType shibboleth
     Require shibboleth
     ShibRequestSetting requireSession true

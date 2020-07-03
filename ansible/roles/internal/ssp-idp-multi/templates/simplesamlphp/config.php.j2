@@ -807,6 +807,12 @@ $config = array(
         1 => array(
             'class' => 'core:AttributeMap', 'urn2name'
         ),
+        10 => array(
+            'class' => 'core:PHP',
+            'code' => '
+                $state["Destination"]["entityid"] = "https://hub.{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') }}/shibboleth";
+            ',
+        ),
         20 => array(
             'class' => 'smartattributes:SmartID',
             {% if ssp_hash_usernames -%}
