@@ -27,6 +27,24 @@
     owner: "{{ ssp_www_user }}"
     group: "{{ ssp_www_user }}"
 
+- name: Enable cron module
+  copy:
+    content: ""
+    dest: "{{ ssp_dir }}/modules/cron/enable"
+    force: no
+    owner: "{{ ssp_www_user }}"
+    group: "{{ ssp_www_user }}"
+    mode: 0644
+
+- name: Enable metarefresh module
+  copy:
+    content: ""
+    dest: "{{ ssp_dir }}/modules/metarefresh/enable"
+    force: no
+    owner: "{{ ssp_www_user }}"
+    group: "{{ ssp_www_user }}"
+    mode: 0644
+
 - name: Setup SSP cert
   copy:
     content: "{{ ssp_idp_multi_saml_cert }}"

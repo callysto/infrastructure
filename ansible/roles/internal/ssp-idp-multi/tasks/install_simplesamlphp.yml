@@ -39,9 +39,10 @@
     mode: 0755
 
 - name: Mark as installed
-  file:
-    path: "{{ ssp_dir }}/.installed"
-    state: touch
+  copy:
+    content: ""
+    dest: "{{ ssp_dir }}/.installed"
+    force: no
 
 - name: Set installed now variable
   set_fact:

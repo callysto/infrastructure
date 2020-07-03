@@ -1,18 +1,17 @@
 - name: Ensure php packages installed
   yum:
-    name: "{{ item }}"
     state: present
     update_cache: yes
-  with_items:
-    - php72u-cli
-    - mod_php72u
-    - php72u-pdo
-    - php72u-xml
-    - php72u-soap
-    - php72u-pecl-apcu
-    - php72u-mbstring
-    - php72u-json
-    - php72u-gd
+    name:
+      - php72u-cli
+      - mod_php72u
+      - php72u-pdo
+      - php72u-xml
+      - php72u-soap
+      - php72u-pecl-apcu
+      - php72u-mbstring
+      - php72u-json
+      - php72u-gd
   become: yes
   notify:
     - restart httpd

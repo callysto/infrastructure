@@ -294,7 +294,12 @@ quota/set: check-env check-user check-refquota
 HELP: Finds a hash for $USER in $ENV
 user/findhash: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} --limit hub plays/find_hash.yml --extra-vars user=${USER}
+	${PLAYBOOK_CMD} --limit ssp plays/find_hash.yml --extra-vars user=${USER}
+
+HELP: Finds a hash for $USER in $ENV
+user/findhash/new: check-env check-user
+	@cd ${ANSIBLE_PATH} ; \
+	${PLAYBOOK_CMD} plays/find_hash_new.yml --extra-vars user=${USER}
 
 # Backup tasks
 HELP: Performs a backup of sensitive data

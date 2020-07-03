@@ -27,7 +27,7 @@ locals {
     runcmd:
       - sed -i '/\/dev\/sdb/d' /etc/fstab
       - sed -i '/\/dev\/sdc/d' /etc/fstab
-      - swaplabel -L swap0 /dev/sdb
+      - swaplabel -L swap0 /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0-0-0-2
       - echo "LABEL=swap0 none  swap  defaults  0  0" >> /etc/fstab
     system_info:
       default_user:

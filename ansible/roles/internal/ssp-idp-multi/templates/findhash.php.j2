@@ -1,19 +1,11 @@
 #!/usr/bin/php
 <?php
 
-$federations = array(
-  {% for idp in ssp_idp_multi_sources -%}
-  {% if idp.type == 'saml' -%}
-    '{{ idp.display_name | lower | replace(' ','') }}',
-  {% endif -%}
-  {% endfor -%}
-);
-
 require_once('/var/simplesamlphp-{{ ssp_ver }}/www/_include.php');
 
 function generateHash($userID) {
   {% set metadata_url = "https://" ~ inventory_hostname ~ "/simplesaml/saml2/idp/metadata.php" %}
-  {% set shib_url = "https://" ~ inventory_hostname ~ "/shibboleth" %}
+  {% set shib_url = "https://hub." ~ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') ~ "/shibboleth" %}
 
   $srcID = 'set17:saml20-idp-hostedset{{ metadata_url | length }}:{{ metadata_url }}';
   $dstID = 'set16:saml20-sp-remoteset{{ shib_url | length }}:{{ shib_url }}';
@@ -34,24 +26,4 @@ $email = $argv[1];
 
 // First try with just the email address.
 $hash = generateHash($email);
-if (file_exists("/tank/home/$hash")) {
-  echo "==> Home Directory detected:\n";
-  echo "OAuth: $hash\n\n";
-}
-
-// Load the federation metadata here
-foreach ($federations as $federation) {
-  require_once("/var/simplesamlphp-{{ ssp_ver }}/metadata/metarefresh-${federation}/saml20-idp-remote.php");
-
-  foreach ($metadata as $key => $value) {
-    $entityID = $value['entityid'];
-    $userID = $email . '!' . $entityID;
-
-    $hash = generateHash($userID);
-    if (file_exists("/tank/home/$hash")) {
-      $displayName = $value['UIInfo']['DisplayName']['en'];
-      echo "==> Home Directory detected:\n";
-      echo "$displayName ($entityID): $hash\n\n";
-    }
-  }
-}
+echo "$hash\n";

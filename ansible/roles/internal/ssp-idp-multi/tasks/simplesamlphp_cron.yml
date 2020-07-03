@@ -19,7 +19,7 @@
 
 - name: Force SSP update
   get_url:
-    url: "https://localhost/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key }}&tag={{ item }}"
+    url: "https://{{ ssp_domain }}/simplesaml/module.php/cron/cron.php?key={{ ssp_refresh_key }}&tag={{ item }}"
     dest: "/dev/null"
     validate_certs: no
     timeout: 30

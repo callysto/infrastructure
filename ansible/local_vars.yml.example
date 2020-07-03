@@ -81,7 +81,8 @@ jupyterhub_admin_users:
 # Set jupyterhub version
 jupyterhub_version: 1.0
 
-# JupyterHub Sharder configurationo
+# JupyterHub Sharder configuration
+sharder_use_shibboleth: True
 sharder_config:
   db_type: sqlite
   db_file: /srv/sharder/sharder.db
@@ -125,9 +126,6 @@ ssp_idp_multi_sources:
 
 # Convert usernames to an anonymous hash
 ssp_hash_usernames: True
-
-ssp_ver: 1.16.2
-ssp_sha256: 5be1b62b48cc322d65405b1897cfafdb5910c27177c220d248cee4c49f1cc195
 
 # Generate a new key-pair with
 # openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"

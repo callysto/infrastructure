@@ -107,9 +107,10 @@ fi
 
 cleanup_notice="/tank/home/${i}/Inactive-Account-Notice.txt"
 if [[ ! -f $cleanup_notice ]]; then
-# Delete contents of home directory using rm instead of destroying zfs dataset.
+# Delete contents of home directory using find instead of destroying zfs dataset.
 echo "Removing home directory contents."
-rm -rf /tank/home/${i}/*
+#rm -rf /tank/home/${i}/*
+find /tank/home/${i}/ -mindepth 1 ! -iname 'getting-started.ipynb' -delete
 # Delete created tar in tank directory
 echo "Removing created tar."
 rm -rf /tank/${i}.tar.gz
