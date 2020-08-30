@@ -1,0 +1,7 @@
+---
+
+- name: Install git
+  dnf:
+    name: git
+    state: present
+  when: caddy_features is search('git')

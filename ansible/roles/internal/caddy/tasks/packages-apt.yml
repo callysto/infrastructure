@@ -1,0 +1,24 @@
+---
+
+- name: Update cache
+  apt:
+    update_cache: true
+    cache_valid_time: 43200   # 12 hours
+
+- name: Install git
+  apt:
+    name: git
+    state: present
+  when: caddy_features is search('git')
+
+# This is required because it provides the /bin/kill binary used in the service file
+- name: Install procps
+  apt:
+    name: procps
+    state: present
+
+- name: Install libcap
+  apt:
+    name: libcap2-bin
+    state: present
+  when: caddy_setcap

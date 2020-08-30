@@ -1,5 +1,5 @@
 - name: Validate SSL configuration
-  hosts: hub,stats,ssp
+  hosts: hub,sharder,ssp,stats
   become: true
   tasks:
     - name: Ensure callysto_ssl_cert_dir is set
@@ -9,7 +9,7 @@
         msg: "Must set callysto_ssl_cert_dir"
 
 - name: Deploy SSL certificates
-  hosts: hub,stats,ssp
+  hosts: hub,sharder,ssp,stats
   become: true
   tasks:
     - name: Deploy SSL certificates

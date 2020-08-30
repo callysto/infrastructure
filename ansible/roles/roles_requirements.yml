@@ -7,7 +7,7 @@
   version: 2.1.1
 
 - name: caddy
-  src: https://github.com/antoiner77/caddy-ansible
+  src: https://github.com/caddy-ansible/caddy-ansible
   version: v2.1.0
 
 - name: cadvisor

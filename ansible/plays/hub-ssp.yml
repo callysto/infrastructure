@@ -1,8 +1,0 @@
----
-## Environment: Deploys a JupyterHub Environment with separate SimpleSAMLphp
-
-- name: Run the main SSP playbook
-  import_playbook: imports/ssp.yml
-
-- name: Run the main hub playbook
-  import_playbook: imports/hub.yml

@@ -280,26 +280,26 @@ ansible/exec: check-env check-group-optional check-module check-args check-ansib
 	$(ANSIBLE_EXEC_CMD) $(_ANSIBLE_ARGS) ${_GROUP} -m ${_MODULE} ${_ARGS}
 
 # Quota tasks
-HELP: Gets a quota for $USER in $ENV
-quota/get: check-env check-user
+HELP: Gets a quota for $USER on hub $HOST in $ENV
+quota/get: check-env check-user check-host
 	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} --limit hub plays/quota_tasks.yml --extra-vars user=${USER}
+	${PLAYBOOK_CMD} --limit hub plays/quota_tasks.yml --limit ${HOST} --extra-vars user=${USER}
 
-HELP: Sets a quota to $REFQUOTA for $USER in $ENV
-quota/set: check-env check-user check-refquota
+HELP: Sets a quota to $REFQUOTA for $USER on hub $HOST in $ENV
+quota/set: check-env check-user check-refquota check-host
 	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} --limit hub plays/quota_tasks.yml --extra-vars set_quota=1 --extra-vars user=${USER} --extra-vars refquota=${REFQUOTA}
+	${PLAYBOOK_CMD} --limit hub plays/quota_tasks.yml --limit ${HOST} --extra-vars set_quota=1 --extra-vars user=${USER} --extra-vars refquota=${REFQUOTA}
 
 # User tasks
+#HELP: Finds a hash for $USER in $ENV
+#user/findhash/old: check-env check-user
+#	@cd ${ANSIBLE_PATH} ; \
+#	${PLAYBOOK_CMD} --limit ssp plays/find_hash_old.yml --extra-vars user=${USER}
+
 HELP: Finds a hash for $USER in $ENV
 user/findhash: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} --limit ssp plays/find_hash.yml --extra-vars user=${USER}
-
-HELP: Finds a hash for $USER in $ENV
-user/findhash/new: check-env check-user
-	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} plays/find_hash_new.yml --extra-vars user=${USER}
+	${PLAYBOOK_CMD} plays/find_hash.yml --extra-vars user=${USER}
 
 # Backup tasks
 HELP: Performs a backup of sensitive data

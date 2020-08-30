@@ -1,13 +1,15 @@
 ---
-# Manages stats configuration on SimpleSAMLphp
+# Manages stats client on nodes.
 # This shouldn't be run on its own.
 - name: Manage stats components on JupyterHub
-  hosts: ssp
+  hosts: hub, ssp, sharder
   become: true
   vars:
+    _cadvisor_port: 9280
     caddy_port: 9999
     caddy_port_mappings:
       node: 9100
+      cadvisor: "{{ _cadvisor_port }}"
   tasks:
     - name: Manage Caddy
       tags: ["stats", "caddy"]
@@ -34,3 +36,12 @@
         prometheus_node_exporter_config_flags:
            'web.listen-address': '127.0.0.1:9100'
            'log.level': 'info'
+
+    - name: Manage cadvisor
+      tags: ["stats", "cadvisor"]
+      include_role:
+        name: cadvisor
+      vars:
+        cadvisor_port: "{{ _cadvisor_port }}"
+        cadvisor_version: v0.34.0
+        cadvisor_checksum: 060c6361dd6d4478ff0572e8496522d8189cf956eea2656b6247ad683abcc9d3

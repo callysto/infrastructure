@@ -37,6 +37,10 @@ the Callysto environment.
 * [Quota Management](#quota-management)
 * [Logout Redirect](#logout-redirect)
 
+> Sharder Management
+
+* [Managing Users in the Sharder](#managing-users-in-the-sharder)
+
 > edX Management
 
 * [Installing Tutor](#installing-tutor)
@@ -298,8 +302,8 @@ To see the corresponding Ansible playbook, run the following:
 make ansible/list-environments
 ```
 
-For example, the Terraform environment `dev-hub-aio-stats` will have an Ansible
-playbook called `hub-aio-stats`.
+For example, the Terraform environment `dev-hub-aio` will have an Ansible
+playbook called `hub-aio`.
 
 ## Deploying the Production Environment
 
@@ -324,13 +328,9 @@ $ openstack volume create --size 150 stats.callysto.ca-1
 $ openstack volume create --size 150 stats.callysto.ca-1
 ```
 
-Allocate a Floating IP for the hub:
-
-```
-$ openstack floating ip create public
-```
-
-Allocate a Floating IP for the stats server:
+Then allocate several Floating IP addresses. You'll need to create a minimum
+of 4 (sharder, SimpleSAMLphp, a hub, and a stats server), so run the following
+command 4 times:
 
 ```
 $ openstack floating ip create public
@@ -339,15 +339,17 @@ $ openstack floating ip create public
 Create a new Terraform environment:
 
 ```
-$ make terraform/new TYPE=hub-prod-aio-stats ENV=hub-prod
+$ make terraform/new TYPE=prod-hub-cluster ENV=hub-prod
 ```
 
 Next, edit `terraform/hub-prod/main.tf` and modify as needed. Notably:
 
-1. Add the 2 hub volume UUIDs to `hub_existing_volumes`.
+1. Add the 2 hub volume UUIDs to `hub01_existing_volumes`.
 1. Add the 2 stats volume UUIDs to `stats_existing_volumes`.
-3. Add the hub floating IP to `hub_existing_floating_ip`.
+3. Add the hub floating IP to `hub01_existing_floating_ip`.
 4. Add the stats floating IP to `stats_existing_floating_ip`.
+5. Add the ssp floating IP to `ssp_existing_floating_ip`.
+5. Add the sharder floating IP to `sharder_existing_floating_ip`.
 
 Next, either restore `ansible/group_vars/hub-prod/local_vars.yml` from a
 backup or begin from scratch. If you're beginning from scratch, the file
@@ -362,7 +364,7 @@ $ make terraform/apply ENV=hub-prod
 Then provision the environments with Ansible:
 
 ```
-$ make ansible/playbook PLAYBOOK=hub-aio-stats ENV=hub-prod
+$ make ansible/playbook PLAYBOOK=hub-cluster ENV=hub-prod
 ```
 
 ## Deploying a Development Environment
@@ -446,7 +448,7 @@ Ansible will merge all `ssh_public_key` definitions across all variable files.
 After the Let's Encrypt-based certificates have been generated, you can deploy them
 one of two ways:
 
-1. Run the full `hub.yml` playbook.
+1. Run the full `hub-cluster.yml` playbook.
 2. Deploy only the certificates by doing:
 
 ```
@@ -687,20 +689,22 @@ zpool import tank2 tank
 ```
 
 Attach the _other_ volume and recreate the zfs mirror.
+
 ```
 zpool attach tank /dev/disk/by-id/<scsi-id-1> /dev/disk/by-id/<scsi-id-2>
 ```
+
 Where `/dev/disk/by-id/scsi-id-1` is the device used to create the pool above
 and `/dev/disk/by-id/scsi-id-2` is the new (blank) device. This process will
 take a few hours to complete but the pool should be usable while it runs.
 
 Finally, start the process again.
+
 ```
 service jupyterhub start
 ```
 
 Once you've verified the hub is working, you may delete the original volumes:
-
 
 ```
 openstack volume delete <old-vol-1>
@@ -715,6 +719,12 @@ zfs destroy -r tank@migrate
 
 
 # JupyterHub User Management
+
+## Managing Admin Users
+
+To grant admin privileges to certain users, first find their hash. Next,
+edit the `local_vars.yml` file and add them to the `jupyterhub_admin_users`
+variable.
 
 ## Creating an Announcement or Alert
 
@@ -784,34 +794,31 @@ directory or if `/tank/home/6fc583e6ba82d7c7f1e6fd7908afe48906e1093f` is.
 We have created a script located at `/usr/local/bin/findhash.php` to help
 assist with this problem.
 
-You can run this script directly on the hub by doing:
+You can run this script directly on the SimpleSAMLphp server by doing:
 
 ```
 $ /usr/local/bin/findhash.php john.doe@example.com
 ```
 
-Or by running the following task on Clavius:
+However, that will only show you the hash and not the hub the user is
+located on. To obtain both the hash and hub, run:
 
 ```
 make user/findhash USER=john.doe@example.com ENV=hub-prod
 ```
 
-## Managing Admin Users
-
-To grant admin privileges to certain users, first find their hash. Next,
-edit the `local_vars.yml` file and add them to the `jupyterhub_admin_users`
-variable.
-
 ## Quota Management
 
-The `Makefile` contains a handful of tasks to manage a user's quota:
+The `Makefile` contains a handful of tasks to manage a user's quota. In order
+to run these commands, you first need to determine which hub the user is hosted
+on. You can do this by running the `user/findhash` task described above.
 
 > Note: <user>` will be the _hash_ of the user and not the readable username.
 
 ```
-$ make quota/get ENV=<env>
-$ make quota/get ENV=<env> USER=<user>
-$ make quota/set ENV=<env> USER=<user> REFQUOTA=<10G>
+$ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env>
+$ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env> USER=<user>
+$ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USER=<user> REFQUOTA=<10G>
 ```
 
 ## Logout Redirect
@@ -819,6 +826,33 @@ $ make quota/set ENV=<env> USER=<user> REFQUOTA=<10G>
 When a user logs out, they will be redirected to `/simplesaml/logout.php`. To
 set this to a custom URL, set the `jupyterhub_shib_return_url` setting in
 `local_vars.yml`.
+
+# Sharder Management
+
+## Managing Users in the Sharder
+
+The sharder comes with an administration tool called `admin.py`. This tool
+can perform a wide variety of tasks to help manage users and hubs within
+the JupyterHub cluster.
+
+To use this tool, SSH to the sharder, and then:
+
+```
+$ sudo su
+$ cd /srv/sharder/sharder
+$ python3 admin.py --help
+```
+
+Some examples are:
+
+```
+$ python3 admin.py --list-users
+$ python3 admin.py --list-hubs
+$ python3 admin.py --list-users-on-hub hub-01.callysto.ca
+$ python3 admin.py --add-user <hash> --to-hub hub-01.callysto.ca
+$ python3 admin.py --delete-user <hash>
+$ python3 admin.py --move-user <hash> --to-hub hub-02.callysto.ca
+```
 
 # edX Management
 

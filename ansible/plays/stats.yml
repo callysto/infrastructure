@@ -1,5 +1,0 @@
----
-## Environment: Manages the stats infrastructure
-
-- name: Run the main stats playbook
-  import_playbook: imports/stats.yml

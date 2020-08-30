@@ -1,0 +1,135 @@
+---
+- include: preflight.yml
+- include: packages-{{ ansible_pkg_mgr }}.yml
+
+- name: Create Caddy user
+  user:
+    name: "{{ caddy_user }}"
+    system: true
+    createhome: true
+    home: "{{ caddy_home }}"
+
+- name: Download Caddy
+  get_url:
+    url: "https://github.com/caddyserver/caddy/releases/download/v1.0.4/caddy_v1.0.4_linux_amd64.tar.gz"
+    dest: "{{ caddy_home }}/caddy.tar.gz"
+    force_basic_auth: "{{ caddy_license != 'personal' }}"
+    timeout: 300
+  retries: 3
+  delay: 2
+  register: caddy_download
+  tags: skip_ansible_lint
+
+- name: Check if Caddy PGP key is already in keyring
+  command: gpg --list-keys {{ caddy_pgp_key_id }}
+  changed_when: gpg_list_keys is failed
+  register: gpg_list_keys
+  when: caddy_pgp_verify_signatures
+  tags: skip_ansible_lint
+  failed_when:
+    - "gpg_list_keys is failed"
+    - "'gpg: error reading key: No public key' not in gpg_list_keys.stderr"
+    - "'gpg: error reading key: public key not found' not in gpg_list_keys.stderr"
+
+- name: Download Caddy PGP key
+  command: >
+    gpg
+      --keyserver-options timeout={{ caddy_pgp_recv_timeout }}
+      --keyserver {{ caddy_pgp_key_server }}
+      --recv-keys {{ caddy_pgp_key_id }}
+  when: caddy_pgp_verify_signatures and gpg_list_keys.changed
+  register: caddy_pgp_key
+  changed_when: '"imported" in caddy_pgp_key.stdout'
+  tags: skip_ansible_lint
+
+- name: Download Caddy signature
+  get_url:
+    url: "{{ caddy_sig_url }}"
+    dest: "{{ caddy_home }}/caddy.tar.gz.asc"
+    timeout: 60
+    force: true
+    force_basic_auth: "{{ caddy_license != 'personal' }}"
+  when: caddy_pgp_verify_signatures
+  tags: skip_ansible_lint
+
+- name: Verify Caddy signature
+  command: >
+    gpg
+      --verify {{ caddy_home }}/caddy.tar.gz.asc
+      {{ caddy_home }}/caddy.tar.gz
+  when: caddy_pgp_verify_signatures
+  tags: skip_ansible_lint
+
+- name: Extract Caddy
+  unarchive:
+    src: "{{ caddy_home }}/caddy.tar.gz"
+    dest: "{{ caddy_home }}"
+    copy: false
+    owner: "{{ caddy_user }}"
+  tags: skip_ansible_lint
+
+- name: Extract Caddy
+  unarchive:
+    src: "{{ caddy_home }}/caddy.tar.gz"
+    dest: "{{ caddy_home }}"
+    creates: "{{ caddy_home }}/caddy"
+    copy: false
+    owner: "{{ caddy_user }}"
+
+- name: Determine Caddy binary path
+  set_fact:
+    caddy_bin: "{{ caddy_bin_dir }}/caddy"
+
+- name: Copy Caddy Binary
+  copy:
+    src: "{{ caddy_home }}/caddy"
+    dest: "{{ caddy_bin }}"
+    mode: 0755
+    remote_src: true
+  notify: restart caddy
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ caddy_user }}"
+    mode: 0770
+  with_items:
+    - "{{ caddy_conf_dir }}"
+    - "{{ caddy_certs_dir }}"
+
+- name: Create log directory
+  file:
+    path: "{{ caddy_log_dir }}"
+    state: directory
+    owner: "{{ caddy_user }}"
+    mode: 0775
+
+- name: Create Caddyfile
+  copy:
+    content: "{{ caddy_config }}"
+    dest: "{{ caddy_conf_dir }}/Caddyfile"
+    owner: "{{ caddy_user }}"
+  notify: reload caddy
+
+- name: Systemd service
+  template:
+    src: caddy.service
+    dest: /etc/systemd/system/caddy.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart caddy
+
+- name: Set capability on the binary file to be able to bind to TCP port <1024
+  capabilities:
+    path: "{{ caddy_bin }}"
+    capability: cap_net_bind_service+ep
+    state: present
+  when: caddy_setcap
+
+- name: Start Caddy service
+  systemd:
+    name: caddy
+    state: started
+    enabled: true

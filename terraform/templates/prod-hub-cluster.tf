@@ -1,4 +1,4 @@
-## Production All in One Development Jupyter Hub
+## Production JupyterHub Cluster Environment
 
 # These are set in env or .envrc file
 variable "PROD_CALLYSTO_DOMAINNAME" {}
@@ -18,43 +18,43 @@ locals {
 
   # Sharder floating IP settings.
   sharder_create_floating_ip   = "false"
-  sharder_existing_floating_ip = "162.246.156.36"
+  sharder_existing_floating_ip = "<IP>"
 
   # SSP Settings
   ssp_name                 = "ssp.${var.PROD_CALLYSTO_DOMAINNAME}"
   ssp_create_floating_ip   = "false"
-  ssp_existing_floating_ip = "162.246.156.247"
+  ssp_existing_floating_ip = "<IP>"
 
   # Hub 01 Settings
   hub01_name                 = "hub-01.${var.PROD_CALLYSTO_DOMAINNAME}"
   hub01_create_floating_ip   = "false"
-  hub01_existing_floating_ip = "162.246.156.219"
+  hub01_existing_floating_ip = "<IP>"
 
   # Set this to use existing volumes. Make sure to only specify 2.
   #existing_volumes = ["uuid1", "uuid2"]
   hub01_existing_volumes = [
-    "ad112939-111b-4929-8bd4-b9e5662d0945",
-    "b92bdad9-d9ea-4921-9a5f-2d556400a179",
+    "<vol1>",
+    "<vol2>",
   ]
 
   # Hub 02 Settings
   hub02_name                 = "hub-02.${var.PROD_CALLYSTO_DOMAINNAME}"
   hub02_create_floating_ip   = "false"
-  hub02_existing_floating_ip = "162.246.156.212"
+  hub02_existing_floating_ip = "<IP>"
 
   hub02_existing_volumes = [
-    "d17f9730-21ba-430f-89d3-36215a95790c",
-    "80fd2a9d-99a2-4b53-9ab3-28703fae3a88",
+    "<vol1>",
+    "<vol2>",
   ]
 
   # Stats Settings
   stats_name                 = "stats.${var.PROD_CALLYSTO_DOMAINNAME}"
   stats_create_floating_ip   = "false"
-  stats_existing_floating_ip = "199.116.235.41"
+  stats_existing_floating_ip = "<IP>"
 
   stats_existing_volumes = [
-    "21833a44-bc33-4489-b7f6-f7d2573c9fab",
-    "0f208656-892d-4651-9304-2dc9e528ea21",
+    "<vol1>",
+    "<vol2>",
   ]
 
   # edX Settings
@@ -62,11 +62,11 @@ locals {
   cms_name                 = "studio.${var.PROD_CALLYSTO_DOMAINNAME}"
   lms_name                 = "courses.${var.PROD_CALLYSTO_DOMAINNAME}"
   edx_create_floating_ip   = "false"
-  edx_existing_floating_ip = "199.116.235.105"
+  edx_existing_floating_ip = "<IP>"
 
   edx_existing_volumes = [
-    "2f73e302-da47-4097-b4ed-4bfe9e1ff928",
-    "1590e460-bd65-4584-a25b-ac2efeb330f4",
+    "<vol1>",
+    "<vol2>",
   ]
 }
 
@@ -253,7 +253,6 @@ resource "ansible_host" "hub01" {
   }
 }
 
-/*
 resource "ansible_host" "hub02" {
   inventory_hostname = "${local.hub02_name}"
 
@@ -275,7 +274,6 @@ resource "ansible_host" "hub02" {
     docker_storage          = ""
   }
 }
-*/
 
 resource "ansible_host" "stats" {
   inventory_hostname = "${local.stats_name}"
