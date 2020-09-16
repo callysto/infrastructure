@@ -4,8 +4,8 @@
 require_once('/var/simplesamlphp-{{ ssp_ver }}/www/_include.php');
 
 function generateHash($userID) {
-  {% set metadata_url = "https://" ~ inventory_hostname ~ "/simplesaml/saml2/idp/metadata.php" %}
-  {% set shib_url = "https://hub." ~ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') ~ "/shibboleth" %}
+  {% set metadata_url = "https://" ~ groups['sharder'][0] ~ "/simplesaml/saml2/idp/metadata.php" %}
+  {% set shib_url = "https://" ~ groups['sharder'][0] ~ "/shibboleth" %}
 
   $srcID = 'set17:saml20-idp-hostedset{{ metadata_url | length }}:{{ metadata_url }}';
   $dstID = 'set16:saml20-sp-remoteset{{ shib_url | length }}:{{ shib_url }}';

@@ -8,6 +8,11 @@
       shell: "/usr/local/bin/findhash.php {{ user | mandatory }}"
       register: findhash_results
 
-    - name: Report hash
+    - name: Get the location of the user
+      shell: "/bin/python3 /srv/sharder/sharder/admin.py --find-user {{ findhash_results.stdout }}"
+      delegate_to: "{{ groups['sharder'][0] }}"
+      register: results
+
+    - name: Report user
       debug:
-        msg: "{{ findhash_results.stdout_lines }}"
+        msg: "{{ results.stdout_lines }}"

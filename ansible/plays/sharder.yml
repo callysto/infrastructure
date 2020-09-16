@@ -1,5 +1,0 @@
----
-## Environment: Deploys a Sharder
-
-- name: Run the main sharder playbook
-  import_playbook: imports/sharder.yml

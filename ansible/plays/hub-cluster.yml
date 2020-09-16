@@ -1,5 +1,8 @@
 ---
-## Environment: Deploys a JupyterHub Environment with separate SimpleSAMLphp
+## Environment: Deploys a clustered JupyterHub environment with a Sharder, SimpleSAMLphp, Prometheus, and Grafana.
+
+- name: Run the main stats playbook
+  import_playbook: imports/stats.yml
 
 - name: Run the main SSP playbook
   import_playbook: imports/ssp.yml
@@ -9,6 +12,9 @@
 
 - name: Run the main hub playbook
   import_playbook: imports/hub.yml
+
+- name: Install stats client on nodes
+  import_playbook: imports/stats_client.yml
 
 # Run the SSP update again
 - name: Run the ssp-idp-multi/tasks/simplesaml_cron.yml force SSP update

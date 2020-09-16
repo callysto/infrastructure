@@ -49,7 +49,7 @@ jupyterhub_authenticator: dummy
 
 # uncomment this to specify a return URL when the user logs out.
 # only when "shib" authenticator is used.
-#jupyterhub_shib_return_url: '/simplesaml/logout.php'
+#jupyterhub_shib_return_url: "https://{{ ssp_domain }}/simplesaml/logout.php"
 
 # uncomment this when using the dummypw authenticator
 #jupyterhub_authenticator_dummy_password: callysto

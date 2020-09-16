@@ -1,0 +1,13 @@
+---
+## Calculates the hash of a JupyterHub user
+- name: Get User Hash
+  hosts: ssp
+  become: true
+  tasks:
+    - name: Get user hash
+      shell: "/usr/local/bin/findhash.php {{ user | mandatory }}"
+      register: findhash_results
+
+    - name: Report hash
+      debug:
+        msg: "{{ findhash_results.stdout_lines }}"

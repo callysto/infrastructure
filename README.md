@@ -71,7 +71,9 @@ are defined:
 
   * `settings`: Returns settings based on a development or production environment.
   * `clavius`: Collected resources for the central team workstation.
+  * `edx`: Collected resources for the Open edX.
   * `hub`: Collected resources for JupyterHub.
+  * `sharder`: Collected resources for the Sharder.
   * `ssp`: Collected resources for the SimpleSAMLphp server.
   * `stats`: Collected resources for the stats server.
 
@@ -109,7 +111,7 @@ Environments are grouped in directories under the `terraform` directory.
 Use the `Makefile` to see what types of environments are available:
 
 ```
-$ make terraform/environments
+$ make terraform/list-environments
 ```
 
 ## Ansible
@@ -127,23 +129,47 @@ If you prefer to not use the `Makefile`, check the contents of the `Makefile`
 for all required Ansible arguments and then just run `ansible` or
 `ansible-playbook` manually.
 
-## Ansible Inventory
+### Ansible Inventory
 
 Inventory is handled through the
 [ansible-terraform-inventory](https://github.com/jtopjian/ansible-terraform-inventory)
 plugin. This plugin reads in the Terraform State of a deployed enviornment and
 creates an appropriate Ansible Inventory result.
 
-## Running Ansible
+### Running Ansible
 
 To deploy a hub, run:
 
 ```
-  $ make ansible/playbook/check PLAYBOOK=hub ENV=hub-dev
-  $ make ansible/playbook PLAYBOOK=hub ENV=hub-dev
+  $ make ansible/playbook/check PLAYBOOK=<playbook> ENV=hub-dev
+  $ make ansible/playbook PLAYBOOK=<playbook> ENV=hub-dev
 ```
 
 > Note: `check` might fail because Ansible's inability to accurately do noop.
+
+### Playbooks
+
+You can see a list of Ansible playbooks by running:
+
+```
+  $ make ansible/list-playbooks
+```
+
+There are certain larger playbooks designed to provision entire environments.
+These can be seen by running:
+
+```
+  $ make ansible/list-environments
+```
+
+You can also look in the `ansible/plays` directory.
+
+### Playbook Imports
+
+The directory `ansible/plays/imports` contains a few plays designed to manage
+individual components of an environment. These plays are not meant to be run
+on their own. Instead, they are meant to be combined into a larger playbook
+found in the `ansible/plays` directory.
 
 ## Identity Proxy
 
