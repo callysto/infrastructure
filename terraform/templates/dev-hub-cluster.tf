@@ -131,7 +131,7 @@ resource "ansible_host" "hub01" {
 
   vars {
     ansible_user            = "ptty2u"
-    ansible_host            = "${module.hub.ip}"
+    ansible_host            = "${module.hub01.ip}"
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
     zfs_disk_1              = "${module.hub01.vol_id_1}"
     zfs_disk_2              = "${module.hub01.vol_id_2}"
@@ -172,8 +172,6 @@ resource "ansible_host" "sharder" {
     ansible_user            = "ptty2u"
     ansible_host            = "${module.sharder.ip}"
     ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-    zfs_disk_1              = "${module.sharder.vol_id_1}"
-    zfs_disk_2              = "${module.sharder.vol_id_2}"
     zfs_pool_name           = "tank"
     docker_storage          = ""
   }
