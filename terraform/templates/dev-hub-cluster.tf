@@ -51,6 +51,11 @@ data "openstack_images_image_v2" "callysto" {
   most_recent = true
 }
 
+resource "openstack_compute_keypair_v2" "callysto" {
+  name       = "${local.key_name}"
+  public_key = "${local.public_key}"
+}
+
 module "settings" {
   source      = "../modules/settings"
   environment = "dev"
