@@ -21,6 +21,8 @@
   copy:
     dest: /srv/sharder/sharder.yml
     content: "{{ sharder_config | to_nice_yaml() }}"
+  notify:
+    - Restart Sharder
 
 - name: Sharder Service definition
   copy:
