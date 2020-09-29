@@ -301,6 +301,11 @@ user/findhash: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \
 	${PLAYBOOK_CMD} plays/find_hash.yml --extra-vars user=${USER}
 
+HELP: Ban $USER from $ENV
+user/banuser: check-env check-user
+	@cd ${ANSIBLE_PATH} ; \
+	${PLAYBOOK_CMD} plays/ban_user.yml --extra-vars user=${USER}
+
 # Backup tasks
 HELP: Performs a backup of sensitive data
 backup:
