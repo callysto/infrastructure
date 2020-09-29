@@ -813,7 +813,7 @@ The `Makefile` contains a handful of tasks to manage a user's quota. In order
 to run these commands, you first need to determine which hub the user is hosted
 on. You can do this by running the `user/findhash` task described above.
 
-> Note: <user>` will be the _hash_ of the user and not the readable username.
+> Note: `<user>` will be the _hash_ of the user and not the readable username.
 
 ```
 $ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env>
@@ -825,15 +825,15 @@ $ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USER=<user> REFQUOTA=<10G>
 
 Occasionally it is necessary to ban accounts from the service for violations of
 the terms of service. To prevent re-creation of the account the preferred
-process is to set the users storage to readonly and kill their container. The
+process is to set the user's storage to readonly and kill their container. The
 spawner can detect the readonly condition and will refuse to start the user's
-container if it is set. Two tasks in the `Makefile` can implement this ban, one
-based on username and one on the user hash (problem accounts are generally
-identified by their hash first).
+container if it is set. The ban is implemented as a tasks in the `Makefile`
+targetting the user by hash.
+
+> Note: `<user>` will be the _hash_ of the user and not the readable username.
 
 ```
 $ make user/banuser ENV=<env> USER=<user>
-$ make user/banuserhash ENV=<env> USERHASH=<userhasn>
 ```
 
 ## Logout Redirect

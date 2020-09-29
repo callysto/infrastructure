@@ -9,6 +9,8 @@ export PATH := ${CURDIR}/bin:${CURDIR}/bin/${UNAME}:${PATH}:${HOME}/.local/bin
 
 SHELL := /bin/bash
 
+undefine USER
+
 # Callysto-specific information
 export OPENRC_PATH := /home/ptty2u/work/rc/openrc
 export ADMIN_EMAIL := sysadmin@callysto.ca
@@ -123,11 +125,6 @@ endif
 check-user:
 ifndef USER
 	$(error USER is not defined)
-endif
-
-check-userhash:
-ifndef USERHASH
-	$(error USERHASH is not defined)
 endif
 
 # Terraform tasks
@@ -310,11 +307,6 @@ HELP: Ban $USER from $ENV
 user/banuser: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \
 	${PLAYBOOK_CMD} plays/ban_user.yml --extra-vars user=${USER}
-
-HELP: Ban $USERHASH from $ENV
-user/banuserhash: check-env check-userhash
-	@cd ${ANSIBLE_PATH} ; \
-	${PLAYBOOK_CMD} plays/ban_user.yml --extra-vars userhash=${USERHASH}
 
 # Backup tasks
 HELP: Performs a backup of sensitive data
