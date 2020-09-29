@@ -125,6 +125,11 @@ ifndef USER
 	$(error USER is not defined)
 endif
 
+check-userhash:
+ifndef USERHASH
+	$(error USERHASH is not defined)
+endif
+
 # Terraform tasks
 HELP: Runs any first steps when this repository is first cloned
 terraform/setup:
@@ -305,6 +310,11 @@ HELP: Ban $USER from $ENV
 user/banuser: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \
 	${PLAYBOOK_CMD} plays/ban_user.yml --extra-vars user=${USER}
+
+HELP: Ban $USERHASH from $ENV
+user/banuserhash: check-env check-userhash
+	@cd ${ANSIBLE_PATH} ; \
+	${PLAYBOOK_CMD} plays/ban_user.yml --extra-vars userhash=${USERHASH}
 
 # Backup tasks
 HELP: Performs a backup of sensitive data
