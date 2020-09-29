@@ -827,7 +827,7 @@ Occasionally it is necessary to ban accounts from the service for violations of
 the terms of service. To prevent re-creation of the account the preferred
 process is to set the user's storage to readonly and kill their container. The
 spawner can detect the readonly condition and will refuse to start the user's
-container if it is set. The ban is implemented as a tasks in the `Makefile`
+container if it is set. The ban is implemented as a task in the `Makefile`
 targetting the user by hash.
 
 > Note: `<user>` will be the _hash_ of the user and not the readable username.
