@@ -118,10 +118,10 @@
     src: "hub-error.html.j2"
     dest: "{{ jupyterhub_hub_template_dir }}/error.html"
 
-- name: Copy jupyterhub 507 error template
+- name: Copy jupyterhub not-running error template
   template:
-    src: "hub-507.html.j2"
-    dest: "{{ jupyterhub_hub_template_dir }}/507.html"
+    src: "hub-not-running.html.j2"
+    dest: "{{ jupyterhub_hub_template_dir }}/not_running.html"
 
 - name: Copy hub logo
   copy:
