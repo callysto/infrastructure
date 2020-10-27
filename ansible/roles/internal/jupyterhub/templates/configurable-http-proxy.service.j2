@@ -1,0 +1,23 @@
+[Unit]
+Description=Configurable-HTTP-Proxy - Public facing proxy component of JupyterHub
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/jupyterhub
+WorkingDirectory={{ jupyterhub_srv_dir }}
+Restart=always
+ProtectHome=tmpfs
+ProtectSystem=strict
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ExecStart=/usr/bin/configurable-http-proxy \
+            --ip {{ jupyterhub_proxy_ip }} \
+            --port {{ jupyterhub_proxy_port }} \
+            --api-ip {{ jupyterhub_proxy_api_ip }} \
+            --api-port {{ jupyterhub_proxy_api_port }} \
+            --error-target http://{{ jupyterhub_api_ip }}:{{ jupyterhub_api_port }}/hub/error
+
+[Install]
+WantedBy=multi-user.target

@@ -1,4 +1,5 @@
 JUPYTERHUB={{ jupyterhub_srv_dir }}
+CONFIGPROXY_AUTH_TOKEN={{ jupyterhub_auth_token }}
 
 {% if jupyterhub_oauth_github_host is defined -%}
 GITHUB_HOST={{ jupyterhub_oauth_github_host }}
