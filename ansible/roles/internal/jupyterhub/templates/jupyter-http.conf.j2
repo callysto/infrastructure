@@ -42,8 +42,7 @@ RequestHeader unset REMOTE_USER
   {% endif %}
 
   <Directory "/var/www/html/site">
-    Order allow,deny
-    Allow from all
+    Require all granted
   </Directory>
 
   <Location /jupyter>
