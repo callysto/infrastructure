@@ -25,10 +25,6 @@
   src: https://github.com/cloudalchemy/ansible-grafana
   version: 0.14.2
 
-- name: nginx
-  src: https://github.com/nginxinc/ansible-role-nginx
-  version: 0.11.0
-
 - name: prometheus
   src: https://github.com/cloudalchemy/ansible-prometheus
   version: 2.10.0
@@ -37,7 +33,7 @@
   src: https://github.com/UnderGreen/ansible-prometheus-node-exporter.git
   version: v1.4.0
 
-- name: prometheus-exporters-common
+- name: UnderGreen.prometheus-exporters-common
   src: https://github.com/UnderGreen/ansible-prometheus-exporters-common.git
   version: v1.2.0
 

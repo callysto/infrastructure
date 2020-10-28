@@ -7,6 +7,6 @@
 
 - name: Restart Apache
   systemd:
-    name: httpd
+    name: "{{ apache_service | default('httpd') }}"
     state: restarted
     daemon_reload: yes

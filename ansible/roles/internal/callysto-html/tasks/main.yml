@@ -43,6 +43,6 @@
   notify:
     - restart apache
   lineinfile:
-    dest: '/etc/httpd/conf/httpd.conf'
+    dest: '{{ apache_server_root }}/conf/httpd.conf'
     regexp: '^DocumentRoot'
     line: 'DocumentRoot "{{ callysto_html_dir.dest }}"'

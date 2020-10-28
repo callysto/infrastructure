@@ -16,7 +16,7 @@
 
 - name: Remove default conf files apache
   file:
-    path: "/etc/httpd/conf.d/{{ item }}"
+    path: "{{ apache_conf_path }}/{{ item }}"
     state: absent
   with_items:
     - shib.conf
@@ -27,7 +27,7 @@
 - name: Copy default config files
   copy:
     src: 20_shib_apache24.conf
-    dest: /etc/httpd/conf.d/20_shib.conf
+    dest: "{{ apache_conf_path }}/20_shib.conf"
   become: yes
   notify:
     - reload httpd

@@ -1,0 +1,14 @@
+---
+httpd24_httpd_packages:
+  - httpd24
+
+httpd24_httpd_modules:
+  - httpd24-mod_ssl
+
+httpd24_httpd_service_name: httpd24-httpd
+httpd24_httpd_service_status: started
+httpd24_httpd_service_enabled: yes
+
+apache_service: httpd
+apache_server_root: /etc/httpd
+apache_conf_path: /etc/httpd/conf.d
