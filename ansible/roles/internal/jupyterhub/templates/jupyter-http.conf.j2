@@ -3,9 +3,9 @@ RequestHeader unset REMOTE_USER
 
 <VirtualHost *:80>
   ServerName {{ inventory_hostname }}
-  ErrorLog /var/log/httpd/jupyter-error.log
+  ErrorLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-error.log
   LogLevel warn
-  CustomLog /var/log/httpd/jupyter-access.log combined
+  CustomLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-access.log combined
 
   Redirect permanent / https://{{ inventory_hostname }}/
 </VirtualHost>
@@ -73,9 +73,9 @@ RequestHeader unset REMOTE_USER
     ProxyPassReverse ws://127.0.0.1:8000/jupyter/$1/$2$3
   </LocationMatch>
 
-  ErrorLog /var/log/httpd/jupyter-ssl-error.log
+  ErrorLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-ssl-error.log
   LogLevel warn
-  CustomLog /var/log/httpd/jupyter-ssl-access.log combined
+  CustomLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-ssl-access.log combined
 
 </VirtualHost>
 

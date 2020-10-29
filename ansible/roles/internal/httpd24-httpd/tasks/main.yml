@@ -9,9 +9,13 @@
   set_fact:
     apache_server_root: "/opt/rh/httpd24/root/etc/httpd"
 
-- name: Set httpd server config root
+- name: Set httpd server virtualhost config root
   set_fact:
     apache_conf_path: "/opt/rh/httpd24/root/etc/httpd/conf.d"
+
+- name: Set httpd server log dir
+  set_fact:
+    apache_log_dir: "/var/log/httpd24"
 
 - name: Install httpd24-httpd from SCL
   yum:

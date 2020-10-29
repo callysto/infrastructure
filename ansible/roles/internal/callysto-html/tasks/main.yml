@@ -1,4 +1,17 @@
 ---
+- name: Create the DocumentRoot
+  file:
+    path: '{{ item.path }}'
+    state: directory
+    owner: '{{ item.owner | default("root") }}'
+    group: '{{ item.group | default("root") }}'
+    mode: '{{ item.mode | default("0755") }}'
+  with_items:
+    - path: '{{ callysto_html_dir.dest }}'
+      state: directory
+    - path: '{{ callysto_html_dir.dest }}/logout'
+      state: directory
+
 - name: Install HTML files
   git:
     repo: '{{ callysto_hub_landing_page_repo }}'
