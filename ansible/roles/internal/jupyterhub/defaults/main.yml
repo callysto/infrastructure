@@ -3,7 +3,17 @@ jupyterhub_user_name: 'jupyter'
 jupyterhub_user_uid: 9999
 
 jupyterhub_srv_dir: '/srv/jupyterhub'
+
+jupyterhub_ip: '127.0.0.1'
+
+jupyterhub_api_ip: '{{ ansible_docker0.ipv4.address }}'
 jupyterhub_api_port: '8081'
+
+jupyterhub_proxy_ip: '127.0.0.1'
+jupyterhub_proxy_port: '8000'
+
+jupyterhub_proxy_api_ip: '{{ ansible_docker0.ipv4.address }}'
+jupyterhub_proxy_api_port: '8001'
 
 jupyterhub_shib_dir: '/opt/shib_authenticator'
 jupyterhub_shib_return_url: ""
@@ -34,9 +44,17 @@ jupyterhub_global_options:
   - conf_object: 'JupyterHub.confirm_no_ssl'
     value: True
   - conf_object: 'JupyterHub.hub_ip'
-    value: "'{{ ansible_docker0.ipv4.address }}'"
+    value: "'{{ jupyterhub_api_ip }}'"
   - conf_object: 'JupyterHub.ip'
-    value: "'127.0.0.1'"
+    value: "'{{ jupyterhub_ip }}'"
+  - conf_object: 'JupyterHub.cleanup_servers'
+    value: False
+  - conf_object: 'ConfigurableHTTPProxy.should_start'
+    value: False
+  - conf_object: 'ConfigurableHTTPProxy.auth_token'
+    value: os.environ['CONFIGPROXY_AUTH_TOKEN']
+  - conf_object: 'ConfigurableHTTPProxy.api_url'
+    value: "'http://{{ jupyterhub_proxy_api_ip }}:{{ jupyterhub_proxy_api_port }}'"
   - conf_object: 'JupyterHub.services'
     value: |
         [

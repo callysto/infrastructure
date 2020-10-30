@@ -84,6 +84,14 @@
     dest: /etc/systemd/system/jupyterhub.service
   notify:
     - Restart JupyterHub
+    - Restart CHP
+
+- name: Configurable-HTTP-Proxy Service definition
+  template:
+    src: configurable-http-proxy.service.j2
+    dest: /etc/systemd/system/configurable-http-proxy.service
+  notify:
+    - Restart CHP
 
 - name: Add jupyterhub port to to home zone (assume firewalld)
   firewalld:
@@ -143,6 +151,12 @@
 - name: Start + Enable jupyterhub
   service:
     name: jupyterhub
+    state: started
+    enabled: yes
+
+- name: Start + Enable Configurable-HTTP-Proxy
+  service:
+    name: configurable-http-proxy
     state: started
     enabled: yes
 
