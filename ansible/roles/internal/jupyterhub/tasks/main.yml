@@ -142,7 +142,7 @@
 - name: Add httpd config for jupyter service
   template:
     src: jupyter-http.conf.j2
-    dest: /etc/httpd/conf.d/jupyter.conf
+    dest: "{{ apache_conf_path }}/jupyter.conf"
     mode: 0644
     owner: root
     group: root

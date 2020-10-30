@@ -14,6 +14,6 @@
 
 - name: restart httpd
   service:
-    name: httpd
+    name: "{{ apache_service | default('httpd') }}"
     state: restarted
   become: yes

@@ -170,7 +170,7 @@
     - name: Manage Apache
       tags: ["httpd"]
       include_role:
-        name: apache
+        name: httpd24-httpd
 
     - name: Manage Python3
       tags: ["python", "python3"]

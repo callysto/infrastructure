@@ -1,0 +1,34 @@
+---
+# These facts overlap with definitions from the apache role. Other roles can
+# use these facts to work with either version of apache
+- name: Set httpd service name
+  set_fact:
+    apache_service: httpd24-httpd
+
+- name: Set httpd server config root
+  set_fact:
+    apache_server_root: "/opt/rh/httpd24/root/etc/httpd"
+
+- name: Set httpd server virtualhost config root
+  set_fact:
+    apache_conf_path: "/opt/rh/httpd24/root/etc/httpd/conf.d"
+
+- name: Set httpd server log dir
+  set_fact:
+    apache_log_dir: "/var/log/httpd24"
+
+- name: Install httpd24-httpd from SCL
+  yum:
+    name: "{{ httpd24_httpd_packages }}"
+    state: present
+
+- name: Install httpd24-modules
+  yum:
+    name: "{{ httpd24_httpd_modules }}"
+    state: present
+
+- name: Apache 2.4 SCL | set apache service status
+  service:
+    name: "{{ httpd24_httpd_service_name }}"
+    state: "{{ httpd24_httpd_service_status }}"
+    enabled: "{{ httpd24_httpd_service_enabled }}"
