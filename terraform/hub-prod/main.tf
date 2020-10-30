@@ -47,6 +47,16 @@ locals {
     "80fd2a9d-99a2-4b53-9ab3-28703fae3a88",
   ]
 
+  # Hub 03 Settings
+  hub03_name                 = "hub-03.${var.PROD_CALLYSTO_DOMAINNAME}"
+  hub03_create_floating_ip   = "false"
+  hub03_existing_floating_ip = "162.246.156.237"
+
+  hub03_existing_volumes = [
+    "c435ffea-9acd-4e47-b0d2-20b57c4a42a8",
+    "8d1f2d0d-86e0-4cb2-8a3d-1c32a54e5b17",
+  ]
+
   # Stats Settings
   stats_name                 = "stats.${var.PROD_CALLYSTO_DOMAINNAME}"
   stats_create_floating_ip   = "false"
@@ -130,6 +140,20 @@ module "hub02" {
   existing_volumes     = "${local.hub02_existing_volumes}"
   create_floating_ip   = "${local.hub02_create_floating_ip}"
   existing_floating_ip = "${local.hub02_existing_floating_ip}"
+}
+
+module "hub03" {
+  source               = "../modules/hub"
+  name                 = "${local.hub03_name}"
+  zone_id              = "${local.zone_id}"
+  image_id             = "${data.openstack_images_image_v2.callysto.id}"
+  flavor_name          = "${module.settings.hub_flavor_name}"
+  key_name             = "${local.key_name}"
+  network_name         = "${local.network_name}"
+  vol_zfs_size         = "${module.settings.hub_vol_zfs_size}"
+  existing_volumes     = "${local.hub03_existing_volumes}"
+  create_floating_ip   = "${local.hub03_create_floating_ip}"
+  existing_floating_ip = "${local.hub03_existing_floating_ip}"
 }
 
 module "stats" {
@@ -253,7 +277,6 @@ resource "ansible_host" "hub01" {
   }
 }
 
-/*
 resource "ansible_host" "hub02" {
   inventory_hostname = "${local.hub02_name}"
 
@@ -275,7 +298,28 @@ resource "ansible_host" "hub02" {
     docker_storage          = ""
   }
 }
-*/
+
+resource "ansible_host" "hub03" {
+  inventory_hostname = "${local.hub03_name}"
+
+  groups = [
+    "all",
+    "${ansible_group.hub.inventory_group_name}",
+    "${ansible_group.environment.inventory_group_name}",
+    "${ansible_group.shibboleth_hosts.inventory_group_name}",
+    "${ansible_group.local_vars.inventory_group_name}",
+  ]
+
+  vars {
+    ansible_user            = "ptty2u"
+    ansible_host            = "${module.hub03.ip}"
+    ansible_ssh_common_args = "-C -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    zfs_disk_1              = "${module.hub03.vol_id_1}"
+    zfs_disk_2              = "${module.hub03.vol_id_2}"
+    zfs_pool_name           = "tank"
+    docker_storage          = ""
+  }
+}
 
 resource "ansible_host" "stats" {
   inventory_hostname = "${local.stats_name}"
@@ -352,6 +396,14 @@ output "hub02_ip" {
 
 output "hub02_dns_name" {
   value = "${module.hub02.dns_name}"
+}
+
+output "hub03_ip" {
+  value = "${module.hub03.ip}"
+}
+
+output "hub03_dns_name" {
+  value = "${module.hub03.dns_name}"
 }
 
 output "stats_ip" {
