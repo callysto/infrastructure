@@ -47,8 +47,8 @@ RequestHeader unset REMOTE_USER
   </Directory>
 
   <Location /jupyter>
-    ProxyPass http://127.0.0.1:8000/jupyter
-    ProxyPassReverse http://127.0.0.1:8000/jupyter
+    ProxyPass http://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter
+    ProxyPassReverse http://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter
     ProxyPreserveHost on
   </Location>
 
@@ -70,8 +70,8 @@ RequestHeader unset REMOTE_USER
     ShibUseHeaders off
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
   {% endif %}
-    ProxyPassMatch ws://127.0.0.1:8000/jupyter/$1/$2$3
-    ProxyPassReverse ws://127.0.0.1:8000/jupyter/$1/$2$3
+    ProxyPassMatch ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
+    ProxyPassReverse ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
   </LocationMatch>
 
   ErrorLog /var/log/httpd/jupyter-ssl-error.log

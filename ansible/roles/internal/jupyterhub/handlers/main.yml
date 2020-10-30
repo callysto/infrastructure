@@ -7,6 +7,11 @@
     name: jupyterhub
     state: restarted
 
+- name: Restart CHP
+  service:
+    name: configurable-http-proxy
+    state: restarted
+
 - name: restart httpd
   service:
     name: httpd
