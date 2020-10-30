@@ -13,14 +13,16 @@
 {% endraw -%}
 {# add an alert -#}
 {% if jupyterhub_alert != "" -%}
-<br><div class="container alert alert-danger">{{ jupyterhub_alert }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+<div id="header-announcements" class="container">
+<span id="messages"><div class="alert alert-danger">{{ jupyterhub_alert }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></span>
+</div>
 {% endif -%}
-{# add an announcement -#}
 {% if jupyterhub_announcement != "" -%}
-<div class="container alert alert-info">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
-{% endif -%}
+<div id="header-announcements" class="container">
+<span id="messages"><div class="alert alert-info">{{ jupyterhub_announcement }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></span>
+</div>
+{% endif %}
 {% raw -%}
 {{ super() }}
-{% endblock %}
+{% endblock header %}
 {% endraw -%}
-
