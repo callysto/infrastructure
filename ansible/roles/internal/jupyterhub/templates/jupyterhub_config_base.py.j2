@@ -28,11 +28,11 @@ def create_fs_hook(spawner):
       if (int(available) < free_bytes_required):
              msg = f'{ (available / (1024 * 1024)):.1f} MB free; {(refquota - available) / (1024 * 1024):.1f} / {refquota / (1024 * 1024):.1f} MB used'
              e = web.HTTPError(507, log_message=f"{username}: Insufficient free space, refusing spawn.")
-             e.jupyterhub_message = f'Storage quota exceeded: {msg}.'
+             e.jupyterhub_message = f'Storage quota exceeded for {username}.\n{msg}'
              raise e
       elif (readonly.decode() == "on"):
              e = web.HTTPError(507, log_message=f"{username}: Readonly account, refusing spawn.")
-             e.jupyterhub_message = f'Term of service violation, account locked.'
+             e.jupyterhub_message = f'{username}: Term of service violation, account locked.'
              raise e
 
 
