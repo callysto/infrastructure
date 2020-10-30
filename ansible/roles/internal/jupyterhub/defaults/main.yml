@@ -32,7 +32,7 @@ jupyterhub_hub_template_dir: "/tank/hub_templates"
 
 jupyterhub_getting_started_url: ""
 
-jupyterhub_version: "0.9.6"
+jupyterhub_version: "1.1.0"
 
 jupyterhub_admin_users: []
 

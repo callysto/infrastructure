@@ -6,12 +6,12 @@
 
 - name: restart httpd
   service:
-    name: httpd
+    name: "{{ apache_service | default('httpd') }}"
     state: restarted
   become: yes
 
 - name: reload httpd
   service:
-    name: httpd
+    name: "{{ apache_service | default('httpd') }}"
     state: reloaded
   become: yes
