@@ -1,0 +1,43 @@
+---
+## Ban a user for ToS violation
+- name: Ban User by Hash
+  hosts: sharder
+  become: true
+  tasks:
+
+    - name: Get the location of the user by hash
+      shell: "/bin/python3 /srv/sharder/sharder/admin.py --find-user {{ user | mandatory }}"
+      register: user_results
+      changed_when: false
+
+    - set_fact:
+        userhub: "{{ user_results.stdout | regex_search(hub_regexp, '\\1') | first }}"
+      vars:
+        # Complicated regex just matches (and captures) FQDN
+        hub_regexp: "{{ user | mandatory  + '\\s+' + '(((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)' }}"
+      ignore_errors: true
+
+    - name: Fail if hub not found
+      fail:
+        msg: Hub not found
+      when:
+        userhub is not defined
+
+    - name: Check if hub exists
+      fail:
+        msg: User hub not found
+      when: userhub not in groups['hub']
+
+    - name: Set user storage to readonly
+      zfs:
+        name: "tank/home/{{ user | mandatory }}"
+        state: present
+        extra_zfs_properties:
+          readonly: on
+      delegate_to: "{{ userhub }}"
+
+    - name: Stop user container
+      docker_container:
+        name: 'jupyter-{{ user | mandatory }}'
+        state: absent
+      delegate_to: "{{ userhub }}"
