@@ -1,6 +1,8 @@
 rrsync_enable: false
 rrsync_local_user:
 rrsync_source_directory:
+# slashes matter for rsync!
+rrsync_dest_directory: '/{{ inventory_hostname }}/'
 rrsync_remote_host:
 rrsync_remote_user:
 rrsync_private_key:
