@@ -31,6 +31,10 @@ RequestHeader unset REMOTE_USER
   LoadModule mod_shib /usr/lib64/shibboleth/mod_shib_24.so
   ProxyPass /Shibboleth.sso !
 
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} !^.*hub={{ inventory_hostname }}.*$ [NC]
+  RewriteRule ^(.*)$ https://{{ groups['sharder'][0] }}/jupyter/hub [R,NC,L]
+
   <Location /shibboleth-sp>
     Require all granted
   </Location>
