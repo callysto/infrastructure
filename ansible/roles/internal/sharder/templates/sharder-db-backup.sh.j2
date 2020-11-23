@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+DATE=$(/bin/date "+%Y%m%d%H%M%S")
+ROOTDIR="{{ sharder_app_dir }}"
+BACKUPDIR="{{ sharder_backup_dir }}"
+
+DBBASENAME="sharder"
+DBFILE="${ROOTDIR}/${DBBASENAME}.db"
+
+TARGET="{{ sharder_backup_dir }}/${DBBASENAME}-${DATE}.sql"
+
+# How many backups should we retain?
+KEEPLAST=365
+
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $@" >&2
+  exit ${E_DID_NOTHING}
+}
+
+if [ -d "${BACKUPDIR}" ] ; then
+
+  if [ -f "${DBFILE}" ] ; then
+    if ! sqlite3 "${DBFILE}" ".backup ${TARGET}" ; then
+      err "Sharder backup failed! $?"
+    fi
+  else
+    err "Sharder unable to find target database!"
+  fi
+
+  cd "${BACKUPDIR}"
+  /bin/ls -tp ${DBBASENAME}*.sql | \
+    /bin/grep -v '/$' | \
+    /bin/tail -n +${KEEPLAST} | \
+    /bin/xargs -I {} /bin/rm -- ./{}
+  if (( PIPESTATUS[0] != 0 || PIPESTATUS[1] != 0 )); then
+      err "Sharder unable to remove old backups!"
+  fi
+
+else
+  err "Sharder backup directory not found"
+fi
+

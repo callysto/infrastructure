@@ -111,6 +111,11 @@
       include_role:
         name: sharder
 
+    - name: Manage rrsync script
+      tags: ["ssh", "rrsync", "backup"]
+      include_role:
+        name: rrsync
+
     #- name: Prometheus node-exporter
     #  tags: ["stats","prometheus"]
     #  include_role:

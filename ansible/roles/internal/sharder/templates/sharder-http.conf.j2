@@ -3,9 +3,9 @@ RequestHeader unset REMOTE_USER
 
 <VirtualHost *:80>
   ServerName {{ inventory_hostname }}
-  ErrorLog /var/log/httpd/jupyter-error.log
+  ErrorLog {{ apache_log_dir | default('/var/log/httpd') }}/jupyter-error.log
   LogLevel warn
-  CustomLog /var/log/httpd/jupyter-access.log combined
+  CustomLog {{ apache_log_dir | default('/var/log/httpd') }}/jupyter-access.log combined
 
   Redirect permanent / https://{{ inventory_hostname }}/
 </VirtualHost>
@@ -41,7 +41,7 @@ RequestHeader unset REMOTE_USER
   </Location>
   {% endif %}
 
-  <Directory "/var/www/html/site">
+  <Directory "{{ callysto_html_dir.dest }}">
     Order allow,deny
     Allow from all
   </Directory>
@@ -60,9 +60,9 @@ RequestHeader unset REMOTE_USER
     ProxyPreserveHost on
   </Location>
 
-  ErrorLog /var/log/httpd/sharder-ssl-error.log
+  ErrorLog {{ apache_log_dir | default('/var/log/httpd') }}/sharder-ssl-error.log
   LogLevel warn
-  CustomLog /var/log/httpd/sharder-ssl-access.log combined
+  CustomLog {{ apache_log_dir | default('/var/log/httpd') }}/sharder-ssl-access.log combined
 </VirtualHost>
 
 SSLProtocol             all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1

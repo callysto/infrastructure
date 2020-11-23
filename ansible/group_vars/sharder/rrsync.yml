@@ -1,0 +1,2 @@
+# Backup of sharder config (trailing slash matters!)
+rrsync_source_directory: /srv/sharder/backup/
