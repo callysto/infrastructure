@@ -46,6 +46,10 @@ RequestHeader unset REMOTE_USER
     Allow from all
   </Directory>
 
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !^/jupyter/hub [NC]
+  RewriteRule ^/jupyter/user/(.*)$ /jupyter/hub/$1 [R,NC,L]
+
   <Location /jupyter/hub>
   {% if sharder_use_shibboleth == True %}
     AuthType shibboleth
