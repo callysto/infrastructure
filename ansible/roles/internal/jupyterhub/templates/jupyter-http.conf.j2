@@ -34,8 +34,8 @@ RequestHeader unset REMOTE_USER
   RewriteEngine On
   RewriteCond %{HTTP_COOKIE} !^.*hub={{ inventory_hostname }}.*$ [NC]
   # Everything else _except_ the hub metadata transfers
-  RewriteCond %{REQUEST_URI} ^/jupyter/ [NC]
-  RewriteRule ^/jupyter/(.*)$ https://{{ groups['sharder'][0] }}/jupyter/hub/$1 [R,NC,L]
+  RewriteCond %{REQUEST_URI} ^/jupyter/hub [NC]
+  RewriteRule ^/jupyter/hub/(.*)$ https://{{ groups['sharder'][0] }}/jupyter/hub/$1 [R,NC,L]
 
   <Location /shibboleth-sp>
     Require all granted
