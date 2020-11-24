@@ -2,3 +2,4 @@
 sharder_use_shibboleth: False
 sharder_app_dir: /srv/sharder
 sharder_backup_dir: /srv/sharder/backup
+sharder_domain: syzygy.farm
