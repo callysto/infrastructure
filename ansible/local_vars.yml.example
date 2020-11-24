@@ -88,7 +88,7 @@ sharder_config:
   db_file: /srv/sharder/sharder.db
   hubs: "{{ groups['hub'] }}"
   sharder_listen: 127.0.0.1
-  domain: syzygy.farm
+  domain: callysto.farm
 
 # Set to True to disable updating package versions automatically
 disable_package_update: False
