@@ -1,0 +1,9 @@
+[Unit]
+Description=JupyterHub Sharder
+
+[Service]
+ExecStart=/bin/python3.6 {{ sharder_app_dir }}/sharder/daemon.py --config-file {{ sharder_app_dir }}/sharder.yml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

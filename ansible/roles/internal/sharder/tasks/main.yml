@@ -2,7 +2,7 @@
 - name: Install the sharder app from github
   git:
     repo: https://github.com/callysto/sharder
-    dest: /srv/sharder
+    dest: '{{ sharder_app_dir }}'
 
 - name: Install Sharder package dependencies
   yum:
@@ -15,18 +15,18 @@
 - name: Install Sharder Python dependencies
   pip:
     executable: pip3.6
-    requirements: /srv/sharder/sharder/requirements.txt
+    requirements: '{{ sharder_app_dir }}/sharder/requirements.txt'
 
 - name: Deploy Sharder config file
   copy:
-    dest: /srv/sharder/sharder.yml
+    dest: '{{ sharder_app_dir }}/sharder.yml'
     content: "{{ sharder_config | to_nice_yaml() }}"
   notify:
     - Restart Sharder
 
 - name: Sharder Service definition
-  copy:
-    src: sharder.service
+  template:
+    src: sharder.service.j2
     dest: /etc/systemd/system/sharder.service
   notify:
     - Restart Sharder
@@ -39,8 +39,24 @@
 - name: Add httpd config for sharder service
   template:
     src: sharder-http.conf.j2
-    dest: /etc/httpd/conf.d/sharder.conf
-    mode: 0644
+    dest: '{{ apache_conf_path }}/sharder.conf'
+    mode: '0644'
     owner: root
     group: root
   notify: Restart Apache
+
+- name: Create local backup dir
+  file:
+    path: '{{ sharder_backup_dir }}'
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory
+
+- name: Create local backup task for sharder db
+  template:
+    src: sharder-db-backup.sh.j2
+    dest: /etc/cron.daily/sharder-db-backup.sh
+    owner: root
+    group: root
+    mode: '0750'

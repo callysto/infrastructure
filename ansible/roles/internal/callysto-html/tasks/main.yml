@@ -1,4 +1,8 @@
 ---
+- name: Set html target dir
+  set_fact:
+    callysto_html_dir: "{{ callysto_html_dir }}"
+
 - name: Create the DocumentRoot
   file:
     path: '{{ item.path }}'
