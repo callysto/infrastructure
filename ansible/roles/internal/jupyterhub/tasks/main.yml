@@ -6,8 +6,9 @@
 
 # TODO: merge role jhub-docker-cull into this role?
 - name: Manage Jupyterhub Docker Cull script
-  include_role:
-    name: jhub-docker-cull
+  pip:
+    name: jupyterhub-idle-culler
+    executable: pip3.6
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
@@ -35,6 +36,22 @@
   user:
     name: '{{ jupyterhub_user_name }}'
     uid: '{{ jupyterhub_user_uid }}'
+
+- name: Install pycurl dependencies
+  yum:
+    name: '{{ item.name }}'
+    state: '{{ item.state | default(present) }}'
+    update_cache: yes
+  with_items:
+    - { 'name': 'libcurl-devel', 'state': 'present' }
+    - { 'name': 'python3-devel', 'state': 'present' }
+
+- name: Install pycurl
+  pip:
+    name: pycurl
+    executable: pip3.6
+  environment:
+    PYCURL_SSL_LIBRARY: nss
 
 - name: Install Jupyterhub
   pip:
