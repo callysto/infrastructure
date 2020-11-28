@@ -159,6 +159,15 @@
             file_sd_configs:
               - files:
                 - "/etc/prometheus/file_sd/hubs.yml"
+          - job_name: "jupyter"
+            scheme: "https"
+            metrics_path: "/jupyterhub/jupyter/hub/metrics"
+            basic_auth:
+              username: "{{ stats_username }}"
+              password: "{{ stats_password }}"
+            file_sd_configs:
+              - files:
+                - "/etc/prometheus/file_sd/hubs.yml"
 
     - name: Prometheus node exporter
       tags: ["stats", "prometheus"]

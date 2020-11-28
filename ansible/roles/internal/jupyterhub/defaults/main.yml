@@ -148,10 +148,8 @@ jupyterhub_oauth_client_id: ""
 jupyterhub_oauth_client_secret: ""
 jupyterhub_oauth_callback_url: ""
 
-# Configure these for stats service account
-#jupyterhub_stats_service_token:
-#  token: #Output of openssl rand -hex 16
-#  user: stats
+# Enable jupyterhub prometheus metrics
+jupyterhub_stats_service: true
 
 # Set these when using Swift storage
 openstack_auth_url: ""
