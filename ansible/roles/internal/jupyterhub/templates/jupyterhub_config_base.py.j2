@@ -1,6 +1,7 @@
 # {{ ansible_managed }}
 {% block global %}
 import os
+import sys
 
 from subprocess import check_call, check_output
 from tornado import web
@@ -42,6 +43,17 @@ c.Spawner.pre_spawn_hook = create_fs_hook
 c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% endfor %}
 
+{% if jupyterhub_services is defined %}
+c.JupyterHub.services = []
+{% for service in jupyterhub_services %}
+c.JupyterHub.services.append( {
+    'name': '{{ service.name }}',
+    'admin': {{ service.admin | default(False) }},
+    'command': [{% for item in service.command %}{{ item }}{% if not loop.last -%}, {% endif -%}{% endfor %} ]
+})
+{% endfor %}
+{% endif %}
+
 {% if jupyterhub_admin_users | length > 0 -%}
 c.Authenticator.admin_users  = set([{% for user in jupyterhub_admin_users -%}'{{ user }}'{% if not loop.last -%},{% endif -%}{% endfor -%}])
 {% endif %}
@@ -53,14 +65,23 @@ c.{{ global_option.conf_object }} = {{ global_option.value }}
 {% endif %}
 {% endblock %}
 
-{% block cookie -%}
+{% block proxy -%}
 {% if jupyterhub_auth_token != "" -%}
 c.ConfigurableHTTPProxy.auth_token = '{{ jupyterhub_auth_token }}'
 {% endif -%}
+{% endblock %}
+{% block cookie %}
 {% if jupyterhub_cookie_secret_file != "" -%}
 c.JupyterHub.cookie_secret_file = '{{ jupyterhub_cookie_secret_file }}'
 {% endif -%}
 {% endblock -%}
+
+# These stats should be protected/authenticated via caddy
+{% block stats %}
+{% if jupyterhub_stats_service %}
+c.JupyterHub.authenticate_prometheus = False
+{% endif %}
+{% endblock %}
 
 {% block spawner %}
 {% if jupyterhub_spawner in jupyterhub_spawners %}

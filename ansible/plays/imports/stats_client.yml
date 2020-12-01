@@ -6,10 +6,12 @@
   become: true
   vars:
     _cadvisor_port: 9280
+    _jupyterhub_proxy_port: 8000
     caddy_port: 9999
     caddy_port_mappings:
       node: 9100
-      cadvisor: "{{ _cadvisor_port }}"
+      cadvisor: '{{ _cadvisor_port }}'
+      jupyterhub: '{{ _jupyterhub_proxy_port }}'
   tasks:
     - name: Manage Caddy
       tags: ["stats", "caddy"]

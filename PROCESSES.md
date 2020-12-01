@@ -1239,8 +1239,8 @@ Stats are viewed using [Grafana](https://grafana.com/).
 Once you have a stats environment up and running, you can access Grafana
 by visiting either:
 
-Production: https://stats.callysto.ca:9999/grafana
-Dev: https://stats-<name>.callysto.farm:9999/grafana
+Production: https://stats.callysto.ca/grafana
+Dev: https://stats-<name>.callysto.farm/grafana
 
 You can find the login information either in 1Password or in the environment's
 `local_vars.yml` Ansible file.

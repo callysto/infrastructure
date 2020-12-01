@@ -74,6 +74,12 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 #jupyterhub_auth_token: ""
 #jupyterhub_cookie_secret_file: ""
 
+# Set a token here (openssl rand -hex 16) to authenticate for hub metrics
+# jupyterhub_stats_service_token
+#jupyterhub_stats_service_token:
+#  token: ""
+#  user: stats
+
 # Add the email addresses or hashes of addresses for admin users
 jupyterhub_admin_users:
   - fd1f75f968e4781519f03bfc90a7204be8d27592
