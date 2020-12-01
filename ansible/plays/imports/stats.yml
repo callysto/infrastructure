@@ -108,19 +108,23 @@
         caddy_user: "root"
         caddy_home: "/root"
         caddy_config: |
-          :{{ caddy_port }}
-          tls /etc/pki/tls/certs/fullchain.pem /etc/pki/tls/private/privkey.pem
-          proxy /prometheus 127.0.0.1:9090
-          basicauth /prometheus {{ stats_username }} {{ stats_password }}
-          proxy /grafana 127.0.0.1:3000 {
-            without /grafana
+          :{{ 80 }} {
+            redir https://{{ ansible_nodename }}/grafana/login
           }
-          {% for name, port in caddy_port_mappings.items() %}
-          basicauth /{{ name }} {{ stats_username }} {{ stats_password }}
-          proxy /{{ name }} 127.0.0.1:{{ port }} {
-            without /{{ name }}
+          :{{ 443 }} {
+            tls /etc/pki/tls/certs/fullchain.pem /etc/pki/tls/private/privkey.pem
+            proxy /prometheus 127.0.0.1:9090
+            basicauth /prometheus {{ stats_username }} {{ stats_password }}
+            proxy /grafana 127.0.0.1:3000 {
+              without /grafana
+            }
+            {% for name, port in caddy_port_mappings.items() %}
+            basicauth /{{ name }} {{ stats_username }} {{ stats_password }}
+            proxy /{{ name }} 127.0.0.1:{{ port }} {
+              without /{{ name }}
+            }
+            {% endfor %}
           }
-          {% endfor %}
 
     - name: Manage prometheus
       tags: ["stats", "prometheus"]
@@ -193,7 +197,7 @@
           - name: prometheus
             type: prometheus
             access: proxy
-            url: "https://{{ ansible_nodename }}:{{ caddy_port }}/prometheus"
+            url: "https://{{ansible_nodename}}/prometheus"
             basicAuth: True
             basicAuthUser: "{{ stats_username }}"
             basicAuthPassword: "{{ stats_password }}"
