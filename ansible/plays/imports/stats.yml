@@ -188,7 +188,7 @@
         name: grafana
       vars:
         grafana_address: 127.0.0.1
-        grafana_url: "https://{{ ansible_nodename}}:{{ caddy_port }}/grafana"
+        grafana_url: "https://{{ ansible_nodename}}/grafana"
         grafana_data_dir: "/{{ zfs_pool_name }}/grafana"
         grafana_security:
           admin_user: admin
