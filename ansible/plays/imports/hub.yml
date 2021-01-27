@@ -190,7 +190,6 @@
         permanent: true
         immediate: yes
       with_items:
-        - { interface: '{{ docker_interface }}', zone: 'home' }
         - { interface: 'eth0', zone: 'public' }
       notify:
         firewalld complete reload
