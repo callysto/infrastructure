@@ -9,12 +9,6 @@
       when:
         - set_quota is defined
 
-    - name: Get ZFS Data
-      zfs_facts:
-        name: tank/home
-        recurse: yes
-        type: filesystem
-
     - name: Report ZFS
       shell: zfs get used,refquota -o property,value tank/home/{{ user }}
       register: zfs_result
