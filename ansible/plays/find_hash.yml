@@ -5,14 +5,21 @@
   become: true
   tasks:
     - name: Get user hash
-      shell: "/usr/local/bin/findhash.php {{ user | mandatory }}"
+      shell: "/usr/local/bin/findhash.php {{ user | lower | mandatory }}"
       register: findhash_results
 
     - name: Get the location of the user
       shell: "/bin/python3 /srv/sharder/sharder/admin.py --find-user {{ findhash_results.stdout }}"
       delegate_to: "{{ groups['sharder'][0] }}"
       register: results
+      failed_when: results.rc != 0 and results.rc != 1
+
+    - name: Report hash
+      debug:
+        msg: "{{ results.stderr }}"
+      when: results.rc != 0
 
     - name: Report user
       debug:
         msg: "{{ results.stdout_lines }}"
+      when: results.rc == 0

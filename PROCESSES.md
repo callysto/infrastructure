@@ -807,6 +807,9 @@ located on. To obtain both the hash and hub, run:
 make user/findhash USER=john.doe@example.com ENV=hub-prod
 ```
 
+N.B. Email addresses are case-insensitive, but hashes are not! It seems that
+internally SimpleSamlPHP uses the lowecase address of a person.
+
 ## Quota Management
 
 The `Makefile` contains a handful of tasks to manage a user's quota. In order
@@ -817,8 +820,8 @@ on. You can do this by running the `user/findhash` task described above.
 
 ```
 $ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env>
-$ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env> USER=<user>
-$ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USER=<user> REFQUOTA=<10G>
+$ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user>
+$ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user> REFQUOTA=<10G>
 ```
 
 ## Banning a User
@@ -833,7 +836,7 @@ targetting the user by hash.
 > Note: `<user>` will be the _hash_ of the user and not the readable username.
 
 ```
-$ make user/banuser ENV=<env> USER=<user>
+$ make user/banuser ENV=<env> USERHASH=<user>
 ```
 
 ## Logout Redirect
