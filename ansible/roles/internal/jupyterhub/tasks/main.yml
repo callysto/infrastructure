@@ -190,3 +190,11 @@
     mode: 0750
     owner: root
     group: root
+
+- name: Install jupyter container renice script
+  copy:
+    src: container_renice.sh
+    dest: /usr/local/bin/container-renice
+    owner: root
+    group: root
+    mode: 0755
