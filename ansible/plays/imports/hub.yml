@@ -194,6 +194,12 @@
       notify:
         firewalld complete reload
 
+    - name: Add admin user to docker group
+      user:
+        name: '{{ ansible_user }}'
+        group: docker
+        append: yes
+
     - name: update facts if docker0 is not defined
       action: setup filter="ansible_docker0"
       when: ansible_docker0 is not defined
