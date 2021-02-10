@@ -297,6 +297,13 @@ quota/set: check-env check-userhash check-refquota check-host
 	@cd ${ANSIBLE_PATH} ; \
 	${PLAYBOOK_CMD} --limit hub plays/quota_tasks.yml --limit ${HOST} --extra-vars set_quota=1 --extra-vars user=${USERHASH} --extra-vars refquota=${REFQUOTA}
 
+# ZFS Delete user directory task
+HELP: Deletes the ZFS directory for $USERHASH on hub $HOST in $ENV
+zfsdir/delete: check-env check-userhash check-host
+	@cd ${ANSIBLE_PATH} ; \
+	${PLAYBOOK_CMD} --limit hub plays/zfsdir_destroy.yml --limit ${HOST} --extra-vars user=${USERHASH}
+
+
 HELP: Finds a hash ($USERHASH) for $USER in $ENV
 user/findhash: check-env check-user
 	@cd ${ANSIBLE_PATH} ; \

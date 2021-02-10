@@ -1,0 +1,27 @@
+---
+## Task to delete JupyterHub user's directory
+- name: ZFS Delete Task
+  hosts: hub
+  become: true
+  tasks:
+    - name: Check Docker container ID
+      shell: docker ps -f name=jupyter-{{ user | mandatory }} -q
+      register: containerid
+      when: user != ""
+
+    - name: Show Docker container ID value
+      debug:
+        var: containerid.stdout
+
+    - name: Stop Docker Container if it's running
+      shell: docker stop {{ containerid.stdout }}
+      when: containerid.stdout != ""
+
+    - name: Delete user ZFS directory
+      shell: zfs destroy tank/home/{{ user | mandatory }}
+      register: zfs_result
+      when: user != "" or containerid.stdout != ""
+
+    - name: Show the return code of ZFS delete task
+      debug:
+        var: zfs_result.rc
