@@ -35,7 +35,7 @@ the Callysto environment.
 * [Determining a User's Hash](#determining-a-users-hash)
 * [Managing Admin Users](#managing-admin-users)
 * [Quota Management](#quota-management)
-* [Deleting a User's Hub Contents(#deleting-a-users-hub-contents)
+* [Deleting a User's Hub Contents](#deleting-a-users-hub-contents)
 * [Logout Redirect](#logout-redirect)
 
 > Sharder Management
@@ -824,6 +824,7 @@ $ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env>
 $ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user>
 $ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user> REFQUOTA=<10G>
 ```
+
 ## Deleting a User's Hub Contents
 
 There will be times where a user will request for their CallystoHub’s contents to be wiped in order to have a fresh start instead of going through the process of deleting it manually or by other methods. In order to do this, you need to determine first the username’s hash and hub location by running the user/findhash task.
