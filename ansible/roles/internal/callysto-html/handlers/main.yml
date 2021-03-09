@@ -9,12 +9,3 @@
   shell: "rm -rf {{ callysto_html_dir.dest }} && mkdir {{ callysto_html_dir.dest }} && git archive {{ callysto_landing_branch }} | tar -x -C {{ callysto_html_dir.dest }}"
   args:
     chdir: '{{ callysto_html_dir.src }}'
-
-- name: Update image assets
-  copy:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    force: yes
-  with_items:
-    - { src: 'files/logo.png', dest: '/var/www/html/site/img/logo.png' }
-    - { src: 'files/login.png', dest: '/var/www/html/site/img/login.png' }

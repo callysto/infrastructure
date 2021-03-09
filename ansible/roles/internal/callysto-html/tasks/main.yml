@@ -13,8 +13,6 @@
   with_items:
     - path: '{{ callysto_html_dir.dest }}'
       state: directory
-    - path: '{{ callysto_html_dir.dest }}/logout'
-      state: directory
 
 - name: Install HTML files
   git:
@@ -24,7 +22,6 @@
     ssh_opts: "-o StrictHostKeyChecking=no"
   notify:
     - Copy landing page templates
-    - Update image assets
 
 - name: Flush handlers
   meta: flush_handlers
@@ -39,8 +36,6 @@
   with_items:
     - src: '{{ callysto_html_dir.src }}/index.html'
       dest: '/var/tmp/callysto-html-index.html'
-    - src: '{{ callysto_html_dir.src }}/logout/index.html'
-      dest: '/var/tmp/callysto-html-logout-index.html'
 
 - name: Process html template and send results back to host
   template:
@@ -52,8 +47,6 @@
   with_items:
     - dest: '{{ callysto_html_dir.dest }}/index.html'
       src: '/var/tmp/callysto-html-index.html'
-    - dest: '{{ callysto_html_dir.dest }}/logout/index.html'
-      src: '/var/tmp/callysto-html-logout-index.html'
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Update DocumentRoot
