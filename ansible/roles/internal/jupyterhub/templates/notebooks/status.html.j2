@@ -1,3 +1,4 @@
+{%- raw -%}
 {% extends "page.html" %}
 
 {% block params %}
@@ -13,7 +14,7 @@ data-targetpath="{{ targetpath | urlencode }}"
 {% block site %}
 <div class="container"">
     <div class="page-header">
-	<p>Callysto is attempting to synchronize your <a href="{{ repo }}">git
+  <p>Callysto is attempting to synchronize your <a href="{{ repo }}">git
 repository</a> and will take you to your notebooks when they are ready.</p>
     </div>
 
@@ -34,48 +35,54 @@ repository</a> and will take you to your notebooks when they are ready.</p>
       <div class="hidden">
          <div id="id-help-message">
            <h2>Problem?</h2>
-           <p>If you see an error message above, it is likely that <code>nbgitpuller</code> can't resolve the
-           differences between your local copy of the repository and the one you are trying to clone. If you are sure
-           the link you followed is correct, please try one of the solutions below.  If the problem persists, or if you
-           are unsure how to proceed, please contact <a href="mailto:{{ support_email }}?subject=nbgitpuller problem">{{ support_email }}</a>.</p>
-
-	         <h3>1. Rename Your Copy and Clone Another</h3>
-           <p>If you want to keep your copy of the repository and clone a new one, you will need to move your copy out
-           of the way. You can do this via the rename button in the <a href="/jupyter/user-redirect/tree">file
-           browser</a>.  Open the <a href="/jupyter/user-redirect/tree">file browser</a> and find the repository/folder
-           you want to rename (probably <code>{{ targetpath }}</code>).  Click the checkbox next to the folder then hit
-           the <code>rename</code> button at the top of the window. A dialog window will open asking for a new name. You
-           can give any other name you want, but try to avoid spaces and special characters in filenames.  When you're
-           finished, go back to the original callysto link and click it again. This should start you a new clone of the
-           repository.</p>
-           <p>&nbsp;</p>
-           <p>This is the safest option available, but it will take up more storage.  If you end up going over your
-           storage quota you will see a <em>different</em> error message, please contact <a href="mailto:{{
-           support_email }}">{{ support_email }}</a> if that happens.</p>
-
-	         <h3>2. Delete Your Copy and Clone a Fresh One</h3>
-           <p>If you know <strong>for sure</strong> that you don't need to save any of your changes, and you just want a
-           fresh copy of the repository, then you can delete your copy and clone a new one. You can use the python
-           <code>shutil</code> module to delete files and folders following <a
-           href="https://www.callysto.ca/wp-content/uploads/2020/12/Callysto-InstructionsForGettingAFreshSetOfNotebooks.pdf"
-           target="_blank">these instructions</a>.  Deleting files is <em>always</em> potentially dangerous, but if you
-           are sure you know what you are doing then go to the <a href="/jupyter/user-redirect/tree">file browser</a>
-           and select <code>New->Python 3</code> to start a new python 3 kernel. In a code cell, run</p>
-<pre>
+     <p>If you see an error message above, it is likely that
+<code>nbgitpuller</code> can't resolve the differences between your local copy
+of the repository and the one you are trying to clone. If you are sure the link
+you followed is correct, please try one of the solutions below.  If the problem
+persists, or if you are unsure how to proceed, please contact <a
+href="mailto:{% endraw %}{{ support_email }}?subject=nbgitpuller
+problem">{{ support_email }}{% raw -%}</a>.</p>
+     <h3>1. Rename Your Copy and Clone Another</h3> <p>If you want to
+keep your copy of the repository and clone a new one, you will need to move
+your copy out of the way. You can do this via the rename button in the <a
+href="/jupyter/user-redirect/tree">file browser</a>.  Open the <a
+href="/jupyter/user-redirect/tree">file browser</a> and find the
+repository/folder you want to rename (probably <code>{{ targetpath }}</code>). Click the checkbox next to the folder
+then hit the <code>rename</code> button at the top of the window. A dialog
+window will open asking for a new name. You can give any other
+name you want, but try to avoid spaces and special characters in filenames.
+When you're finished, go back to the original callysto link and click it
+again. This should start you a new clone of the repository.</p> <p>&nbsp;</p>
+<p>This is the safest option available, but it will take up more storage.  If
+you end up going over your storage quota you will see a <em>different</em>
+error message, please contact <a
+href="mailto:{%- endraw -%}{{ support_email }}">{{ support_email }}{%- raw -%}</a> if that happens.</p>
+     <h3>2. Delete Your Copy and Clone a Fresh One</h3> <p>If you know
+<strong>for sure</strong> that you don't need to save any of your changes,
+and you just want a fresh copy of the repository, then you can delete your copy
+and clone a new one. You can use the python
+<code>shutil</code> module to delete files and folders following <a
+href="https://www.callysto.ca/wp-content/uploads/2020/12/Callysto-InstructionsForGettingAFreshSetOfNotebooks.pdf" target="_blank">these
+instructions</a>.  Deleting files is <em>always</em> potentially dangerous, but if you
+are sure you know what you are doing then go to the <a
+href="/jupyter/user-redirect/tree">file browser</a> and
+select <code>New->Python 3</code> to start a new python 3 kernel. In a code cell, run <pre>
   <code>
 import shutil
 shutil.rmtree('{{ targetpath }}')
-  </code>
+</code>
 </pre>
-           <p><code>shutil.rmtree</code> will happily delete whatever you tell it to so <strong>be absolutely
-           sure</strong> that <code>{{ targetpath }}</code> is the folder you want to delete <em>before</em> running the
-           command above. We may not be able to recover deleted files for you.</p>
+<code>shutil.rmtree</code>
+will happily delete whatever you tell it to so <strong>be absolutely
+sure</strong> that <code>{{ targetpath }}</code> is the folder you want to
+delete <em>before</em> running the command above. We may not be able to recover deleted files for you.</p>
 
            <h3>3. Resolve the Conflicts with Git</h3>
-           <p>If you are comfortable with the <a href="https://git-scm.com/doc" target="_blank">git command line</a>,
-           you might be able to straighten out the repository that way. Start by opening a terminal window, navigating
-           to your copy of the repository and running <code>git status</code> that should give you some idea of why
-           nbgitpull wasn't able to merge the upstream repository.</p>
+     If you are comfortable with the <a href="https://git-scm.com/doc"
+target="_blank">git command line</a>, you might be able to straighten out the
+repository that way. Start by opening a terminal window, navigating to your
+copy of the repository and running <code>git status</code> that should give you
+some idea of why nbgitpull wasn't able to merge the upstream repository.
          </div>
       </div>
     </div>
@@ -154,3 +161,4 @@ body {
 }
 </style>
 {% endblock %}
+{%- endraw -%}

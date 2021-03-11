@@ -133,6 +133,11 @@
     src: "notebooks/tree.html.j2"
     dest: "{{ jupyterhub_notebook_template_dir }}/tree.html"
 
+- name: Copy jupyter nbgitpuller status template
+  template:
+    src: "notebooks/status.html.j2"
+    dest: "{{ jupyterhub_notebook_template_dir }}/status.html"
+
 - name: Ensure jupyterhub_hub_template_dir exists
   file:
     path: "{{ jupyterhub_hub_template_dir }}"
