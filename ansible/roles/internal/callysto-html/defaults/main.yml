@@ -15,8 +15,8 @@ callysto_html_logout_message: "You have been logged out of your Jupyter Session"
 
 callysto_html_terms: |
   By using this service you are indicating that you agree with the Callysto
-  <a href="https://callysto.ca/wp-content/uploads/2019/07/CallystoTermsofService-July2019.pdf">Terms
-  of Service</a> and <a href="https://callysto.ca/wp-content/uploads/2019/07/CallystoPrivacyNotice-July2019.pdf">Privacy
+  <a href="https://www.callysto.ca/wp-content/uploads/2021/03/CallystoTermsofService-July2019.pdf">Terms
+  of Service</a> and <a href="https://www.callysto.ca/wp-content/uploads/2021/03/CallystoPrivacyNotice-July2019.pdf">Privacy
   Notice</a>.
 
-  Questions? <a href="support@callysto.ca">Contact us</a>
+  Questions? <a href="mailto:support@callysto.ca">Contact us</a>
