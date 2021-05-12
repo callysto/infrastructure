@@ -456,11 +456,9 @@ one of two ways:
 make ansible/playbook ENV=hub-prod PLAYBOOK=deploy-certs
 ```
 
-The above is useful for production environments where you _only_ want to deploy
-the certificates.
-
-Note that Apache will not be automatically restarted. You must do this manually.
-This is to provide the ability to wait until a window to restart Apache.
+Note that this play will restart apache and caddy services to pick up the new
+certificates. Users running at the time of the restart may experience a
+momentary interuption in service.
 
 ## Building Docker Images
 
