@@ -33,8 +33,15 @@
         state: restarted
       when: certs.changed
 
-    - name: Restart Apache but not on the hubs or stats servers
+    - name: Populate service facts
+      service_facts:
+
+    - name: Restart service
       systemd:
-        name: httpd
+        name: '{{ item }}'
         state: restarted
-      when: certs.changed and 'hub' not in group_names and 'stats' not in group_names
+      when: services[item] is defined and services[item].state == 'running' and certs.changed
+      with_items:
+        - httpd.service
+        - httpd24-httpd.service
+        - caddy.service
