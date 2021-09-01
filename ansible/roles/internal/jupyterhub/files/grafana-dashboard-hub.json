@@ -255,7 +255,7 @@
         },
         "showUnfilled": true
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "targets": [
         {
           "expr": "sort_desc(count(container_tasks_state{name=~\"jupyter-.+\", state=\"running\"} + 0) by (instance))",
@@ -265,15 +265,6 @@
           "intervalFactor": 1,
           "legendFormat": "{{instance}}",
           "refId": "A"
-        },
-        {
-          "expr": "6",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{instance}}",
-          "refId": "B"
         }
       ],
       "title": "Total User Count",
@@ -337,7 +328,7 @@
         },
         "showUnfilled": true
       },
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "targets": [
         {
           "expr": "sort_desc(count(node_filesystem_device_error{mountpoint=~\"/tank/home/.+\"}) by (instance))",
@@ -392,7 +383,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -516,7 +507,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -678,7 +669,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -785,7 +776,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -894,7 +885,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -998,7 +989,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1102,7 +1093,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1248,7 +1239,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.3.4",
+      "pluginVersion": "7.3.7",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1342,7 +1333,7 @@
     "list": []
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -1373,5 +1364,5 @@
   "timezone": "",
   "title": "Callysto Global",
   "uid": "M7PC-woik",
-  "version": 14
+  "version": 18
 }%
