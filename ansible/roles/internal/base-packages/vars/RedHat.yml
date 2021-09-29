@@ -16,4 +16,4 @@ base_packages_centos_cron_rpm_url: 'https://github.com/wied03/centos-package-cro
 
 # This doesn't seem to be versioned, so grab the current master and checksum
 base_packages_centos_yum_security_url: 'https://raw.githubusercontent.com/maulinglawns/centos-yum-security/master/centos-yum-security'
-base_packages_centos_yum_security_sha256: '9caa4fedc8c1f8754867bafdba1de23cffb6912a1e87339ac326a1deb439a0e7'
+base_packages_centos_yum_security_sha256: '0f3967697249f59b119f32765455be49400621e8219a74688ff647625c313c4a'
