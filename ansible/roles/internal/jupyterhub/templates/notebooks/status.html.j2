@@ -93,8 +93,8 @@ some idea of why nbgitpull wasn't able to merge the upstream repository.
 
 {% block script %}
 {{super()}}
-<script src="{{ base_url }}git-pull/static/index.js?v={{ version }}">
-</script>
+<script type="module src="{{ base_url }}git-pull/static/js/index.js"></script>
+<script src="{{ base_url }}git-pull/static/dist/bundle.js"></script>
 <script>
 require([
   'jquery'
@@ -124,8 +124,6 @@ require([
 {% block stylesheet %}
 {{super()}}
 
-<link rel="stylesheet" href="{{ static_url("terminal/css/override.css") }}" type="text/css" />
-<link rel="stylesheet" href="{{ static_url("components/xterm.js-css/index.css") }}" type="text/css" />
 <style>
 body {
   overflow: unset;

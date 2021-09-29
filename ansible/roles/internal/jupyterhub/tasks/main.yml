@@ -8,7 +8,7 @@
 - name: Manage Jupyterhub Docker Cull script
   pip:
     name: jupyterhub-idle-culler
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
@@ -24,7 +24,7 @@
 - name: Install jhub_shibboleth_auth
   pip:
     name: jhub_shibboleth_auth
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
   become: yes
   when: jupyterhub_authenticator == 'shib'
 
@@ -49,14 +49,14 @@
 - name: Install pycurl
   pip:
     name: pycurl
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
   environment:
     PYCURL_SSL_LIBRARY: nss
 
 - name: Install Jupyterhub
   pip:
     name: 'jupyterhub=={{ jupyterhub_version }}'
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
 
 - name: Install node packages
   yum:
@@ -68,6 +68,7 @@
     name: configurable-http-proxy
     state: present
     global: yes
+    version: '{{ jupyterhub_chp_version }}'
 
 - name: Create JupyterHub Config Directory
   file:
@@ -109,14 +110,6 @@
     dest: /etc/systemd/system/configurable-http-proxy.service
   notify:
     - Restart CHP
-
-- name: Add jupyterhub port to to home zone (assume firewalld)
-  firewalld:
-    zone: "home"
-    port: "{{ jupyterhub_api_port }}/tcp"
-    immediate: yes
-    state: enabled
-    permanent: true
 
 - name: Ensure jupyterhub_notebook_template_dir exists
   file:

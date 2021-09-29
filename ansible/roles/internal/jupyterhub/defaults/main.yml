@@ -4,6 +4,8 @@ jupyterhub_user_uid: 9999
 
 jupyterhub_srv_dir: '/srv/jupyterhub'
 
+jupyterhub_chp_version: 4.5.0
+
 jupyterhub_ip: '127.0.0.1'
 
 jupyterhub_api_ip: '{{ ansible_docker0.ipv4.address }}'
@@ -32,7 +34,7 @@ jupyterhub_hub_template_dir: "/tank/hub_templates"
 
 jupyterhub_getting_started_url: ""
 
-jupyterhub_version: "1.1.0"
+jupyterhub_version: "1.4.2"
 
 jupyterhub_admin_users: []
 
