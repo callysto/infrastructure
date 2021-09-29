@@ -86,7 +86,7 @@
     - name: Ensure firewalld service is running
       tags: ["firewalld"]
       include_role:
-        name: firewalld
+        name: flatkey.firewalld
 
     # Configuration is stored in
     # group_vars/<group>/ssh.yml.
