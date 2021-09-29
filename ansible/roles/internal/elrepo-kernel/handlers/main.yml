@@ -1,6 +1,0 @@
----
-- name: "Recreate grub config"
-  shell: "grub2-mkconfig -o /boot/grub2/grub.cfg"
-
-- name: "Boot to latest kernel"
-  shell: "grub2-set-default 0"

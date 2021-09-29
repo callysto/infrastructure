@@ -12,10 +12,6 @@
         state: latest
       ignore_errors: true
 
-    - name: Install Enterprise Linux kernel
-      include_role:
-        name: elrepo-kernel
-
     - name: Reboot instance
       command: /sbin/shutdown -r +1
       async: 0
