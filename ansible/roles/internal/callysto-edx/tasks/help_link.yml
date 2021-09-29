@@ -1,0 +1,16 @@
+---
+- name: Copy lms production.py
+  copy:
+    src: production.py
+    dest: /tank/tutor/env/apps/openedx/settings/lms/production.py
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Copy help_tokens.ini
+  copy:
+    src: help_tokens.ini
+    dest: /tank/tutor/env/apps/openedx/config/help_tokens.ini
+    mode: 0644
+    owner: root
+    group: root
