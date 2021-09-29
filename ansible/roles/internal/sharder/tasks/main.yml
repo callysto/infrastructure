@@ -14,7 +14,7 @@
 
 - name: Install Sharder Python dependencies
   pip:
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
     requirements: '{{ sharder_app_dir }}/sharder/requirements.txt'
 
 - name: Deploy Sharder config file
