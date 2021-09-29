@@ -7,12 +7,12 @@
 - name: Install Tutor
   pip:
     name: "tutor-openedx=={{ edx_tutor_version }}"
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
 
 - name: Install Tutor Callysto Plugin
   pip:
     name: git+https://github.com/callysto/tutor-callysto
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
 
 - name: Generate a Tutor config.yml file
   template:
