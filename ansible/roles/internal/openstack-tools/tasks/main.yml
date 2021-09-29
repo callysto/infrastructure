@@ -3,11 +3,9 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - python-pip
     - openssl-devel
     - gcc
     - libffi-devel
-    - python-devel
   become: yes
   when: ansible_os_family == "RedHat"
 
@@ -16,12 +14,9 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - python-pip
     - libssl-dev
     - build-essential
     - libffi-dev
-    - python-dev
-    - python-openssl
   become: yes
   when: ansible_os_family == "Debian"
 
@@ -30,7 +25,7 @@
     name: "{{ item.name }}"
     state: present
     version: "{{ item.version }}"
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
   with_items:
     - "{{ openstack_tools_pip_pkg_vers }}"
   become: yes
@@ -50,7 +45,7 @@
   pip:
     name: "{{ item }}"
     state: present
-    executable: pip3.6
+    executable: '{{ python3_pip_executable }}'
   with_items:
     - "{{ openstack_tools_pip_pkgs }}"
   become: yes
