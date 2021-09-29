@@ -124,7 +124,7 @@ endif
 
 check-user:
 ifndef USER
-	$(error USERHASH is not defined)
+	$(error USER is not defined)
 endif
 
 check-userhash:
@@ -324,7 +324,7 @@ backup:
 HELP: Builds the CentOS image for Callysto
 packer/build/centos:
 	@cd $(PACKER_PATH) ; \
-	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd centos.json
+	USER=ptty2u $(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd centos.json
 
 HELP: Builds the Ubuntu 18.04 image for callysto
 packer/build/ubuntu1804:
