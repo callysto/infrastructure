@@ -97,7 +97,7 @@
     - name: Ensure firewalld service is running
       tags: ["firewalld"]
       include_role:
-        name: firewalld
+        name: flatkey.firewalld
 
     # Configuration is stored in
     # group_vars/<group>/ssh.yml.
@@ -116,19 +116,11 @@
     - name: Manage Python3
       tags: ["python", "python3"]
       include_role:
-        name: ius-python3
+        name: python38
 
     - name: Add interfaces their respective zones
-      firewalld:
-        interface: '{{ item.interface }}'
-        zone: '{{ item.zone }}'
-        state: enabled
-        permanent: true
-        immediate: yes
-      with_items:
-        - { interface: 'eth0', zone: 'public' }
-      notify:
-        firewalld complete reload
+      include_role:
+        name: flatkey.firewalld
 
     - name: Copy SSL certificates
       include_role:
