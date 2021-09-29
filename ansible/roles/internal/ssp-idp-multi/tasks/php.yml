@@ -3,15 +3,15 @@
     state: present
     update_cache: yes
     name:
-      - php72u-cli
-      - mod_php72u
-      - php72u-pdo
-      - php72u-xml
-      - php72u-soap
-      - php72u-pecl-apcu
-      - php72u-mbstring
-      - php72u-json
-      - php72u-gd
+      - php73-cli
+      - mod_php73
+      - php73-pdo
+      - php73-xml
+      - php73-soap
+      - php73-pecl-apcu
+      - php73-mbstring
+      - php73-json
+      - php73-gd
   become: yes
   notify:
     - restart httpd
