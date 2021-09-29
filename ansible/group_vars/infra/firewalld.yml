@@ -1,2 +1,6 @@
-firewalld_allow_services:
-  - {service: ssh }
+default_zone: public
+firewalld_service_rules:
+  ssh:
+    service: ssh
+    state: enabled
+    zone: public

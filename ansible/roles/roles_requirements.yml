@@ -6,6 +6,10 @@
   src: git+https://github.com/geerlingguy/ansible-role-apache.git
   version: 2.1.1
 
+- name: nodejs
+  src: https://github.com/geerlingguy/ansible-role-nodejs
+  version: 5.1.1
+
 - name: caddy
   src: https://github.com/caddy-ansible/caddy-ansible
   version: v2.1.0
@@ -16,10 +20,11 @@
 
 - name: docker
   src: https://github.com/geerlingguy/ansible-role-docker
-  version: 2.1.0
+  version: 2.9.0
 
-- name: firewalld
-  src: https://github.com/marcelnijenhof/ansible-role-firewalld.git
+- name: flatkey.firewalld
+  src: https://github.com/FlatKey/ansible-firewalld-role
+  version: v1.3.0
 
 - name: grafana
   src: https://github.com/cloudalchemy/ansible-grafana

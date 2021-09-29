@@ -1,4 +1,14 @@
-firewalld_allow_services:
-  - { service: http }
-  - { service: https }
-  - { service: ssh }
+default_zone: public
+firewalld_service_rules:
+  http:
+    service: http
+    state: enabled
+    zone: public
+  https:
+    service: https
+    state: enabled
+    zone: public
+  ssh:
+    service: ssh
+    state: enabled
+    zone: public
