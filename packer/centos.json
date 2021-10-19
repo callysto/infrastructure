@@ -5,7 +5,7 @@
     "region": "{{user `region`}}",
     "flavor": "{{user `flavor`}}",
     "security_groups": ["packer"],
-    "image_name": "callysto-centos",
+    "image_name": "callysto-centos-dev",
     "ssh_username": "centos",
     "source_image_name": "{{user `image_name`}}",
     "networks": ["{{user `network_id`}}"],
