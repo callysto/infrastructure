@@ -79,7 +79,7 @@
 - name: Add httpd config for ssp with Jupyter all-in-one
   template:
     src: jupyter.conf.j2
-    dest: /etc/httpd/conf.d/20_ssp.conf
+    dest: '{{ apache_conf_path }}/20_ssp.conf'
     mode: 0644
     owner: root
     group: root
