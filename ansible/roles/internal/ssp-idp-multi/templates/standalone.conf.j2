@@ -3,9 +3,9 @@ RequestHeader unset REMOTE_USER
 
 <VirtualHost *:80>
   ServerName {{ inventory_hostname }}
-  ErrorLog /var/log/httpd/ssp.log
+  ErrorLog {{ apache_log_dir | default('/var/log/httpd') }}/ssp.log
   LogLevel warn
-  CustomLog /var/log/httpd/ssp.log combined
+  CustomLog {{ apache_log_dir | default('/var/log/httpd') }}/ssp.log combined
 
   Redirect permanent / https://{{ inventory_hostname }}/
 </VirtualHost>
@@ -42,6 +42,11 @@ RequestHeader unset REMOTE_USER
       Require all granted
       </IfModule>
   </Directory>
+
+   ErrorLog {{ apache_log_dir | default('/var/log/httpd') }}/ssp.log
+   LogLevel warn
+   CustomLog {{ apache_log_dir | default('/var/log/httpd') }}/ssp.log combined
+
 </VirtualHost>
 
 SSLProtocol             all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1
