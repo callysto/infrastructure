@@ -10,6 +10,7 @@
 **/openrc.sh
 **/clouds.yaml
 ansible/group_vars/*/local_vars.yml
+ansible/group_vars/hub-iana
 ansible/inventory
 ansible/roles/edx/configuration
 ansible/roles/external
@@ -19,4 +20,5 @@ keys/id_rsa*
 letsencrypt/*/accounts
 letsencrypt/*/certs
 letsencrypt/*/chains
+terraform/hub-iana
 tutor/**
