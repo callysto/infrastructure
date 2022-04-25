@@ -51,6 +51,7 @@ the Callysto environment.
 * [Updating the Callysto edX Theme](#updating-the-callysto-edx-theme)
 * [Deploying an edX Environment](#deploying-an-edx-environment)
 * [Updating edX After Deployment](#updating-edx-after-deployment)
+* [Renewing Certificates for edX](#renewing-certificates-for-edx)
 * [Tutor Plugins](#tutor-plugins)
 * [Deleting a Course](#deleting-a-course)
 * [Creating edX Users](#creating-edx-users)
@@ -1152,6 +1153,17 @@ using Docker directly:
 ```
 docker ps -a -q | xargs docker stop
 docker ps -a -q | xargs docker rm
+tutor local start --detach
+```
+
+## Renewing Certificates for edX
+
+The certificate for edX is currently managed separately from the rest of the hub
+infrastructure. `tutor` has a subcommand to renew certificates via an `http-01`
+challenge
+```
+tutor local stop
+tutor local https renew
 tutor local start --detach
 ```
 
