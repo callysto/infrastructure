@@ -1158,14 +1158,17 @@ tutor local start --detach
 
 ## Renewing Certificates for edX
 
-The certificate for edX is currently managed separately from the rest of the hub
-infrastructure. `tutor` has a subcommand to renew certificates via an `http-01`
-challenge
-```
+The certificate for edX is currently managed directly by tutor (using the
+`http-01` challenge). For convenience, this process has been added to the
+[hub cert deployment](#deploying-certificates) task. If you wish to manually
+renew the certificate without running the deployment on the hubs, ssh to the
+edx instance then run the following commands.
+```bash
 tutor local stop
 tutor local https renew
 tutor local start --detach
 ```
+
 
 ## Tutor Plugins
 
