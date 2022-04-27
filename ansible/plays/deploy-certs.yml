@@ -45,3 +45,23 @@
         - httpd.service
         - httpd24-httpd.service
         - caddy.service
+
+- name: Deploy SSL cert for edx
+  hosts: edx
+  become: true
+  tasks:
+    - name: Stop the edx environment
+      command: tutor local stop
+      environment:
+        TUTOR_ROOT: "{{ edx_tutor_root }}"
+        PATH: "/bin:/usr/bin:/usr/local/bin"
+    - name: Renew cert via tutor
+      command: tutor local https renew
+      environment:
+        TUTOR_ROOT: "{{ edx_tutor_root }}"
+        PATH: "/bin:/usr/bin:/usr/local/bin"
+    - name: Start the edx environment
+      command: tutor local start
+      environment:
+        TUTOR_ROOT: "{{ edx_tutor_root }}"
+        PATH: "/bin:/usr/bin:/usr/local/bin"
