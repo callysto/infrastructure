@@ -11,6 +11,7 @@
 **/clouds.yaml
 ansible/group_vars/*/local_vars.yml
 ansible/group_vars/hub-iana
+ansible/group_vars/dev
 ansible/inventory
 ansible/roles/edx/configuration
 ansible/roles/external
