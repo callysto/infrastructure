@@ -52,16 +52,19 @@
   tasks:
     - name: Stop the edx environment
       command: tutor local stop
+      connection: paramiko
       environment:
         TUTOR_ROOT: "{{ edx_tutor_root }}"
         PATH: "/bin:/usr/bin:/usr/local/bin"
     - name: Renew cert via tutor
       command: tutor local https renew
+      connection: paramiko
       environment:
         TUTOR_ROOT: "{{ edx_tutor_root }}"
         PATH: "/bin:/usr/bin:/usr/local/bin"
     - name: Start the edx environment
-      command: tutor local start
+      command: tutor local start --detach
+      connection: paramiko
       environment:
         TUTOR_ROOT: "{{ edx_tutor_root }}"
         PATH: "/bin:/usr/bin:/usr/local/bin"
