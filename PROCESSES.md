@@ -832,6 +832,34 @@ There will be times where a user will request for their CallystoHub’s contents
 $ make zfsdir/delete HOST=hub-nn.callysto.ca> ENV=<env> USERHASH=<user>
 ```
 
+## Archiving a User's Hub Contents
+
+When it is necessary to recover space on a hub, you can archive user's home
+folders. This is done by running `/usr/bin/cleanup-inactive-accounts.sh` on
+each of the respective hub servers. The user's home directory will be gzipped
+and uploaded to swift.
+
+## Restoring a User's Hub Contents
+
+First is to find the hash and hub for the user by running:
+```
+make user/findhash USER=john.doe@example.com ENV=hub-prod
+```
+
+You will then need to ssh to the hub (eg. hub-01 in this example):
+```
+cd ~/work/callysto-infra
+ssh -i keys/id_rsa hub-01.callysto.ca
+```
+
+Once you are hub-01 you will need to download the backup:
+```
+sudo su
+source /root/openrc
+/usr/local/bin/swift download archived_users ${USERHASH}.tar.gz
+tar xzf ${USERHASH}.tar.gz -C /
+```
+
 ## Banning a User
 
 Occasionally it is necessary to ban accounts from the service for violations of
