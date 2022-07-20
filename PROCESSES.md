@@ -1160,11 +1160,15 @@ tutor local start --detach
 
 The certificate for edX is currently managed separately from the rest of the hub
 infrastructure. `tutor` has a subcommand to renew certificates via an `http-01`
-challenge
+challenge.
+
+Do the following on Clavius:
 ```
-tutor local stop
-tutor local https renew
-tutor local start --detach
+$ cd work/callysto-infra/
+$ ssh -i keys/id_rsa ptty2u@courses.callysto.ca
+$ tutor local stop
+$ tutor local https renew
+$ tutor local start --detach
 ```
 
 ## Tutor Plugins
