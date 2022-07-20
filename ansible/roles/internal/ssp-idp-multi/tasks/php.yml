@@ -3,15 +3,25 @@
     state: present
     update_cache: yes
     name:
-      - php73-cli
-      - mod_php73
-      - php73-pdo
-      - php73-xml
-      - php73-soap
-      - php73-pecl-apcu
-      - php73-mbstring
-      - php73-json
-      - php73-gd
+      - rh-php73-php-cli
+      - rh-php73-mod_php
+      - rh-php73-php-pdo
+      - rh-php73-php-xml
+      - rh-php73-php-soap
+      - rh-php73-php-pecl-apcu
+      - rh-php73-php-mbstring
+      - rh-php73-php-json
+      - rh-php73-php-gd
   become: yes
   notify:
     - restart httpd
+
+# Make this the default php
+- name: Set php default
+  copy:
+    dest: /etc/profile.d/rh-php73.sh
+    content: '. {{ ssp_php_scl }}/enable'
+
+- name: Set php fact explicitly
+  set_fact:
+    php_executable: "{{ ssp_php_root }}/usr/bin/php"

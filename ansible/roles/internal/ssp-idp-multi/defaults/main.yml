@@ -35,3 +35,7 @@ ssp_hash_usernames: True
 
 # Semi-hack to know when ssp is installed standalone and not with jupyterhub all-in-one
 ssp_standalone: False
+
+
+ssp_php_scl: /opt/rh/rh-php73
+ssp_php_root: '{{ ssp_php_scl }}/root'
