@@ -337,6 +337,7 @@ packer/build/ubuntu1604:
 	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Ubuntu 16.04" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd ubuntu1604.json
 
 # Let's Encrypt tasks
+HELP: Generates new wildcard certs for callysto envrionments
 letsencrypt/generate: check-env
 	@cd letsencrypt/${ENV} ; \
 	unset OS_USERNAME ; \
