@@ -1,3 +1,4 @@
 ---
 dependencies:
   - role: scl
+  - role: httpd24-httpd
