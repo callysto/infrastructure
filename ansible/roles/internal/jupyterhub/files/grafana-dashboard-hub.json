@@ -88,7 +88,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(running_servers)",
+          "expr": "sum(jupyterhub_running_servers)",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -241,7 +241,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(running_servers) by (instance)",
+          "expr": "sum(jupyterhub_running_servers) by (instance)",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -509,7 +509,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(running_servers) by (instance)",
+          "expr": "sum(jupyterhub_running_servers) by (instance)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1332,5 +1332,5 @@
   "timezone": "",
   "title": "Callysto Global",
   "uid": "M7PC-woik",
-  "version": 26
+  "version": 80
 }
