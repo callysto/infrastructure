@@ -4,7 +4,7 @@ jupyterhub_user_uid: 9999
 
 jupyterhub_srv_dir: '/srv/jupyterhub'
 
-jupyterhub_chp_version: 4.5.0
+jupyterhub_chp_version: 4.5.4
 
 jupyterhub_ip: '127.0.0.1'
 
@@ -34,13 +34,12 @@ jupyterhub_hub_template_dir: "/tank/hub_templates"
 
 jupyterhub_getting_started_url: ""
 
-jupyterhub_version: "1.4.2"
+jupyterhub_version: "3.1.0"
 
 jupyterhub_admin_users: []
 
 jupyterhub_services:
   - name: 'cull-idle'
-    admin: True
     command:
       - sys.executable
       - "'-m'"
