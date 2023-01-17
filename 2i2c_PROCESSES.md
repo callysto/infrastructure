@@ -43,7 +43,7 @@ https://github.com/2i2c-org/infrastructure/issues/1918
 
 ## How to Access GKE via Kubectl
 
-Log onto Clavuis (ssh ptty2u@clavius.callysto.farm)  
+SSH into Clavuis 
 
 Clavius is currently set up to run kubectl, however if needed in the future setup instructions are [here](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
 
