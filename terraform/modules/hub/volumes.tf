@@ -4,7 +4,7 @@ resource "openstack_blockstorage_volume_v2" "zfs" {
   name = "${format("%s-zfs-%02d", var.name, count.index+1)}"
   size = "${var.vol_zfs_size}"
 
-  volume_type = "encrypted"
+  volume_type = "${var.volume_type}"
 }
 
 # Determine the volume UUIDs, whether if existing ones were supplied

@@ -14,6 +14,10 @@ variable "vol_zfs_size" {
   default = 10
 }
 
+variable "volume_type" {
+  default = "encrypted"
+}
+
 variable "existing_volumes" {
   type = "list"
 
