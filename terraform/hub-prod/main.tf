@@ -43,8 +43,8 @@ locals {
   hub02_existing_floating_ip = "162.246.156.212"
 
   hub02_existing_volumes = [
-    "d17f9730-21ba-430f-89d3-36215a95790c",
-    "80fd2a9d-99a2-4b53-9ab3-28703fae3a88",
+    "9e3efaa9-6b21-4899-bb94-1389db64669e",
+    "97720a93-6353-4dd6-b031-f306e196e2fa",
   ]
 
   # Hub 03 Settings
@@ -53,8 +53,8 @@ locals {
   hub03_existing_floating_ip = "162.246.156.237"
 
   hub03_existing_volumes = [
-    "c435ffea-9acd-4e47-b0d2-20b57c4a42a8",
-    "8d1f2d0d-86e0-4cb2-8a3d-1c32a54e5b17",
+    "04e5d637-d56e-4cad-b845-8358d5e436a0",
+    "6c4fc956-0886-4821-95e1-ac25828c2565",
   ]
 
   # Stats Settings
