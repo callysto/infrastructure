@@ -61,6 +61,11 @@
       include_role:
         name: ansible
 
+    - name: Install kubectl
+      tags: ["kubernetes"]
+      include_role:
+        name: kubernetes
+
     - name: Manage Docker
       include_role:
         name: docker
