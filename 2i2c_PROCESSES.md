@@ -48,4 +48,20 @@ https://github.com/2i2c-org/infrastructure/issues/1918
 # JupyterHub User Management
 
 ## How to add Domains to the Allowlist
+Domains are controlled in the 2i2c-infrastructure repository by adding entries to [common.valyes.yml](https://github.com/2i2c-org/infrastructure/blob/e03c2e5e35e5899e911e1ad8b13ac981297bb452/config/clusters/callysto/common.values.yaml#L111). That file can't be edited directly so changes should be proposed as a pull-request against [2i2c.org/infrastructure:master](https://github.com/2i2c.org/infrastructure). Currently pull-requests must be manually reviewed by 2i2c admins before merging, but we are working to have this specific type of change also be reviewable by callysto admins.
+
+New domains should be added under the following key (e.g. to add `new.domain.ca`)
+
+```yaml
+jupyterhub:
+  hub:
+    config:
+      EmailAuthenticatingCILoginOAuthenticator:
+        allowed_domains:
+          - 2i2c.org
+          ...
+          - new.domain.ca
+```
+Where the `...` represents any other existing entries. We've been trying to keep the entries in alphabetical order but there are some exceptions for "special" entries.
+
 
