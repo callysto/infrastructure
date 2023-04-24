@@ -41,6 +41,24 @@ Additional Information:
 https://github.com/2i2c-org/infrastructure/issues/787  
 https://github.com/2i2c-org/infrastructure/issues/1918
 
+## How to scale nodes using the CLI
+
+You can start and stop nodes via the command line:
+
+**How to start a node**
+```
+make hackathon/start
+```
+The script will run and ask you how many nodes you would like. Once you enter the amount of nodes it will provision them and adjust your autoscale.
+
+**How to stop nodes**
+```
+make hackathon/stop
+```
+This shuts down, deletes, and changes the minimum nodes back to zero.
+
+
+
 ## How to Access GKE via Kubectl
 
 SSH into Clavuis 
