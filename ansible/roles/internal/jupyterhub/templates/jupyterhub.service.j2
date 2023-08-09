@@ -1,7 +1,7 @@
 [Unit]
 Description=JupyterHub - Multi-user Jupyter notebook service.
-After=network.target docker.service configurable-http-proxy
-Requires=docker.service configurable-http-proxy
+After=network.target docker.service configurable-http-proxy.service
+Requires=docker.service configurable-http-proxy.service
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/jupyterhub
