@@ -70,10 +70,9 @@
       include_role:
         name: docker
 
-    # This is broken, please fix
-    # - name: Manage Docker storage
-    #  include_role:
-    #    name: docker-storage
+    - name: Manage Docker storage
+      include_role:
+        name: docker-storage
 
     - name: Ensure cryptsetup is installed
       yum:
@@ -91,10 +90,6 @@
     - name: Ensure OpenStack CLI tools are installed
       include_role:
         name: openstack-tools
-
-    - name: Ensure Kubernetes tools (ie kubectl) are installed
-      include_role:
-        name: kubernetes
 
     - name: Ensure mailx is installed
       yum:
