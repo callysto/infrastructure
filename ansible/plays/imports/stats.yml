@@ -116,13 +116,11 @@
             proxy /prometheus 127.0.0.1:9090
             basicauth /prometheus {{ stats_username }} {{ stats_password }}
             proxy /grafana 127.0.0.1:3000 {
-              header_upstream Host {host}
               without /grafana
             }
             {% for name, port in caddy_port_mappings.items() %}
             basicauth /{{ name }} {{ stats_username }} {{ stats_password }}
             proxy /{{ name }} 127.0.0.1:{{ port }} {
-              header_upstream Host {host}
               without /{{ name }}
             }
             {% endfor %}
@@ -199,7 +197,7 @@
           - name: prometheus
             type: prometheus
             access: proxy
-            url: http://127.0.0.1:9090/prometheus/
+            url: "https://{{ansible_nodename}}/prometheus"
             basicAuth: True
             basicAuthUser: "{{ stats_username }}"
             basicAuthPassword: "{{ stats_password }}"
