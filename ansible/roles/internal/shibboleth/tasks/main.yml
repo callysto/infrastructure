@@ -1,10 +1,7 @@
 - name: Add shibboleth repo
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/yum.repos.d/{{ item }}"
-  with_items:
-    - shibboleth-centos7.repo
-    - shibboleth.repo.gpgkey
+  template:
+    src: "shibboleth.repo.j2"
+    dest: "/etc/yum.repos.d/shibboleth.repo"
   become: yes
 
 - name: Ensure shibboleth installed
