@@ -1,5 +1,6 @@
 # Unset REMOTE_USER header (for security)
 RequestHeader unset REMOTE_USER
+TraceEnable Off
 
 <VirtualHost *:80>
   ServerName {{ inventory_hostname }}
@@ -55,6 +56,7 @@ RequestHeader unset REMOTE_USER
     ProxyPass http://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter
     ProxyPassReverse http://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter
     ProxyPreserveHost on
+    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
   </Location>
 
   {% if jupyterhub_authenticator == 'shib' %}
@@ -64,6 +66,7 @@ RequestHeader unset REMOTE_USER
     ShibRequestSetting requireSession true
     ShibUseHeaders off
     RequestHeader set REMOTE_USER %{REMOTE_USER}s
+    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
   </Location>
   {% endif %}
 
@@ -77,6 +80,7 @@ RequestHeader unset REMOTE_USER
   {% endif %}
     ProxyPassMatch ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
     ProxyPassReverse ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
+    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
   </LocationMatch>
 
   ErrorLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-ssl-error.log

@@ -16,3 +16,7 @@ OAUTH_CLIENT_SECRET={{ jupyterhub_oauth_client_secret }}
 {% if jupyterhub_oauth_callback_url != "" -%}
 OAUTH_CALLBACK_URL={{ jupyterhub_oauth_callback_url }}
 {% endif -%}
+
+{% if python3_bin is defined -%}
+PATH={{ python3_bin }}:$PATH
+{% endif %}
