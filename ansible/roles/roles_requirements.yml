@@ -8,7 +8,7 @@
 
 - name: nodejs
   src: https://github.com/geerlingguy/ansible-role-nodejs
-  version: 5.1.1
+  version: 6.1.0
 
 - name: caddy
   src: https://github.com/caddy-ansible/caddy-ansible
