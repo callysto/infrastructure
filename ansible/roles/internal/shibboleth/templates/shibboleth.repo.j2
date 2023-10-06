@@ -1,0 +1,8 @@
+[security_shibboleth]
+name=Shibboleth (CentOS {{ ansible_distribution_major_version }})
+type=rpm-md
+mirrorlist=https://shibboleth.net/cgi-bin/mirrorlist.cgi/CentOS_{{ ansible_distribution_major_version }}
+gpgcheck=1
+gpgkey=https://shibboleth.net/downloads/service-provider/RPMS/repomd.xml.key
+        https://shibboleth.net/downloads/service-provider/RPMS/cantor.repomd.xml.key
+enabled=1

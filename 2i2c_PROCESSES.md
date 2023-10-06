@@ -41,8 +41,38 @@ Additional Information:
 https://github.com/2i2c-org/infrastructure/issues/787  
 https://github.com/2i2c-org/infrastructure/issues/1918
 
+## How to scale nodes using the CLI
+
+You can start and stop nodes via the command line:
+
+**How to start a node**
+```
+make hackathon/start
+```
+The script will run and ask you how many nodes you would like. Once you enter the amount of nodes it will provision them and adjust your autoscale.
+
+**How to stop nodes**
+```
+make hackathon/stop
+```
+This shuts down, deletes, and changes the minimum nodes back to zero.
+
+
+
 ## How to Access GKE via Kubectl
 Explicit documentation for this is not yet available, but will basically follow the [google kubectl setup docs](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl). Along with our cluster parameters.
+
+SSH into Clavuis 
+
+Clavius is currently set up to run kubectl, however if needed in the future setup instructions are [here](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl)
+
+run kubectl to view resources 
+```bash
+# View Pods
+kubectl get pods --all-namespaces
+# View Services
+kubectl get services  --all-namespaces
+```
 
 ## How to Monitor Pods via Kubectl
 Assuming kubectl is installed the following namespaces are available in our cluster
@@ -81,6 +111,29 @@ $ kubectl get logs jupyter-123712781462591347147
 
 $ kubectl -n prod exec --stdin --tty jupyter-123712781462591347147 -- /bin/bash
 ```
+
+Monitoring pods cannot be done live with kubectl, however you can get pod metrics with the folloing commands:
+```
+# Get pod metrics 
+kubectl top pods -n <namespace> --containers
+# or
+kubectl top pods --all-namespaces
+```
+The pods that we are most concerned with are these:
+| NAMESPACE      | NAME                          |
+| -------------- | ----------------------------- |
+| prod           | home-metrics-774c8b8684-6q2gv |
+| prod           | hub-6cfbbcb654-m4v4j          |
+| prod           | proxy-7f969467cf-gzs8t        |
+| staging        | home-metrics-774c8b8684-xhclq |
+| staging        | hub-5556444d88-s8d48          |
+| staging        | proxy-5c8f478b4-4wnh7         |
+
+They are the production and staging pods for the hub. Note that the names may vary slightly. The namespace and first part of the names will be the same (home-metrics for example), however the characters appended to the end may change (774c8b8684-6q2gv in this case).
+
+Note that CPU represents compute processing and is specified in units of [Kubernetes CPUs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu). 
+
+Memory is specified in units of bytes. 
 
 # JupyterHub User Management
 
