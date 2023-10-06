@@ -60,6 +60,7 @@ This shuts down, deletes, and changes the minimum nodes back to zero.
 
 
 ## How to Access GKE via Kubectl
+Explicit documentation for this is not yet available, but will basically follow the [google kubectl setup docs](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl). Along with our cluster parameters.
 
 SSH into Clavuis 
 
@@ -74,6 +75,43 @@ kubectl get services  --all-namespaces
 ```
 
 ## How to Monitor Pods via Kubectl
+Assuming kubectl is installed the following namespaces are available in our cluster
+```bash
+$ kubectl get namespaces
+NAME              STATUS   AGE
+cert-manager      Active   223d
+default           Active   223d
+kube-node-lease   Active   223d
+kube-public       Active   223d
+kube-system       Active   223d
+prod              Active   217d
+staging           Active   222d
+support           Active   223d
+```
+
+The user pods should be in either the `prod` or `staging` namespace, e.g.
+```bash
+$ kubectl -n prod get pods
+NAME                                     READY   STATUS    RESTARTS   AGE
+continuous-image-puller-8d7sw            1/1     Running   0          9h
+hub-5cfb88999c-hgq55                     2/2     Running   0          6h35m
+jupyter-123712781462591347147            1/1     Running   0          3h5m
+jupyter-823456747138123105324            1/1     Running   0          3h5m
+jupyter-123995775666754321331            1/1     Running   0          3h5m
+proxy-7874d464f-m74nk                    1/1     Running   0          14d
+shared-volume-metrics-55c5cc4974-7bzb6   1/1     Running   0          14d
+```
+The user pods are prefixed those prefixed with the name `jupyter`, and you can interact with them via e.g.
+```bash
+$ kubectl get logs jupyter-123712781462591347147
+...
+[I 2023-04-05 23:20:50.478 SingleUserLabApp handlers:454] Restoring connection for f734bfac-a7bd-42cb-9f97-e7a4ef12384e:703e91973b00443683b137c06332d91f
+[W 2023-04-05 23:22:20.481 SingleUserLabApp zmqhandlers:227] WebSocket ping timeout after 90002 ms.
+[I 2023-04-05 23:22:25.484 SingleUserLabApp kernelmanager:321] Starting buffering for f734bfac-a7bd-42cb-9f97-e7a4ef12384e:703e91973b00443683b137c06332d91f
+
+$ kubectl -n prod exec --stdin --tty jupyter-123712781462591347147 -- /bin/bash
+```
+
 Monitoring pods cannot be done live with kubectl, however you can get pod metrics with the folloing commands:
 ```
 # Get pod metrics 
@@ -115,5 +153,3 @@ jupyterhub:
           - new.domain.ca
 ```
 Where the `...` represents any other existing entries. We've been trying to keep the entries in alphabetical order but there are some exceptions for "special" entries.
-
-

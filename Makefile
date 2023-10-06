@@ -395,3 +395,18 @@ tutor/image/build: check-env
 HELP: Render the custom Tutor theme for $ENV
 tutor/theme/render: check-env
 	TUTOR_ROOT="${TUTOR_PATH}/${ENV}" tutor config render --extra-config ../tutor-indigo/config.yml ../tutor-indigo/theme ${TUTOR_PATH}/${ENV}/env/build/openedx/themes/indigo
+
+HELP: Start a hackathon
+hackathon/start:
+	echo "how many nodes would you like?  "; \
+	read pods; \
+	gcloud container clusters update callysto-cluster --no-enable-autoscaling --node-pool=nb-user --region=northamerica-northeast1; \
+	gcloud container clusters resize callysto-cluster --node-pool nb-user --num-nodes $$pods --region=northamerica-northeast1; \
+	gcloud container clusters update callysto-cluster --enable-autoscaling --node-pool=nb-user --min-nodes=$$pods --max-nodes=20 --region=northamerica-northeast1
+
+HELP: Stop a hackathon
+hackathon/stop:
+	echo "Closing nodes"; \
+	gcloud container clusters update callysto-cluster --no-enable-autoscaling --node-pool=nb-user --region=northamerica-northeast1; \
+	gcloud container clusters resize callysto-cluster --node-pool nb-user --num-nodes 0 --region=northamerica-northeast1; \
+	gcloud container clusters update callysto-cluster --enable-autoscaling --node-pool=nb-user --min-nodes=0 --max-nodes=20 --region=northamerica-northeast1
