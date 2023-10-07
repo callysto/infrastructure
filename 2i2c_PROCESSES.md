@@ -10,7 +10,7 @@ the Callysto environment as deployed by 2i2c on GKE.
 * [Scaling Up or Down the Number of Nodes](#scaling-up-or-down-the-number-of-nodes)
 * [How to Access GKE via Kubectl](#how-to-access-gke-via-kubectl)
 * [How to Monitor Pods via Kubectl](#how-to-monitor-pods-via-kubectl)
-
+* [Image Updates](#how-to-update-the-2i2c-image)
 > JupyterHub User Management
 
 * [How to add Domains to the Allowlist](#how-to-add-domains-to-the-allowlist)
@@ -134,6 +134,10 @@ They are the production and staging pods for the hub. Note that the names may va
 Note that CPU represents compute processing and is specified in units of [Kubernetes CPUs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu). 
 
 Memory is specified in units of bytes. 
+
+
+## How to update the 2i2c image
+The image used on the 2i2c cluster is usually taken from [2i2c-image](https://github.com/callysto/2i2c-image). The 2i2c-notebook image is used as the base layer and the pims-r has minor modifications on op of this base to allow it to run in our legacy cluster. Image updates _were_ handled as pull requests against the [2i2c-infrastructure](https://github.com/2i2c-org/infrastructure/) repo, but we can now manage them via the configuratior. Simply visit 2i2c.callysto.ca and log in as one of the admin users (see the `admin_users` section of [our config](https://github.com/2i2c-org/infrastructure/blob/master/config/clusters/callysto/common.values.yaml). From the control panel, select `Services->configurator` and update the image name to something like `callysto/2i2c:0.1.5`, where `callysto` is our dockerhub org, `2i2c` is the image and `0.1.5` is the desired tag.
 
 # JupyterHub User Management
 
