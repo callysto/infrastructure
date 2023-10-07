@@ -82,7 +82,7 @@ jupyterhub_spawners:
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
       - conf_object: 'DockerSpawner.environment'
-        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'notebook.notebookapp.NotebookApp' }"
+      value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'jupyter-server' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
