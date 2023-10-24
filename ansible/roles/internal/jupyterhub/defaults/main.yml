@@ -38,6 +38,13 @@ jupyterhub_version: "3.1.0"
 
 jupyterhub_admin_users: []
 
+jupyterhub_load_roles:
+  - name: 'idle-culler'
+    scopes:
+      - "'read:users:activity'"
+      - "'servers'"
+      - "'admin:users'"
+
 jupyterhub_services:
   - name: 'cull-idle'
     command:
@@ -82,7 +89,7 @@ jupyterhub_spawners:
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
       - conf_object: 'DockerSpawner.environment'
-      value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'jupyter-server' }"
+        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'jupyter-server' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
