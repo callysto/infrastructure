@@ -36,7 +36,7 @@
 - name: Create {{ zfs_pool_name }} zpool
   notify:
    - Start zfs
-  command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1[0:20] }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2[0:20] }}"
+  command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1 }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2 }}"
   args:
     creates: "/{{ zfs_pool_name }}"
   when: zpool_exist_again.failed ==  true and zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""

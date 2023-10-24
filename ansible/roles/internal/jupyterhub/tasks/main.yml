@@ -55,7 +55,9 @@
 
 - name: Install Jupyterhub
   pip:
-    name: 'jupyterhub=={{ jupyterhub_version }}'
+    name:
+      - 'jupyterhub{{ jupyterhub_version }}'
+      - 'sqlalchemy{{ jupyterhub_sqlalchemy_version | default("") }}'
     executable: '{{ python3_pip_executable }}'
 
 - name: Install node packages

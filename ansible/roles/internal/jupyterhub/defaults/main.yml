@@ -34,9 +34,17 @@ jupyterhub_hub_template_dir: "/tank/hub_templates"
 
 jupyterhub_getting_started_url: ""
 
-jupyterhub_version: "3.1.0"
+jupyterhub_version: "==3.1.0"
+jupyterhub_sqlalchemy_version: "<2.0.0"
 
 jupyterhub_admin_users: []
+
+jupyterhub_load_roles:
+  - name: 'idle-culler'
+    scopes:
+      - "'read:users:activity'"
+      - "'servers'"
+      - "'admin:users'"
 
 jupyterhub_services:
   - name: 'cull-idle'
@@ -82,7 +90,7 @@ jupyterhub_spawners:
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
       - conf_object: 'DockerSpawner.environment'
-        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'notebook.notebookapp.NotebookApp' }"
+        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'jupyter-server' }"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
