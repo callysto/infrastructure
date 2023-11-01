@@ -824,6 +824,23 @@ $ make quota/get HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user>
 $ make quota/set HOST=<hub-nn.callysto.ca> ENV=<env> USERHASH=<user> REFQUOTA=<10G>
 ```
 
+For instances where people are logging in with Microsoft emails and whenever we cannot find their hash (meaning ` make user/findhash` fails), we need to do additional steps to try and locate what their hash actually is. 
+
+Run below commands on each hub (hub-01, hub-02, hub-03) until you find the correct user.
+
+1. Search for 507 errors (quota / out of space errors) in `/var/log/messages`
+```
+sudo su
+grep " 507 " /var/log/messages
+```
+Look for the logs with "Insufficient free space, refusing spawn"
+Also look for the timestamp and compare it to when the user reported the issue
+
+2. Check for which users are likely to be running into the issue 
+```
+zfs list -o name,quota,used,avail | egrep " [0-9]M$| [0-9][0-9]M$ | [0-9]G$ | 1.00G$"
+```
+
 ## Deleting a User's Hub Contents
 
 There will be times where a user will request for their CallystoHub’s contents to be wiped in order to have a fresh start instead of going through the process of deleting it manually or by other methods. In order to do this, you need to determine first the username’s hash and hub location by running the user/findhash task.
