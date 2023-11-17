@@ -15,6 +15,8 @@ TraceEnable Off
   ServerName {{ inventory_hostname }}
   ServerAdmin {{ admin_email }}
 
+  Protocols h2 http/1.1
+
   SSLEngine on
   SSLCertificateFile /etc/pki/tls/certs/cert.pem
   SSLCertificateChainFile /etc/pki/tls/certs/chain.pem
@@ -37,6 +39,11 @@ TraceEnable Off
   # Everything else _except_ the hub metadata transfers
   RewriteCond %{REQUEST_URI} ^/jupyter/hub [NC]
   RewriteRule ^/jupyter/hub/(.*)$ https://{{ groups['sharder'][0] }}/jupyter/hub/$1 [R,NC,L]
+
+  # Use RewriteEngine to handle WebSocket connection upgrades
+  RewriteCond %{HTTP:Connection} Upgrade [NC]
+  RewriteCond %{HTTP:Upgrade} websocket [NC]
+  RewriteRule /(.*) ws://127.0.0.1:8000/$1 [P,L]
 
   <Location /shibboleth-sp>
     Require all granted
@@ -69,19 +76,6 @@ TraceEnable Off
     RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
   </Location>
   {% endif %}
-
-  <LocationMatch "/jupyter/(user/[^/]*)/(api/kernels/[^/]+/channels|terminals/websocket)(.*)">
-  {% if jupyterhub_authenticator == 'shib' %}
-    AuthType shibboleth
-    Require shibboleth
-    ShibRequestSetting requireSession true
-    ShibUseHeaders off
-    RequestHeader set REMOTE_USER %{REMOTE_USER}s
-  {% endif %}
-    ProxyPassMatch ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
-    ProxyPassReverse ws://{{ jupyterhub_proxy_ip }}:{{ jupyterhub_proxy_port }}/jupyter/$1/$2$3
-    RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
-  </LocationMatch>
 
   ErrorLog {{ apache_log_dir | default('/var/log/httpd')}}/jupyter-ssl-error.log
   LogLevel warn

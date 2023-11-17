@@ -32,3 +32,11 @@
     name: "{{ httpd24_httpd_service_name }}"
     state: "{{ httpd24_httpd_service_status }}"
     enabled: "{{ httpd24_httpd_service_enabled }}"
+
+- name: Disable http2_module
+  # Doesn't work in http24-httpd
+  lineinfile:
+    path: '{{ apache_server_root }}/conf.modules.d/00-base.conf'
+    backrefs: yes
+    regexp: '^(LoadModule\s+http2_module\s+modules/mod_http2.so)$'
+    line: '# \1'
