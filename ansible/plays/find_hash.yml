@@ -9,7 +9,7 @@
       register: findhash_results
 
     - name: Get the location of the user
-      shell: "/bin/python3 /srv/sharder/sharder/admin.py --find-user {{ findhash_results.stdout }}"
+      shell: "/opt/rh/rh-python38/root/bin/python3 /srv/sharder/sharder/admin.py --find-user {{ findhash_results.stdout }}"
       delegate_to: "{{ groups['sharder'][0] }}"
       register: results
       failed_when: results.rc != 0 and results.rc != 1
