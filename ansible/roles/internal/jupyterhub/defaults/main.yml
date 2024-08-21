@@ -42,12 +42,15 @@ jupyterhub_admin_users: []
 jupyterhub_load_roles:
   - name: 'idle-culler'
     scopes:
+      - "'list:users'"
       - "'read:users:activity'"
-      - "'servers'"
-      - "'admin:users'"
+      - "'read:servers'"
+      - "'delete:servers'"
+    services:
+      - "'idle-culler'"
 
 jupyterhub_services:
-  - name: 'cull-idle'
+  - name: 'idle-culler'
     command:
       - sys.executable
       - "'-m'"
@@ -90,7 +93,11 @@ jupyterhub_spawners:
       - conf_object: 'DockerSpawner.remove_containers'
         value: 'True'
       - conf_object: 'DockerSpawner.environment'
-        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp', 'JUPYTERHUB_SINGLEUSER_APP': 'jupyter-server' }"
+        value: "{ 'JUPYTER_RUNTIME_DIR': '/tmp' }"
+      - conf_object: 'Spawner.default_url'
+        value: "'/tree'"
+      - conf_object: 'Spawner.cmd'
+        value: "['jupyter-labhub']"
   syzygyswiftspawner:
     name: 'syzygyauthenticator.swiftspawner.SyzygySwiftSpawner'
     options:
