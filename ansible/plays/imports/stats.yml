@@ -23,87 +23,122 @@
           zfs_pool_name is defined and zfs_pool_name != ""
         msg: "Must set either zfs_pool_name"
 
-- name: Ensure sudo is configured correctly
+- name: Generic Callysto host configuration
   hosts: stats
   become: true
   tasks:
-    # Settings are defined in
-    # group_vars/<group>/sudo.yml
-    - name: Configure sudo
-      tags: ["sudo", "always"]
-      include_role:
-        name: sudo
-      vars:
-          ansible_ssh_pipelining: no
-
-- name: Manage the stats server
-  hosts: stats
-  become: true
-  vars:
-    caddy_port: 9999
-    caddy_port_mappings:
-      alertmanager: 9093
-      node: 9100
-    zfs_containers:
-      - prometheus
-      - grafana
-  tasks:
-    - name: Ensure hostname is set
-      tags: ["hostname"]
-      include_role:
-        name: hostname
-
     # Add relevant keys to `ssh_public_keys`
     # in either host_vars, group_vars, or local_vars.
     - name: Manage SSH public keys
       tags: ["ssh"]
-      include_role:
-        name: ssh-public-keys
+      ansible.posix.authorized_key:
+        user: '{{ item.value.user }}'
+        state: '{{ item.value.state }}'
+        key: '{{ item.value.public_key }}'
+      with_dict: '{{ ssh_public_keys }}'
+      when: ssh_public_keys is defined
 
-    # This also installs EPEL
-    - name: Ensure base packages are installed
+    - name: Install Base Packages
+      become: true
       tags: ["base-packages"]
-      include_role:
-        name: base-packages
+      ansible.builtin.yum:
+        name: '{{ item }}'
+        state: present
+      with_items: '{{ base_packages }}'
+      when: base_packages is defined
 
     - name: Configure SELinux
       tags: ["selinux"]
-      include_role:
-        name: selinux
-      vars:
-        selinux_policy: targeted
-        selinux_state: permissive
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Ensure firewalld service is running
+      become: true
+      tags:
+        - firewalld
+      ansible.builtin.yum:
+        name: firewalld
+        state: present
+
+    - name: Poke firewall holes
+      become: true
+      tags:
+        - firewalld
+      ansible.posix.firewalld:
+        service: '{{ item.value.service }}'
+        permanent: "{{ item.value.permanent | default('yes') }}"
+        state: '{{ item.value.state }}'
+        zone: '{{ item.value.zone }}'
+      with_dict: '{{ firewalld_service_rules }}'
+      when: firewalld_service_rules is defined
+
+    - name: Install Python Environment
+      become: true
+      tags:
+        - python
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python3.11
+        - python3.11-pip
+        - python3.11-devel
+
+    - name: Set Python3.11 as the default
+      become: true
+      tags:
+        - python
+      community.general.alternatives:
+        name: python3
+        path: /usr/bin/python3.11
+        link: /usr/bin/python3
+
+
+    - name: Set pip3.11 as the default
+      become: true
+      tags:
+        - python
+      community.general.alternatives:
+        name: pip3
+        path: /usr/bin/pip3.11
+        link: /usr/bin/pip3
+
+    - name: Update Needs-Restarting python
+      become: true
+      tags:
+        - python
+      lineinfile:
+        dest: /usr/bin/needs-restarting
+        regexp: '^#!/usr/bin/python3$'
+        line: '#!/usr/bin/python3.9'
+
+- name: Apply play specific roles
+  hosts: stats
+  roles:
+    - { role: geerlingguy.repo-epel, become: yes}
+    - { role: weareinteractive.sudo, become: yes }
+    - { role: devsec.hardening.ssh_hardening, become: yes }
+
+    - role: sysstat
+      become: yes
+
+    - role: geerlingguy.apache
+      become: yes
 
     # This will create and manage a zpool based on
     # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
     - name: Manage ZFS
       tags: ["zfs"]
-      include_role:
-        name: zfs
-
-    # Enabled services are defined in
-    # group_vars/stats/firewalld.yml
-    - name: Ensure firewalld service is running
-      tags: ["firewalld"]
-      include_role:
-        name: flatkey.firewalld
-
-    # Configuration is stored in
-    # group_vars/<group>/ssh.yml.
-    - name: Ensure sshd is installed and running
-      tags: ["sshd"]
-      include_role:
-        name: sshd
+      role: zfs
 
     - name: Copy SSL certificates
       tags: ["ssl"]
-      include_role:
-        name: callysto-ssl
+      role: callysto-ssl
 
     - name: Manage Caddy
       tags: ["stats", "caddy"]
-      include_role:
-        name: caddy
+      role: caddy
       vars:
         caddy_user: "root"
         caddy_home: "/root"
@@ -130,8 +165,7 @@
 
     - name: Manage prometheus
       tags: ["stats", "prometheus"]
-      include_role:
-        name: prometheus
+      role: prometheus.prometheus.prometheus
       vars:
         prometheus_web_external_url: 'https://{{ ansible_nodename }}/prometheus/'
         prometheus_db_dir: "/{{ zfs_pool_name }}/prometheus"
@@ -156,15 +190,6 @@
             file_sd_configs:
               - files:
                 - "/etc/prometheus/file_sd/nodes.yml"
-          - job_name: "hubs"
-            scheme: "https"
-            metrics_path: "/cadvisor/metrics"
-            basic_auth:
-              username: "{{ stats_username }}"
-              password: "{{ stats_password }}"
-            file_sd_configs:
-              - files:
-                - "/etc/prometheus/file_sd/hubs.yml"
           - job_name: "jupyter"
             scheme: "https"
             metrics_path: "/jupyterhub/jupyter/hub/metrics"
@@ -177,8 +202,7 @@
 
     - name: Prometheus node exporter
       tags: ["stats", "prometheus"]
-      include_role:
-        name: prometheus-node-exporter
+      role: prometheus.prometheus.node_exporter
       vars:
         prometheus_node_exporter_config_flags:
            'web.listen-address': '127.0.0.1:9100'
@@ -186,8 +210,7 @@
 
     - name: Manage grafana
       tags: ["stats", "grafana"]
-      include_role:
-        name: grafana
+      role: grafana.grafana.grafana
       vars:
         grafana_address: 127.0.0.1
         grafana_url: "https://{{ ansible_nodename}}/grafana"
@@ -203,33 +226,3 @@
             basicAuth: True
             basicAuthUser: "{{ stats_username }}"
             basicAuthPassword: "{{ stats_password }}"
-
-    # For some reason, Ansible isn't correctly triggering this in the Grafana role.
-    - name: Create/Update dashboards file (provisioning)
-      tags: ["stats", "grafana"]
-      become: true
-      copy:
-        dest: "/etc/grafana/provisioning/dashboards/ansible.yml"
-        content: |
-          apiVersion: 1
-          providers:
-           - name: 'default'
-             orgId: 1
-             folder: ''
-             type: file
-             options:
-               path: "/{{ zfs_pool_name }}/grafana/dashboards"
-        backup: false
-        owner: root
-        group: grafana
-        mode: 0640
-      notify: restart grafana
-
-    - name: Manage Grafana dashboard for JupyterHub
-      tags: ["stats", "grafana"]
-      copy:
-        src: "../../roles/internal/jupyterhub/files/grafana-dashboard-hub.json"
-        dest: "/{{ zfs_pool_name }}/grafana/dashboards/hub.json"
-        owner: grafana
-        group: grafana
-        mode: "0640"

@@ -94,160 +94,164 @@
           hub_metrics is defined
         msg: "Must set hub_metrics to true or false"
 
-- name: Ensure sudo is configured correctly
-  hosts: hub
-  become: true
-  tasks:
-    # Settings are defined in
-    # group_vars/<group>/sudo.yml
-    - name: Configure sudo
-      tags: ["sudo", "always"]
-      include_role:
-        name: sudo
-      vars:
-          ansible_ssh_pipelining: no
-
-- name: Install and configure the hub
+- name: Generic Callysto host configuration
   hosts: hub
   become: true
   tasks:
     - name: Ensure hostname is set
       tags: ["hostname"]
-      include_role:
-        name: hostname
+      ansible.builtin.hostname:
+        name: '{{ inventory_hostname }}'
 
     # Add relevant keys to `ssh_public_keys`
     # in either host_vars, group_vars, or local_vars.
     - name: Manage SSH public keys
       tags: ["ssh"]
-      include_role:
-        name: ssh-public-keys
+      ansible.posix.authorized_key:
+        user: '{{ item.value.user }}'
+        state: '{{ item.value.state }}'
+        key: '{{ item.value.public_key }}'
+      with_dict: '{{ ssh_public_keys }}'
+      when: ssh_public_keys is defined
 
-    # This also installs EPEL
-    - name: Ensure base packages are installed
+    - name: Install Base Packages
+      become: true
       tags: ["base-packages"]
-      include_role:
-        name: base-packages
+      ansible.builtin.yum:
+        name: '{{ item }}'
+        state: present
+      with_items: '{{ base_packages }}'
+      when: base_packages is defined
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Ensure firewalld service is running
+      become: true
+      tags:
+        - firewalld
+      ansible.builtin.yum:
+        name: firewalld
+        state: present
+
+    - name: Poke firewall holes
+      become: true
+      tags:
+        - firewalld
+      ansible.posix.firewalld:
+        service: '{{ item.value.service }}'
+        permanent: "{{ item.value.permanent | default('yes') }}"
+        state: '{{ item.value.state }}'
+        zone: '{{ item.value.zone }}'
+      with_dict: '{{ firewalld_service_rules }}'
+      when: firewalld_service_rules is defined
+
+    - name: Install Python Environment
+      become: true
+      tags:
+        - python
+      ansible.builtin.yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python3.11
+        - python3.11-pip
+        - python3.11-devel
+
+    - name: Set Python3.11 as the default
+      become: true
+      tags:
+        - python
+      community.general.alternatives:
+        name: python3
+        path: /usr/bin/python3.11
+        link: /usr/bin/python3
+
+    - name: Set pip3.11 as the default
+      become: true
+      tags:
+        - python
+      community.general.alternatives:
+        name: pip3
+        path: /usr/bin/pip3.11
+        link: /usr/bin/pip3
+
+    - name: Update Needs-Restarting python
+      become: true
+      tags:
+        - python
+      lineinfile:
+        dest: /usr/bin/needs-restarting
+        regexp: '^#!/usr/bin/python3$'
+        line: '#!/usr/bin/python3.9'
+
+
+
+- name: Install and configure the hub
+  hosts: hub
+  become: true
+  roles:
+    - { role: geerlingguy.repo-epel, become: yes}
+    - { role: weareinteractive.sudo, become: yes }
+    - { role: devsec.hardening.ssh_hardening, become: yes }
+
+    - role: sysstat
+      become: yes
+
+    - role: geerlingguy.apache
+      become: yes
 
     # This will create and manage a zpool based on
     # `zfs_disk_1` and `zfs_disk_2` defined in local_vars.yml.
     - name: Manage ZFS
       tags: ["zfs"]
-      include_role:
-        name: zfs
-
-    - name: Configure SELinux
-      tags: ["selinux"]
-      include_role:
-        name: selinux
-      vars:
-        selinux_policy: targeted
-        selinux_state: permissive
-
-    # Enabled services are defined in
-    # group_vars/hub/firewalld.yml
-    #
-    # The jupyterhub role also enables access
-    # to `jupyterhub_api_port`.
-    - name: Ensure firewalld service is running
-      tags: ["firewalld"]
-      include_role:
-        name: flatkey.firewalld
-
-    # Configuration is stored in
-    # group_vars/<group>/ssh.yml.
-    - name: Ensure sshd is installed and running
-      tags: ["sshd"]
-      include_role:
-        name: sshd
+      role: zfs
 
     - name: Copy SSL certificates
-      include_role:
-        name: callysto-ssl
-
-    # Configuration is stored in
-    # group_vars/<group>/httpd.yml
-    - name: Manage Apache
-      tags: ["httpd"]
-      include_role:
-        name: httpd24-httpd
-
-    - name: Manage Python3
-      tags: ["python", "python3"]
-      include_role:
-        name: python38
+      role: callysto-ssl
 
     # Manage Docker
     - name: Manage Docker
-      include_role:
-        name: docker
+      role: geerlingguy.docker
+      become: yes
+      tags: ["docker"]
 
-    - name: Add interfaces their respective zones
-      include_role:
-        name: flatkey.firewalld
+    - role: docker-extra
+      become: yes
+      tags:
+        - docker
 
-    - name: Add admin user to docker group
-      user:
-        name: '{{ ansible_user }}'
-        group: docker
-        append: yes
-
-    - name: update facts if docker0 is not defined
-      action: setup filter="ansible_docker0"
-      when: ansible_docker0 is not defined
-
-    - name: Install docker module
-      yum:
-        name: 'python-docker-py'
-        state: 'present'
-
-    - name: Manage Docker storage
-      include_role:
-        name: docker-storage
+    - role: geerlingguy.nodejs
+      become: yes
+      tags:
+        - nodejs
+        - npm
 
     - name: Manage Callysto html repo
-      include_role:
-        name: callysto-html
-
-    - name: Manage NodeJS
-      tags: ["nodejs", "npm"]
-      include_role:
-        name: nodejs
+      role: callysto-html
 
     - name: Manage Jupyterhub
       tags: ["jupyter", "jupyterhub", "ssp"]
-      include_role:
-        name: jupyterhub
+      role: jupyterhub
 
     - name: Manage Shibboleth
       tags: ["shib"]
-      include_role:
-        name: shibboleth
+      role: shibboleth
       when: jupyterhub_authenticator == 'shib'
 
     # Only manage ssp in all-in-one configurations
     - name: Manage SimpleSAMLphp
       tags: ["ssp"]
-      include_role:
-        name: ssp-idp-multi
+      role: ssp-idp-multi
       when: groups['ssp'][0] == groups['hub'][0] and jupyterhub_authenticator == 'shib'
 
     - name: Manage rrsync script
       tags: ["ssh", "rrsync", "backup"]
-      include_role:
-        name: rrsync
-
-    - name: Prometheus node-exporter
-      tags: ["stats","prometheus"]
-      include_role:
-        name: prometheus-node-exporter
-      vars:
-        prometheus_node_exporter_config_flags:
-           'web.listen-address': '127.0.0.1:9100'
-           'log.level': 'info'
-      when: hub_metrics
+      role: rrsync
 
     - name: Manage openstack tools and openrc file
       tags: ["openstack"]
-      include_role:
-        name: openstack-tools
+      role: openstack-tools

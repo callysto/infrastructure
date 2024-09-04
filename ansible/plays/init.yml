@@ -13,12 +13,15 @@
       ignore_errors: true
 
     - name: Reboot instance
-      command: /sbin/shutdown -r +1
-      async: 0
-      poll: 0
-      ignore_errors: true
+      command: needs-restarting -r
+      register: command_restart
+      failed_when: command_restart.rc not in [0, 1]
+      check_mode: no
+      changed_when: false
 
-    - name: wait for SSH access to come back
-      wait_for_connection:
-        delay: 65
-        timeout: 300
+    - name: Reboot instance
+      reboot:
+        reboot_timeout: 300
+        pre_reboot_delay: 30
+        post_reboot_delay: 30
+      when: command_restart.rc == 1
