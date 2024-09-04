@@ -6,6 +6,8 @@ variable "key_name" {}
 
 variable "network_name" {}
 
+variable "network_id" {}
+
 variable "zone_id" {}
 
 variable "name" {

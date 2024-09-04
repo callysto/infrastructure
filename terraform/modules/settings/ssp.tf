@@ -1,5 +1,5 @@
 variable "ssp_flavor_name" {
-  type = "map"
+  type = map
 
   default = {
     prod = "m1.small"
