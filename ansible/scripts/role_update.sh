@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -x
 #TODO: Support python virtual environments for now global
 
 COLOR_END='\e[0m'
@@ -9,7 +9,8 @@ COLOR_RED='\e[0;31m'
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ROOT_DIR=$(cd "$DIR/../" && pwd)
 EXTERNAL_ROLE_DIR="$ROOT_DIR/roles/external"
-ROLES_REQUIREMNTS_FILE="$ROOT_DIR/roles/roles_requirements.yml"
+EXTERNAL_COLLECTIONS_DIR="$ROOT_DIR/collections/external"
+REQUIREMENTS_FILE="$ROOT_DIR/requirements.yml"
 
 # Exit msg
 msg_exit() {
@@ -29,7 +30,7 @@ trap "cleanup"  ERR INT TERM
 [[ -z "$(which ansible-galaxy)" ]] && msg_exit "Ansible is not installed or not in your path."
 
 # Check roles req file
-[[ ! -f "$ROLES_REQUIREMNTS_FILE" ]]  && msg_exit "roles_requirements '$ROLES_REQUIREMNTS_FILE' does not exist or permssion issue.\nPlease check and rerun."
+[[ ! -f "$REQUIREMENTS_FILE" ]]  && msg_exit "roles_requirements '$REQUIREMENTS_FILE' does not exist or permssion issue.\nPlease check and rerun."
 
 # Remove existing roles
 if [ -d "$EXTERNAL_ROLE_DIR" ]; then
@@ -42,9 +43,23 @@ if [ -d "$EXTERNAL_ROLE_DIR" ]; then
     fi
 fi
 
-
-
 # Install roles
-ansible-galaxy install -r "$ROLES_REQUIREMNTS_FILE" --force --no-deps -p "$EXTERNAL_ROLE_DIR"
+ansible-galaxy role install -r "$REQUIREMENTS_FILE" --force --no-deps -p "$EXTERNAL_ROLE_DIR"
+
+# Remove existing collections
+if [ -d "$EXTERNAL_COLLECTION_DIR" ]; then
+    cd "$EXTERNAL_COLLECTION_DIR"
+    if [ "$(pwd)" == "$EXTERNAL_COLLECTION_DIR" ];then
+      echo "Removing current roles in '$EXTERNAL_COLLECTION_DIR/*'"
+      rm -rf *
+    else
+      msg_exit "Path error could not change dir to $EXTERNAL_COLLECTION_DIR"
+    fi
+fi
+
+
+# Install collections
+ansible-galaxy collection install -r "$REQUIREMENTS_FILE" --force --no-deps -p "$EXTERNAL_COLLECTION_DIR"
+
 
 exit 0
