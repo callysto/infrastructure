@@ -26,8 +26,12 @@
     mode: 0600
   when: rrsync_enable == true
 
+- name: Dependencies
+  ansible.builtin.pip:
+    name: paramiko
+
 - name: Configure rrsync ssh
-  ssh_config:
+  community.general.ssh_config:
     state: present
     user: "{{ rrsync_local_user }}"
     host: "{{ rrsync_remote_host }}"
