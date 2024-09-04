@@ -1,4 +1,0 @@
-- name: Apply the Tutor settings
-  command: /usr/local/bin/tutor config save
-  environment:
-    TUTOR_ROOT: "{{ edx_tutor_root }}"
