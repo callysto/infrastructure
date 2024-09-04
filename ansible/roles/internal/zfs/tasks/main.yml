@@ -4,46 +4,95 @@
     zfs_pool_name: ""
   when: zfs_pool_name is not defined and docker_zfs_pool is not defined
 
-- import_tasks: install-RedHat.yml
-  when: ansible_os_family == 'RedHat'
-  static: no
+- name: Check distro version
+  shell: cat /etc/centos-release
+  register: result
+  when: ansible_distribution == "CentOS"
+  check_mode: no
+  changed_when: false
 
-- import_tasks: install-Debian.yml
-  when: ansible_os_family == 'Debian'
-  static: no
+- name: Set zfs_distro_version if RedHat
+  set_fact:
+    zfs_distro_version: "{{ ansible_distribution_version }}"
+  when: zfs_distro_version is undefined
+
+- name: Install kernel headers
+  yum:
+    name: kernel-devel
+    state: present
+    update_cache: yes
+
+- name: Import ZFS GPG key.
+  rpm_key:
+    key: "{{ zfs_repo_gpg_key_url }}"
+    state: present
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 10
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Install ZFS Repo
+  yum:
+    name: '{{ zfs_repo_url }}'
+    state: present
+  register: result
+  until: result is succeeded
+  retries: 5
+  delay: 10
+
+- name: Install zfs kernel module
+  yum:
+    name: zfs
+    state: present
+    update_cache: yes
+  notify:
+    - Modprobe zfs
+
+- name: Ensure the ZFS kernel module is loaded
+  modprobe:
+    name: zfs
 
 - name: Flush ZFS Handlers
   meta: flush_handlers
 
-- name: Check zpool {{ zfs_pool_name }} exists
-  command: "zpool list {{ zfs_pool_name }}"
-  register: zpool_exist
+  # Check for available pools
+- name: Get list of available zpools
+  ansible.builtin.shell: "zpool list -H -o name"
+  register: available_zpools
   changed_when: false
-  ignore_errors: true
+  check_mode: false
 
-- name: Try importing {{ zfs_pool_name }}
-  command: "zpool import {{ zfs_pool_name }}"
+- name: Get list of importable zpools
+  ansible.builtin.shell: "set -o pipefail; zpool import | sed -nr 's/^\\s*pool: (.*)/\\1/p'"
+  args:
+    executable: /bin/bash
+  register: importable_zpools
   changed_when: false
-  ignore_errors: true
-  when: zpool_exist.failed
+  check_mode: false
 
-- name: Check zpool {{ zfs_pool_name }} exists
-  command: "zpool list {{ zfs_pool_name }}"
-  register: zpool_exist_again
-  changed_when: false
-  ignore_errors: true
 
-- name: Create {{ zfs_pool_name }} zpool
+- name: Import '{{ zfs_pool_name }}' zpool
+  ansible.builtin.command: zpool import {{ zfs_pool_name }}
+  register: zpool_import_result
+  changed_when: true
+  failed_when: (zpool_import_result.rc != 0) or (zpool_import_result.stderr | length > 0)
+  when:
+    - zfs_pool_name not in available_zpools.stdout_lines
+    - zfs_pool_name in importable_zpools.stdout_lines
+
+- name: Create tank zpool
   notify:
    - Start zfs
   command: /sbin/zpool create -f {{ zfs_pool_name }} mirror "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_1 }}" "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_{{ zfs_disk_2 }}"
   args:
     creates: "/{{ zfs_pool_name }}"
-  when: zpool_exist_again.failed ==  true and zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""
+  when:
+    - zfs_pool_name not in available_zpools.stdout_lines
+    - zfs_pool_name not in importable_zpools.stdout_lines
 
-- name: Create ZFS containers
-  command: "/sbin/zfs create {{ zfs_pool_name }}/{{ item }}"
+- name: Create ZFS home container
+  command: /sbin/zfs create '{{ zfs_pool_name }}'/home
   args:
-    creates: "/{{ zfs_pool_name }}/{{ item }}"
-  with_items: "{{ zfs_containers }}"
+    creates: '/{{ zfs_pool_name }}/home'
   when: zfs_disk_1 != "" and zfs_disk_2 != "" and zfs_pool_name != ""

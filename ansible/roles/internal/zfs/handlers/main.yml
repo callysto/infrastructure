@@ -4,19 +4,3 @@
 
 - name: Start zfs
   service: name=zfs.target state=started enabled=yes
-
-- name: Remove existing zfs packages
-  yum:
-    name: '{{ item }}'
-    state: removed
-  with_items:
-    - zfs
-    - zfs-kmod
-    - spl
-    - spl-kmod
-    - libzfs2
-    - libnvpair1
-    - libuutil1
-    - libzpool2
-
-
