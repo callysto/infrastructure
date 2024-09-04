@@ -27,6 +27,13 @@
     owner: "{{ ssp_www_user }}"
     group: "{{ ssp_www_user }}"
 
+- name: Ensure SSP log dir exists and is writable by http user
+  file:
+    path: '{{ ssp_dir }}/log'
+    state: directory
+    owner: '{{ ssp_www_user }}'
+    group: '{{ ssp_www_user }}'
+
 - name: Enable cron module
   copy:
     content: ""

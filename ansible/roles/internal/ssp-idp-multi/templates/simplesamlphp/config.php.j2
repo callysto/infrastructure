@@ -457,6 +457,7 @@ $config = array(
           'smartattributes' => TRUE,
           'cron' => TRUE,
           'metarefresh' => TRUE,
+          'multiauth' => TRUE,
      ),
 
 
@@ -828,7 +829,7 @@ $config = array(
         {% if ssp_hash_usernames -%}
         21 => array(
             'class' => 'core:TargetedID',
-            'attributename' => 'smart_id',
+            'identifyingAttribute' => 'smart_id',
             'nameId' => FALSE,
         ),
         {% else -%}
@@ -843,11 +844,6 @@ $config = array(
            	',
        	),
         {% endif -%}
-        45 => array(
-            'class'         => 'core:StatisticsWithAttribute',
-            'attributename' => 'realm',
-            'type'          => 'saml20-idp-SSO',
-        ),
 
         50 => 'core:AttributeLimit',
 

@@ -1,27 +1,22 @@
+- name: Install a remi php 8.2 module
+  ansible.builtin.dnf:
+    name: '@php:remi-8.2'
+    state: present
+
 - name: Ensure php packages installed
   yum:
     state: present
     update_cache: yes
     name:
-      - rh-php73-php-cli
-      - rh-php73-mod_php
-      - rh-php73-php-pdo
-      - rh-php73-php-xml
-      - rh-php73-php-soap
-      - rh-php73-php-pecl-apcu
-      - rh-php73-php-mbstring
-      - rh-php73-php-json
-      - rh-php73-php-gd
+      - php-cli
+      - php-pdo
+      - php-xml
+      - php-soap
+      - php-pecl-apcu
+      - php-mbstring
+      - php-gd
+      - php-ldap
+      - php-zip
   become: yes
   notify:
     - restart httpd
-
-# Make this the default php
-- name: Set php default
-  copy:
-    dest: /etc/profile.d/rh-php73.sh
-    content: '. {{ ssp_php_scl }}/enable'
-
-- name: Set php fact explicitly
-  set_fact:
-    php_executable: "{{ ssp_php_root }}/usr/bin/php"

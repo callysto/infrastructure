@@ -29,7 +29,7 @@ RequestHeader unset REMOTE_USER
 
   # SimpleSAMLphp
   SetEnv SIMPLESAMLPHP_CONFIG_DIR {{ ssp_dir }}/config
-  Alias /simplesaml {{ ssp_dir }}/www
+  Alias /simplesaml {{ ssp_dir }}/public
 
   <Directory {{ ssp_dir }}>
     <IfModule !mod_authz_core.c>

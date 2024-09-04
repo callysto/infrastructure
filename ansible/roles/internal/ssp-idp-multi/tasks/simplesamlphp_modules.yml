@@ -17,3 +17,9 @@
   args:
     chdir: "{{ ssp_dir }}"
     creates: "{{ ssp_dir }}/modules/authoauth2/lib/OAuth2ResponseHandler.php"
+
+- name: Run composer authoauth2 installer
+  command: "{{ php_executable }} composer.phar require simplesamlphp-module-smartattributes"
+  args:
+    chdir: "{{ ssp_dir }}"
+    creates: "{{ ssp_dir }}/modules/smartattributes"
