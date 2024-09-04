@@ -1,5 +1,10 @@
 ---
-# Overlay2
+- name: Add user to docker group
+  user:
+    name: '{{ docker_user }}'
+    groups: '{{ docker_group }}'
+    append: yes
+
 - name: Check the current filesystem
   command: "lsblk -no fstype {{ openstack_ephemeral_docker_disk }}"
   when: openstack_ephemeral_docker_disk != ""
@@ -52,6 +57,10 @@
 - name: restart docker
   service: name=docker state=restarted
   when: restartdocker_ephemeral.changed or restartdocker_zfs.changed or dockerconf_zfs.changed
+
+- name: update facts if docker0 is not defined
+  action: setup filter="ansible_docker0"
+  when: ansible_docker0 is not defined
 
 - name: Flush Handlers
   meta: flush_handlers
