@@ -6,4 +6,3 @@
       - 'docker{{ dockerspawner_docker_version | default("") }}'
       - 'escapism{{ dockerspawner_escapism_version | default("") }}'
       - 'dockerspawner{{ dockerspawner_version | default("") }}'
-    executable: '{{ python3_pip_executable }}'

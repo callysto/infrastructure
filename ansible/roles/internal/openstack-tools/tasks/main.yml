@@ -25,7 +25,6 @@
     name: "{{ item.name }}"
     state: present
     version: "{{ item.version }}"
-    executable: '{{ python3_pip_executable }}'
   with_items:
     - "{{ openstack_tools_pip_pkg_vers }}"
   become: yes
@@ -45,7 +44,6 @@
   pip:
     name: "{{ item }}"
     state: present
-    executable: '{{ python3_pip_executable }}'
   with_items:
     - "{{ openstack_tools_pip_pkgs }}"
   become: yes
