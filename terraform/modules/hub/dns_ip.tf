@@ -14,10 +14,14 @@ resource "openstack_networking_floatingip_v2" "new_fip" {
   pool  = "public"
 }
 
-resource "openstack_compute_floatingip_associate_v2" "new_fip" {
+resource "openstack_networking_port_v2" "port_1" {
+  network_id = "${var.network_id}"
+}
+
+resource "openstack_networking_floatingip_associate_v2" "new_fip" {
   count       = "${var.create_floating_ip == "true" ? 1 : 0}"
-  instance_id = "${openstack_compute_instance_v2.instance.id}"
-  floating_ip = "${openstack_networking_floatingip_v2.new_fip.address}"
+  floating_ip = "${openstack_networking_floatingip_v2.new_fip[0].address}"
+  port_id     = "${openstack_networking_port_v2.port_1}.id"
 }
 
 resource "openstack_dns_recordset_v2" "new_fip" {
@@ -27,13 +31,13 @@ resource "openstack_dns_recordset_v2" "new_fip" {
   ttl     = 60
   type    = "A"
 
-  records = ["${openstack_compute_floatingip_associate_v2.new_fip.floating_ip}"]
+  records = ["${openstack_networking_floatingip_associate_v2.new_fip[0].floating_ip}"]
 }
 
-resource "openstack_compute_floatingip_associate_v2" "existing_fip" {
+resource "openstack_networking_floatingip_associate_v2" "existing_fip" {
   count       = "${var.existing_floating_ip != "" ? 1 : 0}"
-  instance_id = "${openstack_compute_instance_v2.instance.id}"
   floating_ip = "${var.existing_floating_ip}"
+  port_id     = "${openstack_networking_port_v2.port_1}.id"
 }
 
 resource "openstack_dns_recordset_v2" "existing_fip" {
@@ -43,15 +47,15 @@ resource "openstack_dns_recordset_v2" "existing_fip" {
   ttl     = 60
   type    = "A"
 
-  records = ["${openstack_compute_floatingip_associate_v2.existing_fip.floating_ip}"]
+  records = ["${openstack_networking_floatingip_associate_v2.existing_fip[0].floating_ip}"]
 }
 
 locals {
   ip = "${
     coalesce(
-      element(concat(openstack_compute_floatingip_associate_v2.new_fip.*.floating_ip, list("")), 0),
-      element(concat(openstack_compute_floatingip_associate_v2.existing_fip.*.floating_ip, list("")), 0),
-      openstack_dns_recordset_v2.ipv6.records[0]
+      element(concat(openstack_networking_floatingip_associate_v2.new_fip.*.floating_ip, tolist([""])), 0),
+      element(concat(openstack_networking_floatingip_associate_v2.existing_fip.*.floating_ip, tolist([""])), 0),
+      sort(openstack_dns_recordset_v2.ipv6.records)[0]
     )
   }"
 }

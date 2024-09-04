@@ -6,6 +6,8 @@ variable "key_name" {}
 
 variable "network_name" {}
 
+variable "network_id" {}
+
 variable "name" {
   default = ""
 }
@@ -15,7 +17,7 @@ variable "vol_zfs_size" {
 }
 
 variable "existing_volumes" {
-  type = "list"
+  type = list
 
   default = []
 }

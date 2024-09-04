@@ -1,5 +1,5 @@
 variable "hub_flavor_name" {
-  type = "map"
+  type = map
 
   default = {
     prod = "m1.40g100g8c32g"
@@ -8,7 +8,7 @@ variable "hub_flavor_name" {
 }
 
 variable "hub_vol_zfs_size" {
-  type = "map"
+  type = map
 
   default = {
     prod = "100"
