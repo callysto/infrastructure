@@ -1,0 +1,7 @@
+---
+# vars file for sysstat
+
+sysstat_packages:
+  - sysstat
+
+sysstat_service: "sysstat"
