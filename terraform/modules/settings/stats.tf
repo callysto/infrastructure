@@ -1,5 +1,5 @@
 variable "stats_flavor_name" {
-  type = "map"
+  type = map
 
   default = {
     prod = "m1.large"
@@ -8,7 +8,7 @@ variable "stats_flavor_name" {
 }
 
 variable "stats_vol_zfs_size" {
-  type = "map"
+  type = map
 
   default = {
     prod = "50"
