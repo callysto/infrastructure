@@ -1,5 +1,5 @@
 variable "sharder_flavor_name" {
-  type = "map"
+  type = map
 
   default = {
     prod = "m1.small"
@@ -8,7 +8,7 @@ variable "sharder_flavor_name" {
 }
 
 variable "sharder_vol_zfs_size" {
-  type = "map"
+  type = map
 
   default = {
     prod = "10"
