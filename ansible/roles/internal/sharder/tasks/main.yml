@@ -13,8 +13,7 @@
       - openssl-devel
 
 - name: Install Sharder Python dependencies
-  pip:
-    executable: '{{ python3_pip_executable }}'
+  ansible.builtin.pip:
     requirements: '{{ sharder_app_dir }}/sharder/requirements.txt'
 
 - name: Deploy Sharder config file

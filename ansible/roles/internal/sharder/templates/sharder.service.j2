@@ -2,7 +2,7 @@
 Description=JupyterHub Sharder
 
 [Service]
-ExecStart={{ python3_executable }} {{ sharder_app_dir }}/sharder/daemon.py --config-file {{ sharder_app_dir }}/sharder.yml
+ExecStart=python3 {{ sharder_app_dir }}/sharder/daemon.py --config-file {{ sharder_app_dir }}/sharder.yml
 Restart=on-failure
 
 [Install]
