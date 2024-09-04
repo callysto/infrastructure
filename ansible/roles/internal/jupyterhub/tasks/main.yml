@@ -8,11 +8,11 @@
 - name: Manage Jupyterhub Docker Cull script
   pip:
     name: jupyterhub-idle-culler
-    executable: '{{ python3_pip_executable }}'
 
 - name: Get Docker image for JupyterHub containers
   docker_image:
     name: '{{ jupyterhub_docker_container }}'
+    source: pull
   when: jupyterhub_spawner in ['dockerspawner', 'syzygyswiftspawner']
 
 # TODO: merge role syzygyauthenticator into this role?
@@ -24,7 +24,6 @@
 - name: Install jhub_shibboleth_auth
   pip:
     name: jhub_shibboleth_auth
-    executable: '{{ python3_pip_executable }}'
   become: yes
   when: jupyterhub_authenticator == 'shib'
 
@@ -49,7 +48,6 @@
 - name: Install pycurl
   pip:
     name: pycurl
-    executable: '{{ python3_pip_executable }}'
   environment:
     PYCURL_SSL_LIBRARY: nss
 
@@ -58,7 +56,6 @@
     name:
       - 'jupyterhub{{ jupyterhub_version }}'
       - 'sqlalchemy{{ jupyterhub_sqlalchemy_version | default("") }}'
-    executable: '{{ python3_pip_executable }}'
 
 - name: Install node packages
   yum:
