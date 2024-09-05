@@ -18,9 +18,9 @@
     requirements: '{{ sharder_app_dir }}/sharder/requirements.txt'
 
 - name: Deploy Sharder config file
-  copy:
+  template:
     dest: '{{ sharder_app_dir }}/sharder.yml'
-    content: "{{ sharder_config | to_nice_yaml() }}"
+    src: sharder-config.yml.j2
   notify:
     - Restart Sharder
 

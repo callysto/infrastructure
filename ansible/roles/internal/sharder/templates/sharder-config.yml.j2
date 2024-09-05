@@ -1,0 +1,8 @@
+db_file: {{ sharder_app_dir }}/sharder.db
+db_type: {{ sharder_db_type | default('sqlite') }}
+domain: {{ sharder_domain }}
+hubs:
+{% for host in groups['hub'] %}
+  - name: {{ host }}
+{% endfor %}
+sharder_listen: {{ sharder_listen | default('127.0.0.1') }}

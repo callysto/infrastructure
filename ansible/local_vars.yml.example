@@ -86,12 +86,6 @@ jupyterhub_admin_users:
 
 # JupyterHub Sharder configuration
 sharder_use_shibboleth: True
-sharder_config:
-  db_type: sqlite
-  db_file: /srv/sharder/sharder.db
-  hubs: "{{ groups['hub'] }}"
-  sharder_listen: 127.0.0.1
-  domain: callysto.farm
 
 # Set to True to disable updating package versions automatically
 disable_package_update: False
