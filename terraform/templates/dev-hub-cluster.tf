@@ -1,4 +1,18 @@
 ## Development JupyterHub Cluster Environment
+## Development JupyterHub Cluster Environment
+terraform {
+  required_providers {
+    ansible = {
+      source  = "nbering/ansible"
+      version = "~>1.0"
+    }
+
+    openstack = {
+      source  = "terraform-provider-openstack/openstack"
+      version = "~> 1.54.0"
+    }
+  }
+}
 
 # These are set by the Makefile
 variable "DEV_CALLYSTO_DOMAINNAME" {}
@@ -12,8 +26,9 @@ resource "random_pet" "name" {
 # These represent settings to tune the hub you're creating
 locals {
   # Global Settings
-  image_name   = "callysto-centos"
+  image_name   = "Alma Linux 9"
   network_name = "default"
+  network_id   = "b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd"
   public_key   = "${file("../../keys/id_rsa.pub")}"
   key_name     = "key-${random_pet.name.id}"
   zone_id      = "${var.DEV_CALLYSTO_ZONE_ID}"
@@ -69,6 +84,7 @@ module "sharder" {
   flavor_name          = "${module.settings.sharder_flavor_name}"
   key_name             = "${local.key_name}"
   network_name         = "${local.network_name}"
+  network_id           = "${local.network_id}"
   create_floating_ip   = "${local.sharder_create_floating_ip}"
   existing_floating_ip = "${local.sharder_existing_floating_ip}"
 }
@@ -81,6 +97,7 @@ module "ssp" {
   flavor_name          = "${module.settings.ssp_flavor_name}"
   key_name             = "${local.key_name}"
   network_name         = "${local.network_name}"
+  network_id           = "${local.network_id}"
   create_floating_ip   = "${local.ssp_create_floating_ip}"
   existing_floating_ip = "${local.ssp_existing_floating_ip}"
 }
@@ -93,6 +110,7 @@ module "hub01" {
   flavor_name          = "${module.settings.hub_flavor_name}"
   key_name             = "${local.key_name}"
   network_name         = "${local.network_name}"
+  network_id           = "${local.network_id}"
   vol_zfs_size         = "${module.settings.hub_vol_zfs_size}"
   existing_volumes     = "${local.hub01_existing_volumes}"
   create_floating_ip   = "${local.hub01_create_floating_ip}"

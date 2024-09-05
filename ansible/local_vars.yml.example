@@ -45,7 +45,7 @@ jupyterhub_getting_started_url: 'https://raw.githubusercontent.com/callysto/gett
 #   * shib: log in through ssp/shib
 #   * pam: authenticate against system users
 #
-jupyterhub_authenticator: dummy
+jupyterhub_authenticator: shib
 
 # uncomment this to specify a return URL when the user logs out.
 # only when "shib" authenticator is used.
@@ -83,9 +83,6 @@ jupyterhub_docker_container: 'docker.io/callysto/pims-r:latest'
 # Add the email addresses or hashes of addresses for admin users
 jupyterhub_admin_users:
   - fd1f75f968e4781519f03bfc90a7204be8d27592
-
-# Set jupyterhub version
-jupyterhub_version: 1.0
 
 # JupyterHub Sharder configuration
 sharder_use_shibboleth: True
@@ -145,18 +142,6 @@ stats_password: stats
 
 # Grafana authentication
 grafana_admin_password: password
-
-# edX
-edx_docker_image: "callysto/openedx"
-edx_docker_image_tag: "edx-prod"
-edx_mysql_root_password: password
-edx_mysql_edx_password: password
-edx_secret_key: a_long_string_of_characters
-edx_android_oauth2_secret: another_long_string_of_characters
-edx_id: yet_another_string_of_characters
-edx_tutor_root: /tank/tutor
-edx_tutor_version: "3.11.2"
-edx_enable_backups: false
 
 # OpenStack auth information
 # Fill this in when using the syzygyswiftspawner spawner
