@@ -5,7 +5,6 @@ base_packages:
   - { name: 'vim', state: 'present' }
   - { name: 'tmux', state: 'present' }
   - { name: 'screen', state: 'present' }
-  - { name: 'python2-pip', state: 'present' }
 
 base_packages_centos_cron_major: 1
 base_packages_centos_cron_minor: 0
