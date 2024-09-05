@@ -10,7 +10,7 @@ $metadata['https://{{ ssp_domain }}/simplesaml/saml2/idp/metadata.php'] = array(
         'privatekey' => 'multi-idp.pem',
         'certificate' => 'multi-idp.crt',
         'auth' => 'multi-idp-source',
-
+        'redirect.sign' => true,
         'signature.algorithm' => 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         'attributes.NameFormat' => 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
 
