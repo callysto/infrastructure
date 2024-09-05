@@ -1,4 +1,4 @@
-dockerspawner_version: "==12.1.0"
-dockerspawner_docker_version: "<6.0.0"
-dockerspawner_urllib3_version: "<2.0.0"
-dockerspawner_escapism_version:
+dockerspawner_version: "~=13.0.0"
+dockerspawner_docker_version: "~=7.1.0"
+dockerspawner_urllib3_version: "~=2.2.2"
+dockerspawner_escapism_version: "~=1.0.1"
