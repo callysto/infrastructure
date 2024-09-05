@@ -1,4 +1,4 @@
 ---
-syzygyauthenticator_repo: https://github.com/callysto/syzygyauthenticator
-syzygyauthenticator_version: master
-syzygyauthenticator_dir: /opt/syzygyauthenticator
+syzygyauthenticator_repo: git+https://github.com/callysto/syzygyauthenticator
+syzygyauthenticator_branch: master
+syzygyauthenticator_version:
