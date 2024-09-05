@@ -2,6 +2,7 @@
 {% block global %}
 import os
 import sys
+import syzygyauthenticator
 
 from subprocess import check_call, check_output
 from tornado import web
@@ -11,7 +12,7 @@ def create_fs_hook(spawner):
       callysto_user = 'jupyter'
       env = os.environ
       env['GETTING_STARTED'] = '{{ jupyterhub_getting_started_url }}'
-      check_call(['/opt/syzygyauthenticator/zfs-homedir.sh', username, callysto_user], env=env)
+      check_call([os.path.join(syzygyauthenticator.__path__[0], 'zfs-homedir.sh'), username, callysto_user], env=env)
       refquota,available,readonly = check_output(
                                          ['/usr/sbin/zfs',
                                           'get',
@@ -114,6 +115,7 @@ c.{{ authenticator_option.conf_object }}  = {{ authenticator_option.value }}
 {% endfor %}
 {% endif %}
 {% endif %}
+c.Authenticator.allow_all = {{ jupyterhub_authenticator_allow_all }}
 {% endblock %}
 
 {% if jupyterhub_shib_return_url != "" -%}
