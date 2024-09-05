@@ -12,7 +12,7 @@
         state: latest
       ignore_errors: true
 
-    - name: Reboot instance
+    - name: Check needs restarting
       command: needs-restarting -r
       register: command_restart
       failed_when: command_restart.rc not in [0, 1]
