@@ -85,34 +85,6 @@
         - python3.11-pip
         - python3.11-devel
 
-    - name: Set Python3.11 as the default
-      become: true
-      tags:
-        - python
-      community.general.alternatives:
-        name: python3
-        path: /usr/bin/python3.11
-        link: /usr/bin/python3
-
-
-    - name: Set pip3.11 as the default
-      become: true
-      tags:
-        - python
-      community.general.alternatives:
-        name: pip3
-        path: /usr/bin/pip3.11
-        link: /usr/bin/pip3
-
-    - name: Update Needs-Restarting python
-      become: true
-      tags:
-        - python
-      lineinfile:
-        dest: /usr/bin/needs-restarting
-        regexp: '^#!/usr/bin/python3$'
-        line: '#!/usr/bin/python3.9'
-
 - name: Apply play specific roles
   hosts: stats
   roles:
