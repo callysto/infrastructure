@@ -1,6 +1,7 @@
 ---
 - name: Install dockerspawner
   pip:
+    executable: '{{ python3_pip_executable }}'
     name:
       - 'urllib3{{ dockerspawner_urllib3_version | default("latest") }}'
       - 'docker{{ dockerspawner_docker_version | default("") }}'

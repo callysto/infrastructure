@@ -22,6 +22,7 @@
 
 - name: Ensure versioned pip packages exist on CentOS
   pip:
+    executable: '{{ python3_pip_executable }}'
     name: "{{ item.name }}"
     state: present
     version: "{{ item.version }}"
@@ -32,6 +33,7 @@
 
 - name: Ensure versioned pip packages exist on Debian/Ubuntu
   pip:
+    executable: '{{ python3_pip_executable }}'
     name: "{{ item.name }}"
     state: present
     version: "{{ item.version }}"
@@ -42,6 +44,7 @@
 
 - name: Ensure pip packages exist on CentOS
   pip:
+    executable: '{{ python3_pip_executable }}'
     name: "{{ item }}"
     state: present
   with_items:
@@ -51,6 +54,7 @@
 
 - name: Ensure pip packages exist on Debian/Ubuntu
   pip:
+    executable: '{{ python3_pip_executable }}'
     name: "{{ item }}"
     state: present
   with_items:
