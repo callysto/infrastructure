@@ -154,7 +154,7 @@ jupyterhub_authenticators:
 
 jupyterhub_authenticator_dummy_password: ""
 
-jupyterhub_authenticator_allow_all: False
+jupyterhub_allow_all: True
 
 # Set these to use a persistent token/cookie between the hub and proxy
 jupyterhub_auth_token: ""
