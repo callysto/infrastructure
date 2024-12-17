@@ -84,9 +84,9 @@ $config = array(
 
   {% if s.type == 'microsoft' %}
     '{{ s.display_name | lower | replace(' ','') }}' => array(
-        'authwindowslive:LiveID',
-        'key' => '{{ s.client_id }}',
-        'secret' => '{{ s.client_secret }}',
+        'authoauth2:MicrosoftHybridAuth',
+        'clientId' => '{{ s.client_id }}',
+        'clientSecret' => '{{ s.client_secret }}',
     ),
   {% endif %}
 

@@ -452,8 +452,10 @@ $config = array(
      *
      */
      'module.enable' => array(
-          {% if ssp_develop %}'exampleauth' => TRUE,{% endif %}
-          'authwindowslive' => TRUE,
+{% if ssp_develop %}
+          'exampleauth' => TRUE,
+{% endif %}
+          'authoauth2' => TRUE,
           'smartattributes' => TRUE,
           'cron' => TRUE,
           'metarefresh' => TRUE,
@@ -815,12 +817,18 @@ $config = array(
                 $state["Source"]["entityid"] = "https://{{ groups['sharder'][0] }}/simplesaml/saml2/idp/metadata.php";
             ',
         ),
+        15 => array(
+            'class' => 'core:AttributeAlter',
+            'subject' => 'microsoft.id',
+            'pattern' => '/^/',
+            'replacement' => 'https://graph.microsoft.com!',
+        ),
         20 => array(
             'class' => 'smartattributes:SmartID',
             {% if ssp_hash_usernames -%}
-            'candidates' => array('eduPersonTargetedID', 'eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            'candidates' => array('eduPersonTargetedID', 'eduPersonPrincipalName', 'email', 'microsoft.id'),
             {% else -%}
-            'candidates' => array('eduPersonPrincipalName', 'email', 'windowslive_targetedID'),
+            'candidates' => array('eduPersonPrincipalName', 'email', 'microsoft.id'),
             {% endif -%}
             'add_authority' => FALSE,
             'add_candidate' => FALSE,
