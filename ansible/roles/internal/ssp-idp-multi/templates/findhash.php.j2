@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-require_once('/var/simplesamlphp-{{ ssp_ver }}/www/_include.php');
+require_once('/var/simplesamlphp-{{ ssp_ver }}/public/_include.php');
 
 function generateHash($userID) {
   {% set metadata_url = "https://" ~ groups['sharder'][0] ~ "/simplesaml/saml2/idp/metadata.php" %}
@@ -10,7 +10,7 @@ function generateHash($userID) {
   $srcID = 'set17:saml20-idp-hostedset{{ metadata_url | length }}:{{ metadata_url }}';
   $dstID = 'set16:saml20-sp-remoteset{{ shib_url | length }}:{{ shib_url }}';
 
-  $secretSalt = \SimpleSAML\Utils\Config::getSecretSalt();
+  $secretSalt = (new SimpleSAML\Utils\Config())->getSecretSalt();
   $uidData = 'uidhashbase'.$secretSalt;
   $uidData .= strlen($srcID).':'.$srcID;
   $uidData .= strlen($dstID).':'.$dstID;

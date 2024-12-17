@@ -811,8 +811,8 @@ $config = array(
         10 => array(
             'class' => 'core:PHP',
             'code' => '
-                $state["Destination"]["entityid"] = "https://hub.{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') }}/shibboleth";
-                $state["Source"]["entityid"] = "https://hub.{{ lookup('env', ENVIRONMENT + '_CALLYSTO_DOMAINNAME') }}/simplesaml/saml2/idp/metadata.php";
+                $state["Destination"]["entityid"] = "https://{{ groups['sharder'][0] }}/shibboleth";
+                $state["Source"]["entityid"] = "https://{{ groups['sharder'][0] }}/simplesaml/saml2/idp/metadata.php";
             ',
         ),
         20 => array(
