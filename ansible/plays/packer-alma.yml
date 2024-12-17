@@ -1,0 +1,49 @@
+---
+## Used by Packer to create a AlmaLinux OpenStack image
+## with all updates applied and core utilities installed.
+- name: Initial tasks for Callysto Infrastructure
+  hosts: all
+  become: true
+  tasks:
+    - name: Install yum-plugin-versionlock
+      yum:
+        name: yum-plugin-versionlock
+        state: latest
+        update_cache: yes
+
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+      ignore_errors: true
+
+    - name: Configure SELinux
+      tags: ["selinux"]
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Set net.ipv6.conf.default.accept_ra to 1 for IPv6
+      sysctl:
+        name: net.ipv6.conf.default.accept_ra
+        value: 1
+
+    - name: Set net.ipv6.conf.all.accept_ra.accept_ra to 1 for IPv6
+      sysctl:
+        name: net.ipv6.conf.all.accept_ra
+        value: 1
+
+    - name: Reboot instance
+      command: /sbin/shutdown -r +1
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+    - name: wait for SSH access to come back
+      wait_for_connection:
+
+- name: More initial tasks for Callysto Infrastructure
+  hosts: all
+  become: true
+  roles:
+    - { role: weareinteractive.sudo, become: yes }

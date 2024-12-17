@@ -1,0 +1,30 @@
+{
+  "builders": [{
+    "type": "openstack",
+    "region": "{{user `region`}}",
+    "flavor": "{{user `flavor`}}",
+    "security_groups": ["packer"],
+    "image_name": "callysto-alma",
+    "ssh_username": "almalinux",
+    "source_image_name": "{{user `image_name`}}",
+    "networks": ["{{user `network_id`}}"],
+    "ssh_ip_version": 6,
+    "ssh_pty": true,
+    "metadata": {
+      "build_date": "{{ timestamp }}"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo sed -i.bak -e '/Defaults.*requiretty/s/^/#/' /etc/sudoers"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/plays/packer-alma.yml",
+      "ansible_env_vars": [ "ANSIBLE_HOST_KEY_CHECKING=False" ]
+    }
+  ]
+}

@@ -321,20 +321,10 @@ backup:
 	${PLAYBOOK_CMD} --limit localhost plays/backup.yml
 
 # Packer tasks
-HELP: Builds the CentOS image for Callysto
-packer/build/centos:
+HELP: Builds the AlmaLinux image for Callysto
+packer/build/alma:
 	@cd $(PACKER_PATH) ; \
-	USER=ptty2u $(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="CentOS 7" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd centos.json
-
-HELP: Builds the Ubuntu 18.04 image for callysto
-packer/build/ubuntu1804:
-	@cd $(PACKER_PATH) ; \
-	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Ubuntu 18.04" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd ubuntu1804.json
-
-HELP: Builds the Ubuntu 16.04 image for callysto
-packer/build/ubuntu1604:
-	@cd $(PACKER_PATH) ; \
-	$(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Ubuntu 16.04" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd ubuntu1604.json
+	USER=ptty2u $(PACKER_CMD) build -var region=Calgary -var flavor=m1.small -var image_name="Alma Linux 9" -var network_id=b0b12e8f-a695-480e-9dc2-3dc8ac2d55fd alma.json
 
 # Let's Encrypt tasks
 HELP: Generates new wildcard certs for callysto envrionments
