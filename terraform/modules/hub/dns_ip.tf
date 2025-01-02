@@ -9,19 +9,21 @@ resource "openstack_dns_recordset_v2" "ipv6" {
   ]
 }
 
+resource "openstack_networking_port_v2" "port_1" {
+  network_id = "${var.network_id}"
+  #network_id = openstack_compute_instance_v2.instance.network.0.uuid
+  device_id = openstack_compute_instance_v2.instance.id
+}
+
 resource "openstack_networking_floatingip_v2" "new_fip" {
   count = "${var.create_floating_ip == "true" ? 1 : 0}"
   pool  = "public"
 }
 
-resource "openstack_networking_port_v2" "port_1" {
-  network_id = "${var.network_id}"
-}
-
 resource "openstack_networking_floatingip_associate_v2" "new_fip" {
   count       = "${var.create_floating_ip == "true" ? 1 : 0}"
   floating_ip = "${openstack_networking_floatingip_v2.new_fip[0].address}"
-  port_id     = "${openstack_networking_port_v2.port_1}.id"
+  port_id     = openstack_networking_port_v2.port_1.id
 }
 
 resource "openstack_dns_recordset_v2" "new_fip" {
@@ -37,7 +39,7 @@ resource "openstack_dns_recordset_v2" "new_fip" {
 resource "openstack_networking_floatingip_associate_v2" "existing_fip" {
   count       = "${var.existing_floating_ip != "" ? 1 : 0}"
   floating_ip = "${var.existing_floating_ip}"
-  port_id     = "${openstack_networking_port_v2.port_1}.id"
+  port_id     = openstack_networking_port_v2.port_1.id
 }
 
 resource "openstack_dns_recordset_v2" "existing_fip" {
