@@ -11,8 +11,6 @@ resource "openstack_dns_recordset_v2" "ipv6" {
 
 resource "openstack_networking_port_v2" "port_1" {
   network_id = "${var.network_id}"
-  #network_id = openstack_compute_instance_v2.instance.network.0.uuid
-  device_id = openstack_compute_instance_v2.instance.id
 }
 
 resource "openstack_networking_floatingip_v2" "new_fip" {
