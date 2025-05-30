@@ -1,8 +1,8 @@
 ssp_develop: False
 
 # Version 2.3.0
-ssp_ver: 2.3.5
-ssp_sha256: 97bc3b8220eb628fd5493e14187d756247462849ebf323ccf094b0cd2b505665
+ssp_ver: 2.3.7
+ssp_sha256: ef1ceaff766289a8689c139b77dc64acf48ebc3f07788fd11410144130c67773
 
 ssp_url: https://github.com/simplesamlphp/simplesamlphp/releases/download/v{{ ssp_ver  }}/simplesamlphp-{{ ssp_ver  }}-full.tar.gz
 
