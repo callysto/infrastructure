@@ -16,9 +16,9 @@ export OPENRC_PATH := /home/ptty2u/work/rc/openrc
 export ADMIN_EMAIL := sysadmin@callysto.ca
 export SUPPORT_EMAIL := support@callysto.ca
 
-export DEV_CALLYSTO_DOMAINNAME := callysto.farm
+export DEV_CALLYSTO_DOMAINNAME := callysto.space
 export TF_VAR_DEV_CALLYSTO_DOMAINNAME := ${DEV_CALLYSTO_DOMAINNAME}
-export DEV_CALLYSTO_SSL_DIR_NAME := star_callysto_farm
+export DEV_CALLYSTO_SSL_DIR_NAME := star_callysto_space
 export DEV_CALLYSTO_ZONE_ID := fb1e23f2-5eb9-43e9-aa37-60a5bd7c2595
 export TF_VAR_DEV_CALLYSTO_ZONE_ID := ${DEV_CALLYSTO_ZONE_ID}
 #export DEV_CALLYSTO_SSL_CERT_DIRECTORY := ./../../../letsencrypt/dev/certs/${DEV_CALLYSTO_SSL_DIR_NAME}
