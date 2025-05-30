@@ -173,11 +173,11 @@ $ make ansible/playbook PLAYBOOK=init ENV=clavius
 $ make ansible/playbook PLAYBOOK=clavius ENV=clavius
 ```
 
-Once this is complete, log in to `clavius.callysto.farm` (or whatever the name
+Once this is complete, log in to `clavius.callysto.space` (or whatever the name
 you chose is) via ssh to finish the process:
 
 ```
-$ ssh ptty2u@clavius.callysto.farm
+$ ssh ptty2u@clavius.callysto.space
 ```
 
 First, configure a LUKS-based encrypted volume:
@@ -253,7 +253,7 @@ make letsencrypt/generate ENV=dev
 
 Finally, set the `callysto_ssl_cert_dir` variable in your `local_vars.yml` file.
 The value should be the _local_ path to where the certificates are located. For
-example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_farm`.
+example: `~/work/callysto-infra/letsencrypt/dev/certs/star_callysto_space`.
 
 `callysto_ssl_cert_dir` is used by the `callysto-html` ansible role to copy the
 certificates found in this directory to `/etc/pki/tls/` on the remote servers.
@@ -527,7 +527,7 @@ $ popd
 Run the following:
 
 ```
-$ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --user-session-max-start-delay 5 https://hub-dev.callysto.farm 1
+$ hubtraf --json --user-session-min-runtime 10 --user-session-max-runtime 30 --user-session-max-start-delay 5 https://hub-dev.callysto.space 1
 ```
 
 Tweak the parameters as required.
@@ -1172,10 +1172,10 @@ tutor local start --detach
 
 If this is a dev environment, you can now access edX by replacing the word
 "edx" of the dev domain name with "courses" and "studio". For example, if your
-dev domain name was "edx.engaged-peacock.callysto.farm", you can visit:
+dev domain name was "edx.engaged-peacock.callysto.space", you can visit:
 
-* https://courses.engaged-peacock.callysto.farm
-* https://studio.engaged-peacock.callysto.farm
+* https://courses.engaged-peacock.callysto.space
+* https://studio.engaged-peacock.callysto.space
 
 ## Updating edX After Deployment
 
@@ -1310,7 +1310,7 @@ Once you have a stats environment up and running, you can access Grafana
 by visiting either:
 
 Production: https://stats.callysto.ca/grafana
-Dev: https://stats-<name>.callysto.farm/grafana
+Dev: https://stats-<name>.callysto.space/grafana
 
 You can find the login information either in 1Password or in the environment's
 `local_vars.yml` Ansible file.
