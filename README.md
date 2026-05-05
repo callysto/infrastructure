@@ -1,324 +1,198 @@
 # Callysto Infrastructure
 
-This repository contains code for managing infrastructure within the Callysto
-project.
+This repository contains all infrastructure-as-code for the [Callysto](https://callysto.ca) project —
+an educational platform built around JupyterHub, running on OpenStack.
 
-## OpenStack
+## Documentation
 
-The Callysto infrastructure runs exclusively on OpenStack. In order to exactly
-reproduce everything here, you will need access to an OpenStack cloud with the
+| Document | Purpose |
+|---|---|
+| **README.md** (this file) | Component overview and quick-start reference |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Deep-dive design, topology, and future-state planning |
+| [PROCESSES.md](PROCESSES.md) | Step-by-step operational runbooks |
+| [2i2c_PROCESSES.md](2i2c_PROCESSES.md) | GKE-specific procedures for the 2i2c deployment |
+
+## OpenStack Requirements
+
+Callysto runs exclusively on OpenStack. You need access to a cloud with the
 following services:
 
-* Nova
-* Cinder
-* Neutron
-* Designate
+- **Nova** — compute instances
+- **Cinder** — block storage (ZFS pools, Docker storage)
+- **Neutron** — networking and floating IPs
+- **Designate** — DNS records
+
+## Architecture at a Glance
+
+```
+                        ┌──────────────────────────────────┐
+                        │           OpenStack Cloud         │
+   Users ──HTTPS──►     │                                  │
+                        │  ┌──────┐   ┌─────┐   ┌──────┐  │
+                        │  │ SSP  │   │ Hub │   │Stats │  │
+                        │  │ IdP  │◄──│ v4  │──►│/Graf.│  │
+                        │  └──────┘   └──┬──┘   └──────┘  │
+                        │               │                   │
+                        │          ┌────▼─────┐             │
+                        │          │ Sharder  │             │
+                        │          │ (routing)│             │
+                        │          └──────────┘             │
+                        │                                   │
+                        │  ┌──────────┐   ┌──────────────┐ │
+                        │  │ Clavius  │   │   edX/Tutor  │ │
+                        │  │(admin)   │   │              │ │
+                        │  └──────────┘   └──────────────┘ │
+                        └──────────────────────────────────┘
+```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for a full topology diagram and component descriptions.
 
 ## Master Makefile
 
-There is a master `Makefile` located in the root directory. This `Makefile`
-is used to more easily interact with the below services.
+The root `Makefile` is the primary interface for all operations.
 
-To see all tasks that the `Makefile` supports, run:
-
-```
-  $ make help
+```bash
+make help                          # List all available targets
+make terraform/list-environments   # List Terraform environments
+make ansible/list-playbooks        # List Ansible playbooks
 ```
 
 ## Packer
 
-Packer is used to create OpenStack images with pre-installed packages and
-settings. This is to help reduce the amount of time it takes to build dev
-and CI environments.
+Packer builds OpenStack VM images (Alma Linux 9) with pre-installed packages
+to reduce environment build times.
 
-### Binaries
-
-The `./bin` directory contains the binaries required to run Packer.
-These binaries are bundled in this repository to ensure all project members are
-using the same version.
-
-### Makefile
-
-The master `Makefile` provides an easy way to interact with Packer to create
-images.
-
-For example, to create the base centos image:
-
-```
-  $ make packer/build/centos
+```bash
+make packer/build/alma    # Build the current Alma Linux 9 base image
 ```
 
-> Note: review the `Makefile` and Packer build files to ensure their settings
-> are appropriate for your environment.
+Binaries for Darwin and Linux are bundled in `./bin/` to ensure version consistency.
 
 ## Terraform
 
-The resources are controlled by terraform so we can destroy and recreate
-everything quickly.
-
-All Terraform-related files are stored in the `./terraform` directory.
-
-### Binaries
-
-The main `./bin` directory contains the binaries required to run Terraform.
-These binaries are bundled in this repository to ensure all project members are
-using the same version.
+Terraform provisions OpenStack resources (compute, networking, DNS, storage).
+All Terraform files live under `./terraform/`.
 
 ### Modules
 
-Terraform modules are stored in `./terraform/modules`. The following modules
-are defined:
-
-  * `settings`: Returns settings based on a development or production environment.
-  * `clavius`: Collected resources for the central team workstation.
-  * `edx`: Collected resources for the Open edX.
-  * `hub`: Collected resources for JupyterHub.
-  * `sharder`: Collected resources for the Sharder.
-  * `ssp`: Collected resources for the SimpleSAMLphp server.
-  * `stats`: Collected resources for the stats server.
-
-### Makefile
-
-The master `Makefile` provides an easy way to interact with Terraform to
-deploy and manage infrastructure.
-
-For example, to redeploy the `hub-dev` environment, do
-
-```
-  $ make terraform/destroy ENV=hub-dev
-  $ make terraform/apply ENV=hub-dev
-```
-
-This will use the Terraform binary in `./bin` to apply the Terraform configuration
-defined in `./terraform/hub-dev`.
-
-The `Makefile` arguments correspond to the common Terraform commands: `plan`, `apply`,
-`destroy`, etc.
-
-The `Makefile` is only a convenience and it is not required. If you want to use Terraform
-directly, simply do:
-
-```
-$ cd terraform/hub-dev
-$ ../../bin/<arch>/terraform <action>
-```
+| Module | Purpose |
+|---|---|
+| `settings` | Environment-specific variable resolution (dev vs prod) |
+| `hub` | JupyterHub compute, networking, volumes, DNS, security groups |
+| `clavius` | Central admin workstation |
+| `ssp` | SimpleSAMLphp identity proxy server |
+| `sharder` | User routing/isolation layer |
+| `stats` | Prometheus + Grafana monitoring server |
+| `edx` | Open edX (Tutor) server |
 
 ### Deploying an Environment
 
-An "environment" is defined as any collection of related infrastructure.
-Environments are grouped in directories under the `terraform` directory.
-
-Use the `Makefile` to see what types of environments are available:
-
+```bash
+make terraform/plan ENV=hub-dev      # Preview changes
+make terraform/apply ENV=hub-dev     # Apply changes
+make terraform/destroy ENV=hub-dev   # Tear down
+make terraform/list-environments     # List all environments
 ```
-$ make terraform/list-environments
-```
+
+Environments are directories under `./terraform/` (e.g., `hub-dev`, `hub-prod-r9`, `clavius`).
 
 ## Ansible
 
-Resources are _provisioned_ with Ansible. Contrast this with Terraform
-which _deploys_ resources.
+Ansible provisions software on the infrastructure that Terraform creates.
+Inventory is generated automatically from Terraform state via
+[ansible-terraform-inventory](https://github.com/jtopjian/ansible-terraform-inventory).
 
-### Makefile
-
-The master `Makefile` can assist with running various Ansible commands.
-Using the `Makefile` makes it easy to ensure the command has all required
-information.
-
-If you prefer to not use the `Makefile`, check the contents of the `Makefile`
-for all required Ansible arguments and then just run `ansible` or
-`ansible-playbook` manually.
-
-### Ansible Inventory
-
-Inventory is handled through the
-[ansible-terraform-inventory](https://github.com/jtopjian/ansible-terraform-inventory)
-plugin. This plugin reads in the Terraform State of a deployed enviornment and
-creates an appropriate Ansible Inventory result.
-
-### Running Ansible
-
-To deploy a hub, run:
-
-```
-  $ make ansible/playbook/check PLAYBOOK=<playbook> ENV=hub-dev
-  $ make ansible/playbook PLAYBOOK=<playbook> ENV=hub-dev
+```bash
+make ansible/playbook PLAYBOOK=hub-cluster.yml ENV=hub-dev        # Full hub deploy
+make ansible/playbook/check PLAYBOOK=hub-cluster.yml ENV=hub-dev  # Dry run
+make ansible/list-playbooks        # List all playbooks
+make ansible/list-environments     # List environment-level playbooks
 ```
 
-> Note: `check` might fail because Ansible's inability to accurately do noop.
-
-### Playbooks
-
-You can see a list of Ansible playbooks by running:
-
-```
-  $ make ansible/list-playbooks
-```
-
-There are certain larger playbooks designed to provision entire environments.
-These can be seen by running:
-
-```
-  $ make ansible/list-environments
-```
-
-You can also look in the `ansible/plays` directory.
+Configuration lives in `ansible/group_vars/`, `ansible/host_vars/`, and
+`ansible/local_vars.yml` (copy from `ansible/local_vars.yml.example`).
 
 ### Playbook Imports
 
-The directory `ansible/plays/imports` contains a few plays designed to manage
-individual components of an environment. These plays are not meant to be run
-on their own. Instead, they are meant to be combined into a larger playbook
-found in the `ansible/plays` directory.
+`ansible/plays/imports/` contains component-level plays (`hub.yml`, `ssp.yml`,
+`stats.yml`, `sharder.yml`) that are composed into full environment playbooks.
+They are not intended to be run directly.
 
-## Identity Proxy
+## Identity Proxy (SimpleSAMLphp)
 
-An identity proxy [SimpleSAMLphp](https://simplesamlphp.org/) is used to manage multiple
-login sources from Google, Microsoft, and other SAML/OIDC providers.
-All configuration is done via the `local_vars.yml` file.
+An SSP identity proxy federates Google, Microsoft, and institutional SAML/OIDC
+providers into a single login flow for JupyterHub.
 
-### Initial Configuration
+### Required `local_vars.yml` Variables
 
-The following variables will need to be configured in the `local_vars.yml` file before deployment:
-
-```
-  ssp_idp_multi_salt
-  ssp_idp_multi_admin_password
-  ssp_refresh_key
-  ssp_idp_multi_saml_cert
-  ssp_idp_multi_saml_key
+```yaml
+ssp_idp_multi_salt:
+ssp_idp_multi_admin_password:
+ssp_refresh_key:
+ssp_idp_multi_saml_cert:
+ssp_idp_multi_saml_key:
 ```
 
-The salt, admin password, and refresh key can be set to any secure values.
+Generate SAML keys:
 
-The SAML keys can be created by using the following command:
-
+```bash
+openssl req -new -x509 -days 3650 -nodes -sha256 \
+  -out saml.crt -keyout saml.pem \
+  -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto/OU=Infra/CN=hub-dev.callysto.farm"
 ```
-  $ openssl req -new -x509 -days 3650 -nodes -sha256 -out saml.crt -keyout saml.pem -subj "/C=CA/ST=Alberta/L=Calgary/O=Callysto Dev/OU=Infra/CN=hub-dev.callysto.farm"
-```
 
-Copy the contents of `saml.crt` to `ssp_idp_multi_saml_cert`, and `saml.pem` to `ssp_idp_multi_saml_key`.
+### Configuring Auth Sources
 
-### Adding Google Authentication
-
-Register application with Google here: https://console.developers.google.com/?pli=1
-
-Create a new project.
-Credentials > Create credentials > OAuth client ID
-Select Web application
-Name the client something memorable
-Authorized redirect URIs: https://hub.callysto.ca/simplesaml/module.php/authoauth2/linkback.php
-Note the client ID and client secret as they will be added to:
-
-```
+```yaml
 ssp_idp_multi_sources:
-  ...
   - type: google
     display_name: Google
-    client_id: <Google client ID>
-    client_secret: <Google client secret>
-```
+    client_id: <id>
+    client_secret: <secret>
 
-More documentation here: https://developers.google.com/identity/protocols/OAuth2
-
-### Adding Microsoft Authentication
-
-You will need to register the application here: http://go.microsoft.com/fwlink/?LinkID=144070
-
-Under the Platforms > Web section in the Microsoft registration page,
-use the following for the Redirect URL: https://hub.callysto.ca/simplesaml/module.php/authwindowslive/linkback.php
-Make sure the `User.Read` permission is set.
-
-Create an application secret. This will be stored under `client_secret` in local_vars.yml:
-
-```
-ssp_idp_multi_sources:
-  ...
   - type: microsoft
     display_name: Microsoft
-    client_id: <Microsoft Application Id>
-    client_secret: <Application Secret>
-```
+    client_id: <id>
+    client_secret: <secret>
 
-More documentation here: https://msdn.microsoft.com/en-us/library/bb676626.aspx
-
-### Adding a SAML Identity Provider:
-
-Add an entry for the Identity Provider under `local_vars.yml`:
-
-```
-ssp_idp_multi_sources:
-  ...
   - type: saml
     display_name: Example School
-    metadata_url: https://school.example.com/authentication/idp/metadata
+    metadata_url: https://school.example.com/idp/metadata
 ```
 
-You will need to provide the following metadata URL to the Identity Provider:
-https://hub.callysto.ca/simplesaml/module.php/saml/sp/metadata.php/default-sp
+Provide this SP metadata URL to institutional IdPs:
+`https://hub.callysto.ca/simplesaml/module.php/saml/sp/metadata.php/default-sp`
 
-Currently only SAML Identity Providers that publish their metadata is supported. If values
-are hardcoded, support for this will need to be added to the ssp-idp-multi role.
-It's trivial to add, but likely won't be needed.
+SAML IdPs must release `eduPersonPrincipalName` (`urn:oid:1.3.6.1.4.1.5923.1.1.1.6`).
+The proxy converts it to a Targeted ID at the SSP layer.
 
-This SAML Identity Provider must release an eduPersonPrincipalName (urn:oid:1.3.6.1.4.1.5923.1.1.1.6) attribute.
-Once provided, it is converted at the Identity Proxy level into a Targeted ID (urn:oid:1.3.6.1.4.1.5923.1.1.1.10)
-such as `20fa03478ece18d03c7cd5b39aa2224e45f0cee8`.
+### Development (Mock) Accounts
 
-### Adding a Generic OIDC Provider
-
-There is currently no way to configure generic OIDC connections. Google and Microsoft both use
-OAuth2/OIDC connections, which means SimpleSAMLphp has support, but it will just need to be added
-to the Ansible role.
-
-### Identity Proxy Mock (Development) Accounts
-
-In the local_vars.yml file, enable the `develop` variable:
-```
-...
+```yaml
 ssp_develop: True
-...
 ```
 
-Run a deployment
+Adds a "Login with mock account" button. Test credentials: `user1/password`, `user2/password`.
 
-#### Test Accounts
+## SSL Certificates (Let's Encrypt)
 
-There are 2 test accounts that come enabled with the mock Identity Proxy. They can be used by clicking `Login with mock account` at the Callysto login screen:
-```
-username: user1
-password: password
+Wildcard certificates are generated via [dehydrated](https://github.com/lukas2511/dehydrated)
+using OpenStack Designate DNS challenges. Certificates are generated centrally and
+pushed to all servers.
 
-username: user2
-password: password
-```
+Configuration: `letsencrypt/{dev,prod}/`
+See [PROCESSES.md — Generating Let's Encrypt Certificates](PROCESSES.md#generating-lets-encrypt-certificates).
 
-user1 will release an eduPersonTargetedID attribute with the value `lw90qgjwcywcdg0dh3xpykvn0a2wctetlhp5eznmu`
-user2 will release an eduPersonPrincipalName attribute with the value `user2@example.ca`
+## Metrics and Monitoring
 
-## Let's Encrypt Integration
+Each environment includes a stats server with:
 
-Let's Encrypt is used for all SSL certificates. We use
-[dehydrated](https://github.com/lukas2511/dehydrated) combined with OpenStack
-Designate to generate wildcard certificates. The certificates are stored on the
-Clavius server and then pushed to the various Callysto servers.
-
-Dehydrated is stored in the `vendor` directory.
-
-The configuration is stored in `letsencrypt`.
-
-## Metrics and OS Statistics
-
-The system of gathering statistics from the Callysto environment has been introduced (thanks to Ian Allison's initial work)
-- [Grafana](https://grafana.com/) provides graphs for default stats
-- [Prometheus](https://prometheus.io) is used to gather and store all information
-- [Prometheus Exporter](https://github.com/UnderGreen/ansible-prometheus-node-exporter.git) and [cAdvisor](https://github.com/google/cadvisor) are being installed on monitored nodes
-All above systems are behind Nginx and/or Apache2 as proxy for SSL/TLS communication
-
-To view default graphs please follow to dashboards at *https://stats.<domain_name>*/grafana/
+- **Prometheus** — metrics collection and storage
+- **Grafana** — dashboards at `https://stats.<domain>/grafana/`
+- **Node Exporter** + **cAdvisor** — host and container metrics
 
 ## edX Infrastructure
 
-The edX deployment leverages [Tutor](https://docs.tutor.overhang.io), version 3.7.4.
-
-Please see the PROCESSES.md document for further details about how to use Tutor.
+edX is deployed via [Tutor](https://docs.tutor.overhang.io). See
+[PROCESSES.md — edX Management](PROCESSES.md#edx-management) for full
+operational procedures.
