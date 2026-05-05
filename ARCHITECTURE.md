@@ -19,7 +19,7 @@ For a quick-start reference see [README.md](README.md).
   - [Clavius](#clavius)
   - [SSL Certificate Management](#ssl-certificate-management)
   - [Monitoring — Prometheus and Grafana](#monitoring--prometheus-and-grafana)
-  - [edX / Tutor](#edx--tutor)
+  - [Retired Components](#retired-components)
 - [Storage Architecture](#storage-architecture)
 - [Network and Security](#network-and-security)
 - [Authentication Flow](#authentication-flow)
@@ -27,7 +27,7 @@ For a quick-start reference see [README.md](README.md).
 - [Current and Future State](#current-and-future-state)
   - [Alma Linux 9 Migration](#alma-linux-9-migration)
   - [JupyterHub v4](#jupyterhub-v4)
-  - [Clavius Replacement](#clavius-replacement)
+  - [Clavius Modernization](#clavius-modernization)
 
 ---
 
@@ -78,11 +78,11 @@ Internet
 │  │   └──────────────────┘      └──────────────────────────┘   │  │
 │  └─────────────────────────────────────────────────────────────┘  │
 │                                                                   │
-│  ┌──────────────────────┐      ┌──────────────────────────────┐  │
-│  │       Clavius        │      │         edX / Tutor          │  │
-│  │  Admin workstation   │      │   Open edX (containerized)   │  │
-│  │  Cert generation     │      │                              │  │
-│  │  Image building      │      └──────────────────────────────┘  │
+│  ┌──────────────────────┐                                        │
+│  │       Clavius        │                                        │
+│  │  Admin workstation   │                                        │
+│  │  Cert generation     │                                        │
+│  │  Image building      │                                        │
 │  └──────────────────────┘                                        │
 │                                                                   │
 │  OpenStack Services: Nova | Cinder | Neutron | Designate         │
@@ -150,8 +150,7 @@ terraform/
 │   ├── clavius/    # Admin workstation resources
 │   ├── ssp/        # SimpleSAMLphp server resources
 │   ├── sharder/    # Sharder resources
-│   ├── stats/      # Prometheus/Grafana resources
-│   └── edx/        # Open edX resources
+│   └── stats/      # Prometheus/Grafana resources
 ├── hub-dev/        # Development hub environment
 ├── hub-ci/         # CI/testing hub environment
 ├── hub-prod-r9/    # Production hub (current)
@@ -174,7 +173,7 @@ flavors, image IDs, and DNS zones differ between environments. Consumers call
 this module and use its outputs rather than hardcoding values.
 
 **Terraform state is local.** State files (`terraform.tfstate`) live on disk
-alongside the `.tf` files. See [Clavius Replacement](#clavius-replacement) for
+alongside the `.tf` files. See [CLAVIUS_PROPOSAL.md](CLAVIUS_PROPOSAL.md) for
 the implications and planned improvements.
 
 Inventory for Ansible is generated from Terraform state at runtime via
@@ -364,15 +363,14 @@ distinct functions:
 | Function | Description |
 |---|---|
 | **Certificate generation** | Runs `dehydrated` + Designate DNS hooks to generate wildcard Let's Encrypt certs, then pushes them to all servers |
-| **Docker image building** | Builds custom JupyterHub notebook images and edX images |
-| **edX/Tutor management** | Hosts the Tutor environment used to customize and deploy edX |
+| **Docker image building** | Builds custom JupyterHub notebook images |
 | **Ops tooling** | OpenStack CLI, kubectl, Ansible, Terraform, hubtraf (load testing) |
 | **Team access point** | All team members SSH here to run deployments and maintenance |
 
 Clavius holds significant persistent state: encrypted home volumes, Terraform
-state references, built Docker images, SSL private keys, and Tutor environment
-configurations. See [Clavius Replacement](#clavius-replacement) for planned
-improvements.
+state references, built Docker images, and SSL private keys. This makes it a
+single point of failure for several critical operations. See
+[CLAVIUS_PROPOSAL.md](CLAVIUS_PROPOSAL.md) for a detailed modernization proposal.
 
 ---
 
@@ -416,16 +414,17 @@ Monitoring is toggled per-environment in `local_vars.yml`.
 
 ---
 
-### edX / Tutor
+### Retired Components
 
-**Location:** `terraform/modules/edx/`
+#### edX / Tutor
 
-Open edX is deployed via [Tutor](https://docs.tutor.overhang.io), which manages
-edX as a Docker Compose application. Custom themes, plugins, and images are
-built on Clavius and then deployed to the edX VM.
+The Open edX deployment has been retired. It was managed via
+[Tutor](https://docs.tutor.overhang.io), which ran edX as a Docker Compose
+application on a dedicated OpenStack VM. Custom themes and images were built on
+Clavius and deployed to the edX VM.
 
-See [PROCESSES.md — edX Management](PROCESSES.md#edx-management) for all
-operational procedures including image builds, upgrades, and certificate renewal.
+The `terraform/modules/edx/` module and the edX sections of
+[PROCESSES.md](PROCESSES.md) are retained for historical reference.
 
 ---
 
@@ -466,7 +465,6 @@ All VMs use OpenStack security groups with minimal ingress rules:
 | SSP | 443 (HTTPS), 22 (SSH, restricted) |
 | Stats | 443 (HTTPS), 22 (SSH, restricted) |
 | Clavius | 22 (SSH) |
-| edX | 443 (HTTPS), 80 (HTTP for ACME), 22 (SSH, restricted) |
 
 SSH hardening is applied via the `devsec.hardening` role across all nodes.
 
@@ -544,121 +542,10 @@ The hub runs JupyterHub v4 with the Docker spawner. Key changes from v3:
 - Updated `dockerspawner` and authenticator dependencies
 - Configuration uses the new v4 API patterns for spawner and authenticator
 
-### Clavius Replacement
+### Clavius Modernization
 
-Clavius conflates five distinct responsibilities into a single persistent VM.
-This creates operational risk:
-
-- Single point of failure for certificate generation and deployment
-- Certificates expire if Clavius is unavailable
-- Encrypted state (Docker images, Tutor configs, Terraform state) is difficult
-  to back up and transfer
-- No reproducibility — the current state of Clavius is not fully codified
-
-Three replacement approaches are described below.
-
----
-
-#### Option A: CI/CD Pipeline (GitHub Actions or GitLab CI)
-
-Move all automated tasks into a pipeline. Each Clavius function becomes a
-pipeline job:
-
-| Clavius Function | Pipeline Replacement |
-|---|---|
-| Certificate generation | Scheduled workflow using an ACME action + Designate hook |
-| Docker image builds | Build job triggered on image repo changes |
-| Terraform operations | Manual-trigger workflow with OpenStack credentials in secrets |
-| Ansible runs | Workflow job with SSH key in secrets |
-| edX/Tutor management | Dedicated workflow |
-
-Retains a minimal "jump box" VM (SSH access only) for emergency console access.
-
-**Pros:** Fully reproducible, auditable, no persistent state drift, automatic
-certificate renewal, visible to whole team via PR/job history.
-
-**Cons:** Requires network access from CI runners to OpenStack (may need
-self-hosted runner on the OpenStack network). Initial setup effort is moderate.
-Secret management (OpenStack credentials, SSH keys) must be handled carefully
-in the CI system.
-
-**Best fit if:** The team is comfortable with CI/CD and has or can set up a
-self-hosted runner on the OpenStack network.
-
----
-
-#### Option B: Remote State + Lightweight Ops VM (Recommended)
-
-Split Clavius responsibilities across dedicated, purpose-fit systems while
-keeping a minimal ops VM for interactive work:
-
-| Clavius Function | Replacement |
-|---|---|
-| Terraform state | HCP Terraform (free tier) or an S3-compatible backend |
-| Certificate generation + renewal | Automated script on a small dedicated VM or as a cron on a hub node, using DNS-01 hook |
-| Docker image builds | GitHub Actions (or GitLab CI) — push to registry, pull from hub |
-| edX/Tutor management | Migrate Tutor environment to git; builds in CI |
-| Interactive ops / SSH access | Small Alma Linux 9 "ops VM" (replaces Clavius), no persistent critical state |
-
-The key insight is that Clavius is overloaded. By moving state out (Terraform
-remote backend), automation out (CI for image builds), and secret management out
-(Vault or CI secrets), the remaining interactive ops VM becomes stateless enough
-to be rebuilt from Ansible if lost.
-
-**Pros:** Eliminates single points of failure incrementally. HCP Terraform free
-tier handles state. Each piece can be migrated independently. Keeps an
-interactive VM for teams that prefer SSH-based workflows.
-
-**Cons:** Multiple systems to maintain. Requires a one-time migration of
-Terraform state and Docker images.
-
-**Best fit for Callysto:** This is the recommended approach. The team already
-uses Makefile-based workflows; a CI layer for image builds and an HCP Terraform
-remote backend are tractable additions that de-risk the biggest failure modes
-without requiring a complete workflow change.
-
-**Migration steps (in order):**
-
-1. Enable HCP Terraform (or an S3-compatible backend like Ceph Object Store)
-   and migrate existing `terraform.tfstate` files
-2. Move Docker image builds to GitHub Actions; push images to a registry
-   (GitHub Container Registry or Docker Hub)
-3. Move certificate renewal to a scheduled Ansible play (run from the ops VM
-   or any hub node with OpenStack credentials)
-4. Provision a new Alma Linux 9 ops VM via the updated `clavius` Terraform
-   module; migrate SSH keys and OpenStack credentials
-5. Decommission old Clavius
-
----
-
-#### Option C: Rebuilt Clavius (Alma Linux 9 + Better Practices)
-
-Rebuild Clavius as an Alma Linux 9 VM with the same responsibilities but
-better hygiene:
-
-- Automated daily backup of home volume and Docker layers
-- Terraform remote state (even just a second copy synced to object storage)
-- Full Ansible provisioning so Clavius can be rebuilt from scratch
-
-**Pros:** Lowest migration effort. Preserves existing workflows exactly.
-
-**Cons:** Does not address the fundamental single-point-of-failure problem.
-Certificate expiration, state loss, and reproducibility concerns remain.
-
-**Best fit if:** Timeline is short and a full restructure is not feasible right now.
-This buys time and reduces blast radius without solving root causes.
-
----
-
-#### Recommendation Summary
-
-| Option | Migration Effort | Operational Risk Reduction | Team Workflow Change |
-|---|---|---|---|
-| A: Full CI/CD | High | High | High |
-| **B: Remote State + Ops VM** | **Medium** | **High** | **Low–Medium** |
-| C: Rebuilt Clavius | Low | Low | None |
-
-**Start with Option B.** Migrate Terraform state to HCP Terraform first (lowest
-risk, highest value). Move Docker image builds to GitHub Actions second.
-These two changes eliminate the most critical failure modes. The ops VM rebuild
-on Alma Linux 9 can happen in parallel or as a follow-on.
+Clavius currently runs CentOS 7 (EOL) and conflates several distinct
+responsibilities into a single persistent VM, creating operational risk.
+Three architectural options for modernizing or replacing it — along with
+ASCII topology diagrams and a migration plan — are detailed in
+[CLAVIUS_PROPOSAL.md](CLAVIUS_PROPOSAL.md).

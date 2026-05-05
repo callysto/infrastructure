@@ -9,6 +9,7 @@ an educational platform built around JupyterHub, running on OpenStack.
 |---|---|
 | **README.md** (this file) | Component overview and quick-start reference |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Deep-dive design, topology, and future-state planning |
+| [CLAVIUS_PROPOSAL.md](CLAVIUS_PROPOSAL.md) | Clavius modernization options and migration plan |
 | [PROCESSES.md](PROCESSES.md) | Step-by-step operational runbooks |
 | [2i2c_PROCESSES.md](2i2c_PROCESSES.md) | GKE-specific procedures for the 2i2c deployment |
 
@@ -191,8 +192,10 @@ Each environment includes a stats server with:
 - **Grafana** — dashboards at `https://stats.<domain>/grafana/`
 - **Node Exporter** + **cAdvisor** — host and container metrics
 
-## edX Infrastructure
+## Retired Components
 
-edX is deployed via [Tutor](https://docs.tutor.overhang.io). See
-[PROCESSES.md — edX Management](PROCESSES.md#edx-management) for full
-operational procedures.
+### edX / Tutor
+
+The Open edX deployment (managed via [Tutor](https://docs.tutor.overhang.io))
+has been retired. The `terraform/modules/edx/` module and the edX sections of
+[PROCESSES.md](PROCESSES.md) are retained for historical reference.
